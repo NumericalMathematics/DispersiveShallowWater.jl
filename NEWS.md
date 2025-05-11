@@ -17,6 +17,7 @@ for human readability.
 
 #### Added
 
+- Support source terms for `SerreGreenNaghdiEquations1D` ([#180], [#186]).
 - Add initial support for ForwardDiff.jl for `HyperbolicSerreGreenNaghdiEquations1D` and
   `DispersiveShallowWater.jacobian` ([#185]).
 
