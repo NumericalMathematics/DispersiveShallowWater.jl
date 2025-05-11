@@ -5,6 +5,14 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+
+## Changes when updating to v0.7 from v0.6.x
+
+#### Changed
+
+- The default parameters of the `SvaerdKalischEquations1D` changed from
+  `alpha = 0.0, beta = 0.2308939393939394, gamma = 0.04034343434343434` to `alpha = 0.0, beta = 1/3, gamma = 0.0` ([#196]).
+
 ## Changes in the v0.6 lifecycle
 
 #### Added
