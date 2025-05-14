@@ -1,4 +1,4 @@
-using OrdinaryDiffEqTsit5
+using OrdinaryDiffEqTsit5 #TODO: ODE da wo Rodas5
 using DispersiveShallowWater
 using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 
@@ -40,10 +40,11 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = nothing
 saveat = range(tspan..., length = 100)
 
-# Needs implicit methods
-sol = solve(ode, Rodas5(autodiff = AutoFiniteDiff()), abstol = 1e-6, reltol = 1e-6,
+# The Problem is very stiff. Tsit5() will cause a maxiter exceeded error
+alg = Rodas5()
+sol = solve(ode, alg, abstol = 1e-9, reltol = 1e-9,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
 plot(semi => sol)
-plot(ode.u0)
+
 

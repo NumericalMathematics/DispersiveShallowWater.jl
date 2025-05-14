@@ -47,7 +47,6 @@ function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh
     return SVector(eta)
 end
 
-
 """
     initial_condition_manufactured(x, t, equations::KdVEquation1D, mesh)
 
@@ -86,12 +85,12 @@ calculated using:
 function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
     g = gravity(equations)
     D = equations.D
-  
-    a1 = sinpi(2x - t)         
-    a2 = cospi(2x - t)         
-    b1 = exp(-t / 2)           
-    c0 = sqrt(g * D)           
-    c1 = sqrt(g / D)           
+
+    a1 = sinpi(2x - t)
+    a2 = cospi(2x - t)
+    b1 = exp(-t / 2)
+    c0 = sqrt(g * D)
+    c1 = sqrt(g / D)
 
     dη = -0.5 * a1 * b1 - pi * a2 * b1 +
          2pi * a2 * c0 * b1 +
@@ -100,8 +99,6 @@ function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
 
     return SVector(dη)
 end
-
-
 
 function create_cache(mesh, equations::KdVEquation1D,
                       solver, initial_condition,
@@ -113,11 +110,17 @@ function create_cache(mesh, equations::KdVEquation1D,
     c_0 = sqrt(g * D)
     c_1 = 0.5 * sqrt(g / D)
 
-    eta2 = zeros(RealT, nnodes(mesh))
-    eta2_x = zero(eta2)
+    # We use `DiffCache` from PreallocationTools.jl to enable automatic/algorithmic differentiation
+    # via ForwardDiff.jl. 
+    # 1: eta
+    N = ForwardDiff.pickchunksize(1 * nnodes(mesh))
+    template = ones(RealT, nnodes(mesh))
 
-    eta_x = zero(eta2)
-    eta_xxx = zero(eta2)
+    eta2 = DiffCache(zero(template), N)
+    eta2_x = DiffCache(zero(template), N)
+
+    eta_x = DiffCache(zero(template), N)
+    eta_xxx = DiffCache(zero(template), N)
 
     if solver.D1 isa PeriodicUpwindOperators
         D1 = solver.D1.central
@@ -132,18 +135,23 @@ function create_cache(mesh, equations::KdVEquation1D,
         D3 = solver.D2
     end
 
-    cache = (; D1, D3, eta2, eta2_x, eta_x, eta_xxx, c_0, c_1, DD)
+    cache = (; D1, D3, c_0, c_1, DD, eta2, eta2_x, eta_x, eta_xxx,)
     return cache
 end
 
 function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
               ::BoundaryConditionPeriodic, source_terms, solver, cache)
-    (; D1, D3, eta2, eta2_x, eta_x, eta_xxx, c_0, c_1, DD) = cache
-    D = equations.D
-    d = D
-    g = gravity(equations)
     eta, = q.x
     deta, = dq.x
+
+    (; D1, D3, c_0, c_1, DD,) = cache
+    # In order to use automatic differentiation, we need to extract
+    # the storage vectors using `get_tmp` from PreallocationTools.jl
+    # so they can also hold dual numbers when needed.
+    eta2 = get_tmp(cache.eta2, eta)
+    eta2_x = get_tmp(cache.eta2_x, eta2)
+    eta_x = get_tmp(cache.eta_x, eta)
+    eta_xxx = get_tmp(cache.eta_xxx, eta)
 
     @trixi_timeit timer() "hyperbolic" begin
         @.. eta2 = eta^2
@@ -161,14 +169,9 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
                     c_1 * eta2_x +
                     1 / 6 * c_0 * DD * eta_xxx)
     end
-    # print("before ")
-    # @show deta[1]
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
                                                        solver)
-    
-    # print("after ")                                                   
-    # @show deta[1]
-    # println(" ")
+
     return nothing
 end

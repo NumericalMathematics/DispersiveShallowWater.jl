@@ -37,7 +37,7 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = nothing
 saveat = range(tspan..., length = 100)
 
-sol = solve(ode, Rodas5(), abstol = 1e-9, reltol = 1e-9,
+sol = solve(ode, Tsit5(), abstol = 1e-9, reltol = 1e-9,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
 plot(semi => sol)
