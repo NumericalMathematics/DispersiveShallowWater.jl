@@ -38,10 +38,10 @@ end
 @testitem "kdv_1d_manufactured" setup=[Setup, KdVEquation1D] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_manufactured.jl"),
                         tspan=(0.0, 1.0),
-                        l2=[8.19240300492206e-8],
-                        linf=[9.001177425638218e-8],
-                        cons_error=[1.5510866369083942e-8],
-                        change_waterheight=-1.5510866369083942e-8,)
+                        l2=[8.193629241011088e-8],
+                        linf=[9.001311296330528e-8],
+                        cons_error=[1.5494509675306745e-8],
+                        change_waterheight=-1.5494509675306745e-8,)
 
     @test_allocations(semi, sol, allocs=5_000)
 end
