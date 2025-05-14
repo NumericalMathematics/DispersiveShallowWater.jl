@@ -1,6 +1,6 @@
 using OrdinaryDiffEqTsit5
 using DispersiveShallowWater
-using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
+using SummationByPartsOperators:  periodic_derivative_operator, upwind_operators
 
 ###############################################################################
 # Semidiscretization of the KdV equation 
@@ -12,18 +12,25 @@ boundary_conditions = boundary_condition_periodic
 # create homogeneous mesh
 coordinates_min = -50.0
 coordinates_max = 50.0
-N = 512
+N = 1024
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-# create solver with periodic upwind SBP operators of accuracy order 4
+# create solver with periodic SBP operators of accuracy order 4
 accuracy_order = 4
-D1_upwind = upwind_operators(periodic_derivative_operator;
-                      derivative_order = 1, accuracy_order = 4,
-                      xmin = xmin(mesh), xmax = xmax(mesh),
-                      N = nnodes(mesh))
 
           
-solver = Solver(D1_upwind, nothing)
+
+# using a wide stencil third derivative operator is significantly faster than using
+# the upwind operator for the third derivative for a given N. However there are considerably more oscillations.
+# This can be improved by increasing N, which in fact leads to it being slower again.
+# TODO: This text maybe in the docs somewhere?
+D1 = periodic_derivative_operator(1, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
+D3 = periodic_derivative_operator(3, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
+
+solver = Solver(D1, D3)
+
+
+
 
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
@@ -37,7 +44,7 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = nothing
 saveat = range(tspan..., length = 100)
 
-sol = solve(ode, Tsit5(), abstol = 1e-9, reltol = 1e-9,
+@btime sol = solve(ode, Tsit5(), abstol = 1e-9, reltol = 1e-9,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
 plot(semi => sol)
