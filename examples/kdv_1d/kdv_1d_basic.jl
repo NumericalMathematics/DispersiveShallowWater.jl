@@ -1,0 +1,62 @@
+using OrdinaryDiffEqTsit5
+using DispersiveShallowWater
+using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
+using SparseArrays: sparse
+###############################################################################
+# Semidiscretization of the KdV equation 
+
+equations = KdVEquation1D(gravity = 9.81, D = 1.0)
+initial_condition = initial_condition_convergence_test
+boundary_conditions = boundary_condition_periodic
+
+# create homogeneous mesh
+coordinates_min = -50.0
+coordinates_max = 50.0
+N = 512
+
+mesh = Mesh1D(coordinates_min, coordinates_max, N)
+
+# create solver with periodic SBP operators of accuracy order 4
+accuracy_order = 4
+D1_upwind = upwind_operators(periodic_derivative_operator;
+                      derivative_order = 1, accuracy_order = 4,
+                      xmin = xmin(mesh), xmax = xmax(mesh),
+                      N = nnodes(mesh))
+
+Dp = sparse(D1_upwind.plus)
+Dm = sparse(D1_upwind.minus)
+D = sparse(D1_upwind.central)
+
+D3 = Dp * D * Dm # TODO: make this in the cache later
+                      
+solver = Solver(D1_upwind.central, D3)
+
+semi = Semidiscretization(mesh, equations, initial_condition, solver,
+                          boundary_conditions = boundary_conditions)
+
+tspan = (0.0, 1.0)
+ode = semidiscretize(semi, tspan)                         
+
+summary_callback = SummaryCallback()
+analysis_callback = AnalysisCallback(semi; interval = 100,
+                                     extra_analysis_errors = (:conservation_error,),)
+callbacks = nothing
+saveat = range(tspan..., length = 100)
+
+@btime sol = solve(ode, Tsit5(), abstol = 1e-9, reltol = 1e-9,
+            save_everystep = false, callback = callbacks, saveat = saveat)
+
+plot(semi => sol)
+
+
+"""
+@btime = 507.327 ms
+for Tsit5(), abstol = 1e-9, reltol = 1e-9
+with 
+(gravity = 9.81, D = 1.0)
+initial_condition = initial_condition_convergence_test
+boundary_conditions = boundary_condition_periodic
+coordinates_min = -50.0
+coordinates_max = 50.0
+N = 512
+"""

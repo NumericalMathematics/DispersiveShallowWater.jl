@@ -56,7 +56,7 @@ end
 """
     initial_condition_convergence_test(x, t, equations::BBMEquation1D, mesh)
 
-A travelling-wave solution used for convergence tests in a periodic domain, here generalized
+A traveling-wave solution used for convergence tests in a periodic domain, here generalized
 for dimensional variables.
 
 See section 4.1.3 in (there is an error in paper: it should be `sech^2` instead of `cosh`):
