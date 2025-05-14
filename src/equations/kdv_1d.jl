@@ -14,7 +14,7 @@ taken from:
 
 ...
 
-Hier noch ganz viel Documentation
+Hier noch ganz viel Documentation...
 """
 struct KdVEquation1D{RealT <: Real} <: AbstractKdVEquation{1, 1}
     gravity::RealT # gravitational acceleration
@@ -128,7 +128,7 @@ function create_cache(mesh, equations::KdVEquation1D,
         # calculate the third derivative operator using upwind operators
         D3 = sparse(solver.D1.plus) * sparse(solver.D1.minus) * sparse(solver.D1.central)
 
-    else #TODO: better check maybe?
+    else
         D1 = solver.D1
         D3 = solver.D3
     end
