@@ -561,7 +561,7 @@ include("hyperbolic_serre_green_naghdi_1d.jl")
 
 # KdV equation
 abstract type AbstractKdVEquation{NDIMS, NVARS} <:
-    AbstractEquations{NDIMS, NVARS} end
+              AbstractEquations{NDIMS, NVARS} end
 include("kdv_1d.jl")
 
 function solve_system_matrix!(dv, system_matrix, rhs,
