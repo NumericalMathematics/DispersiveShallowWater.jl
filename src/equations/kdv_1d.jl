@@ -130,9 +130,7 @@ function create_cache(mesh, equations::KdVEquation1D,
 
     else #TODO: better check maybe?
         D1 = solver.D1
-        # The solver struct calls for D2::SecondDerivative, in the case
-        # of the KdV equation, one needs a third derivative however
-        D3 = solver.D2
+        D3 = solver.D3
     end
 
     cache = (; D1, D3, c_0, c_1, DD, eta2, eta2_x, eta_x, eta_xxx,)
