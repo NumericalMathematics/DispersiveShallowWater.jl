@@ -43,5 +43,5 @@ saveat = range(tspan..., length = 100)
 
 # The Problem is very stiff. Tsit5() will cause a maxiter exceeded error.
 alg = Rodas5()
-sol = solve(ode, alg, abstol = 1e-9, reltol = 1e-9,
+sol = solve(ode, alg, abstol = 1e-12, reltol = 1e-12,
             save_everystep = false, callback = callbacks, saveat = saveat)
