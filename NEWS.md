@@ -5,10 +5,19 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+
+## Changes when updating to v0.7 from v0.6.x
+
+#### Changed
+
+- The default parameters of the `SvaerdKalischEquations1D` changed from
+  `alpha = 0.0, beta = 0.2308939393939394, gamma = 0.04034343434343434` to `alpha = 0.0, beta = 1/3, gamma = 0.0` ([#196]).
+
 ## Changes in the v0.6 lifecycle
 
 #### Added
 
+- Support source terms for `SerreGreenNaghdiEquations1D` ([#180], [#186]).
 - Add initial support for ForwardDiff.jl for `HyperbolicSerreGreenNaghdiEquations1D` and
   `DispersiveShallowWater.jacobian` ([#185]).
 
@@ -24,10 +33,10 @@ for human readability.
 
 - Add `LinearDispersionRelation` and documentation about dispersion ([#168]).
 - Reflecting boundary conditions are added for the Svärd-Kalisch equations with `alpha = gamma = 0` ([#166]).
-- Fix a bug in the upwind discretization of the `SvärdKalischEquations1D`.
+- Fix a bug in the upwind discretization of the `SvaerdKalischEquations1D`.
 - Use OrdinaryDiffEqTsit5.jl and OrdinaryDiffEqLowStorageRK.jl instead of OrdinaryDiffEq.jl in all examples to
   reduce latency ([#163]).
-- Allow Fourier and periodic rational derivative operators for `BBMBBMEquations1D` and `SvärdKalischEquations1D` ([#154]).
+- Allow Fourier and periodic rational derivative operators for `BBMBBMEquations1D` and `SvaerdKalischEquations1D` ([#154]).
 - Add `BBMEquation1D` ([#150]).
 
 ## Changes when updating to v0.5 from v0.4.x
@@ -50,7 +59,7 @@ for human readability.
 - The `HyperbolicSerreGreenNaghdiEquations1D` were added for different types of bathymetry ([#139]).
 - The abstract interface `AbstractShallowWaterEquations` was added to unify several
   systems such as the `SerreGreenNaghdiEquations1D`, the `BBMBBMEquations1D`, and the
-  `SvärdKalischEquations1D` ([#127]).
+  `SvaerdKalischEquations1D` ([#127]).
 - A new conversion function `prim2phys` was introduced, defaulting to `prim2prim`. `prim2phys` is the default conversion function for plotting.
 
 ## Changes when updating to v0.4 from v0.3.x
