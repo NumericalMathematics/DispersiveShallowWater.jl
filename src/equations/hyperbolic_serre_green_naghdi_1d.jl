@@ -257,7 +257,7 @@ function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
     # 5: eta, v, D, w, H
     N = ForwardDiff.pickchunksize(5 * nnodes(mesh))
     template = ones(RealT, nnodes(mesh))
-    h = DiffCache(template, N)
+    h = DiffCache(zero(template), N)
     b = DiffCache(zero(template), N)
     b_x = DiffCache(zero(template), N)
     H_over_h = DiffCache(zero(template), N)
@@ -303,28 +303,28 @@ function rhs!(dq, q, t, mesh,
     dh, dv, dD, dw, dH = dq.x # dh = deta since b is constant in time
     fill!(dD, zero(eltype(dD)))
 
+    # First, we extract temporary storage from the `cache`.
+    # Since we use `DiffCache` from PreallocationTools.jl, we need to extract the
+    # appropriate arrays using `get_tmp` and need to pass an array with the element
+    # type we want to use, e.g., plain `Float64` or some dual numbers when using AD.
+
+    h = get_tmp(cache.h, eta)
+    b = get_tmp(cache.b, eta)
+    b_x = get_tmp(cache.b_x, eta)
+    H_over_h = get_tmp(cache.H_over_h, eta)
+    h_x = get_tmp(cache.h_x, eta)
+    v_x = get_tmp(cache.v_x, eta)
+    hv_x = get_tmp(cache.hv_x, eta)
+    v2_x = get_tmp(cache.v2_x, eta)
+    h_hpb_x = get_tmp(cache.h_hpb_x, eta)
+    H_x = get_tmp(cache.H_x, eta)
+    H2_h_x = get_tmp(cache.H2_h_x, eta)
+    w_x = get_tmp(cache.w_x, eta)
+    hvw_x = get_tmp(cache.hvw_x, eta)
+    tmp = get_tmp(cache.tmp, eta)
+
     @trixi_timeit timer() "hyperbolic terms" begin
         # Compute all derivatives required below
-
-        # First, we extract temporary storage from the `cache`.
-        # Since we use `DiffCache` from PreallocationTools.jl, we need to extract the
-        # appropriate arrays using `get_tmp` and need to pass an array with the element
-        # type we want to use, e.g., plain `Float64` or some dual numbers when using AD.
-        h = get_tmp(cache.h, eta)
-        b = get_tmp(cache.b, eta)
-        b_x = get_tmp(cache.b_x, eta)
-        H_over_h = get_tmp(cache.H_over_h, eta)
-        h_x = get_tmp(cache.h_x, eta)
-        v_x = get_tmp(cache.v_x, eta)
-        hv_x = get_tmp(cache.hv_x, eta)
-        v2_x = get_tmp(cache.v2_x, eta)
-        h_hpb_x = get_tmp(cache.h_hpb_x, eta)
-        H_x = get_tmp(cache.H_x, eta)
-        H2_h_x = get_tmp(cache.H2_h_x, eta)
-        w_x = get_tmp(cache.w_x, eta)
-        hvw_x = get_tmp(cache.hvw_x, eta)
-        tmp = get_tmp(cache.tmp, eta)
-
         @.. b = equations.eta0 - D
         @.. h = eta - b
         if !(bathymetry_type isa BathymetryFlat)
