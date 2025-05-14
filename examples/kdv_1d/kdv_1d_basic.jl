@@ -23,14 +23,9 @@ D1_upwind = upwind_operators(periodic_derivative_operator;
                       xmin = xmin(mesh), xmax = xmax(mesh),
                       N = nnodes(mesh))
 
-Dp = sparse(D1_upwind.plus)
-Dm = sparse(D1_upwind.minus)
-D = sparse(D1_upwind.central)
-
-D3 = Dp * D * Dm # TODO: make this in the cache later
-                      
-solver = Solver(D1_upwind.central, D3)
-
+          
+solver = Solver(D1_upwind, nothing)
+#TODO: Example Solver with third derivative operator
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
@@ -50,7 +45,10 @@ plot(semi => sol)
 
 
 """
-@btime = 507.327 ms
+OG:
+@btime = 507.327 ms (197787 allocations: 170.53 MiB)
+With Cache:
+@btime = 15.819 ms (3981 allocations: 542.41 KiB)
 for Tsit5(), abstol = 1e-9, reltol = 1e-9
 with 
 (gravity = 9.81, D = 1.0)
