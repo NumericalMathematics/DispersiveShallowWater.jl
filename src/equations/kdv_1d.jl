@@ -4,9 +4,15 @@
 The equation is given by
 ```math
 \begin{aligned}
-  \eta_t + \sqrt{gD}\eta_x + \frac{3}{2}\sqrt{\frac{g}{D}}\eta\eta_x - \frac{1}{6}D^2\eta_{xxt} &= 0.
+  \eta_t+\sqrt{g D} \eta_x+3 / 2 \sqrt{g / D} \eta \eta_x+1 / 6 \sqrt{g D} D^2 \eta_{x x x} $= 0.
 \end{aligned}
 ```
+
+and the Semi is:
+
+taken from:
+
+...
 
 Hier noch ganz viel Documentation
 """
@@ -41,8 +47,61 @@ function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh
     return SVector(eta)
 end
 
-# TODO: initial_condition_manufactured
-# TODO: source_terms_manufactured
+
+"""
+    initial_condition_manufactured(x, t, equations::KdVEquation1D, mesh)
+
+A smooth manufactured solution in combination with [`source_terms_manufactured`](@ref).
+"""
+function initial_condition_manufactured(x, t, equations::KdVEquation1D,
+                                        mesh)
+    eta = 1 + exp(-t / 2) * sinpi(2 * (x - t / 2))
+    return SVector(eta)
+end
+
+"""
+    source_terms_manufactured(q, x, t, equations::KdVEquation1D, mesh)
+
+A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
+
+calculated using:
+```julia
+    using Symbolics
+    @variables x t 
+    Dt = Differential(t)
+    Dx = Differential(x)
+
+    @variables g D pi
+
+    η = 1 + exp(-t // 2) * sin(pi*(2 * (x - t // 2)))
+    η_t = (Dt(η))
+    η_x = (Dx(η))
+    η_xxx = (Dx(Dx(Dx(η))))
+
+    source_kdv = η_t + sqrt(g * D) * η_x + 3//2 * sqrt(g / D) * η * η_x + 1//6 * sqrt(g * D) * D^2 * η_xxx
+
+    source_julia_form = simplify(expand_derivatives(source_kdv))
+``` 
+"""
+function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
+    g = gravity(equations)
+    D = equations.D
+  
+    a1 = sinpi(2x - t)         
+    a2 = cospi(2x - t)         
+    b1 = exp(-t / 2)           
+    c0 = sqrt(g * D)           
+    c1 = sqrt(g / D)           
+
+    dη = -0.5 * a1 * b1 - pi * a2 * b1 +
+         2pi * a2 * c0 * b1 +
+         3pi * a2 * c1 * (1 + a1 * b1) * b1 -
+         (4 / 3) * D^2 * pi^3 * a2 * c0 * b1
+
+    return SVector(dη)
+end
+
+
 
 function create_cache(mesh, equations::KdVEquation1D,
                       solver, initial_condition,
@@ -66,7 +125,7 @@ function create_cache(mesh, equations::KdVEquation1D,
         # calculate the third derivative operator using upwind operators
         D3 = sparse(solver.D1.plus) * sparse(solver.D1.minus) * sparse(solver.D1.central)
 
-    else
+    else #TODO: better check maybe?
         D1 = solver.D1
         # The solver struct calls for D2::SecondDerivative, in the case
         # of the KdV equation, one needs a third derivative however
@@ -102,7 +161,14 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
                     c_1 * eta2_x +
                     1 / 6 * c_0 * DD * eta_xxx)
     end
+    # print("before ")
+    # @show deta[1]
 
-    #TODO: source terms
+    @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
+                                                       solver)
+    
+    # print("after ")                                                   
+    # @show deta[1]
+    # println(" ")
     return nothing
 end

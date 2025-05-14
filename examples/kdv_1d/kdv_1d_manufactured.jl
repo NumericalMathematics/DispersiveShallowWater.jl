@@ -6,12 +6,14 @@ using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 # Semidiscretization of the KdV equation 
 
 equations = KdVEquation1D(gravity = 9.81, D = 1.0)
-initial_condition = initial_condition_convergence_test
+
+initial_condition = initial_condition_manufactured
+source_terms = source_terms_manufactured
 boundary_conditions = boundary_condition_periodic
 
 # create homogeneous mesh
-coordinates_min = -50.0
-coordinates_max = 50.0
+coordinates_min = -1.0
+coordinates_max = 1.0
 N = 512
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
@@ -24,9 +26,10 @@ D1_upwind = upwind_operators(periodic_derivative_operator;
 
           
 solver = Solver(D1_upwind, nothing)
-#TODO: Example Solver with third derivative operator
+
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
-                          boundary_conditions = boundary_conditions)
+                          boundary_conditions = boundary_conditions,
+                          source_terms = source_terms)
 
 tspan = (0.0, 1.0)
 ode = semidiscretize(semi, tspan)                         
@@ -37,23 +40,10 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = nothing
 saveat = range(tspan..., length = 100)
 
-sol = solve(ode, Rodas5(), abstol = 1e-9, reltol = 1e-9,
+# Needs implicit methods
+sol = solve(ode, Rodas5(autodiff = AutoFiniteDiff()), abstol = 1e-6, reltol = 1e-6,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
 plot(semi => sol)
+plot(ode.u0)
 
-
-"""
-OG:
-@btime = 507.327 ms (197787 allocations: 170.53 MiB)
-With Cache:
-@btime = 15.819 ms (3981 allocations: 542.41 KiB)
-for Tsit5(), abstol = 1e-9, reltol = 1e-9
-with 
-(gravity = 9.81, D = 1.0)
-initial_condition = initial_condition_convergence_test
-boundary_conditions = boundary_condition_periodic
-coordinates_min = -50.0
-coordinates_max = 50.0
-N = 512
-"""
