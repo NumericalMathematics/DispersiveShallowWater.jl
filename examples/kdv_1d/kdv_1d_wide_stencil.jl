@@ -21,7 +21,7 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 # This can be improved by increasing N, which in fact leads to it being slower again.
 # TODO: This text maybe in the docs somewhere?
 accuracy_order = 4
-solver = Solver(mesh, accuracy_order; third = true)
+solver = Solver(mesh, accuracy_order)
 
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
