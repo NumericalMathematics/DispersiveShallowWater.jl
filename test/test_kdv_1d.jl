@@ -31,7 +31,7 @@ end
                         linf=[0.00011293320517307625],
                         cons_error=[4.440892098500626e-15],
                         change_waterheight=4.440892098500626e-15,
-                        atol=1e-8) # to make CI pass))
+                        atol=1e-8) # to make CI pass
 
     @test_allocations(semi, sol, allocs=5_000)
 end
@@ -44,7 +44,7 @@ end
                         cons_error=[1.545513450551539e-8],
                         change_waterheight=-1.548159223041523e-8,
                         atol=1e-9,
-                        atol_ints=1e-10) # to make CI pass)
+                        atol_ints=1e-10) # to make CI pass
 
     @test_allocations(semi, sol, allocs=5_000)
 end
