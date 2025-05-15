@@ -39,11 +39,8 @@ function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh
     A = 1.0 # amplitude (free parameter)
     K = 1 / 2 * sqrt(3 * A / D^3)
     c = (sqrt(g * D) + A * sqrt(g * D) / (2 * D))
-
     x_t = mod(x - c * t - xmin(mesh), xmax(mesh) - xmin(mesh)) + xmin(mesh)
-
     eta = A * sech(K * x_t)^2
-
     return SVector(eta)
 end
 
@@ -76,12 +73,12 @@ function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
     c0 = sqrt(g * D)
     c1 = sqrt(g / D)
 
-    dη = -0.5 * a1 * b1 - pi * a2 * b1 +
-         2pi * a2 * c0 * b1 +
-         3pi * a2 * c1 * (1 + a1 * b1) * b1 -
-         (4 / 3) * D^2 * pi^3 * a2 * c0 * b1
+    dq1 = -0.5 * a1 * b1 - pi * a2 * b1 +
+          2pi * a2 * c0 * b1 +
+          3pi * a2 * c1 * (1 + a1 * b1) * b1 -
+          (4 / 3) * D^2 * pi^3 * a2 * c0 * b1
 
-    return SVector(dη)
+    return SVector(dq1)
 end
 
 function create_cache(mesh, equations::KdVEquation1D,
@@ -111,7 +108,6 @@ function create_cache(mesh, equations::KdVEquation1D,
 
         # calculate the third derivative operator using upwind operators
         D3 = sparse(solver.D1.plus) * sparse(solver.D1.minus) * sparse(solver.D1.central)
-
     else
         D1 = solver.D1
         D3 = solver.D3
@@ -143,13 +139,16 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
         # eta_x = D1 * eta
         mul!(eta_x, D1, eta)
 
+        @.. deta = -1.0 * (c_0 * eta_x +
+                    c_1 * (eta * eta_x +
+                           eta2_x)
+    end
+        
+    @trixi_timeit timer() "third-order derivatives" begin
         # eta_xxx = D3 * eta
         mul!(eta_xxx, D3, eta)
-
-        @.. deta = -1.0 * (c_0 * eta_x +
-                    c_1 * eta * eta_x +
-                    c_1 * eta2_x +
-                    1 / 6 * c_0 * DD * eta_xxx)
+        
+        @.. deta -= 1 / 6 * c_0 * DD * eta_xxx
     end
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,

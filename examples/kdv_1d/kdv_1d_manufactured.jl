@@ -41,7 +41,7 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = CallbackSet(analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
 
-# The Problem is very stiff. Tsit5() will cause a maxiter exceeded error.
+# The problem is very stiff. `Tsit5()` will cause a `maxiter` exceeded error.
 alg = Rodas5()
 sol = solve(ode, alg, abstol = 1e-12, reltol = 1e-12,
             save_everystep = false, callback = callbacks, saveat = saveat)

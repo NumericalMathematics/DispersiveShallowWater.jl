@@ -35,7 +35,7 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = CallbackSet(analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
 
-# Fourier SBP operators are not working with ForwardDiff, so use a explicit method.
+# Fourier SBP operators are not working with ForwardDiff.jl, so use an explicit method.
 alg = Tsit5()
 sol = solve(ode, alg, abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks, saveat = saveat)

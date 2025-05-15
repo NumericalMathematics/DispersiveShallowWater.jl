@@ -56,25 +56,20 @@ end
 Create a solver, where the summation-by-parts (SBP) operators are of order `accuracy_order` and
 associated to the `mesh`.
 """
-function Solver(mesh, accuracy_order; third = false)
+function Solver(mesh, accuracy_order)
     if isodd(accuracy_order)
         @warn "DispersiveShallowWater.jl is expecting a central difference operator. This is not given for an odd accuracy (got $accuracy_order) order.\n This can lead to a significant reduction in the order of convergence of the solution."
     end
     D1 = periodic_derivative_operator(1, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
     D2 = periodic_derivative_operator(2, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
-    if third
-        D3 = periodic_derivative_operator(3, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
-        @assert real(D1) == real(D3)
-    else
-        D3 = nothing
-    end
+    D3 = periodic_derivative_operator(3, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
     @assert real(D1) == real(D2)
     Solver{real(D1), typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
 end
 
 # Also allow to pass custom SBP operators (for convenience without explicitly specifying the type)
 """
-    Solver(D1, D2, D3)
+    Solver(D1, D2 = nothing, D3 = nothing)
 
 Create a solver, where `D1` is an `AbstractDerivativeOperator`
 from [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl)
