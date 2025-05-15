@@ -141,7 +141,7 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
 
         @.. deta = -1.0 * (c_0 * eta_x +
                     c_1 * (eta * eta_x +
-                           eta2_x)
+                           eta2_x))
     end
         
     @trixi_timeit timer() "third-order derivatives" begin
