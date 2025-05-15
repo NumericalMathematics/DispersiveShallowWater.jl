@@ -36,7 +36,7 @@ for periodic boundary conditions.
 
 - Abhijit Biswas, David I. Ketcheson, Hendrik Ranocha and Jochen Schütz (2025)
   Traveling-Wave Solutions and Structure-Preserving Numerical Methods for a Hyperbolic Approximation of the Korteweg-de Vries Equation
-  [J Sci Comput 103, 90 (2025)](https://doi.org/10.1007/s10915-025-02898-x)
+  [J Sci Compute 103, 90 (2025)](https://doi.org/10.1007/s10915-025-02898-x)
 """
 struct KdVEquation1D{RealT <: Real} <: AbstractKdVEquation{1, 1}
     gravity::RealT # gravitational acceleration
