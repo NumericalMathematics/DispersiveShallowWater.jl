@@ -49,8 +49,8 @@ end
     @test_allocations(semi, sol, allocs=5_000)
 end
 
-@testitem "kdv_1d_wide_stencil" setup=[Setup, KdVEquation1D] begin
-    @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_wide_stencil.jl"),
+@testitem "kdv_1d_narrow_stencil" setup=[Setup, KdVEquation1D] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_narrow_stencil.jl"),
                         tspan=(0.0, 5.0),
                         l2=[0.08433737909307822],
                         linf=[0.06531432869388931],

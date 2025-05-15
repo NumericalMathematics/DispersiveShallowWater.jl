@@ -16,7 +16,7 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
 # create solver with periodic SBP operators of accuracy order 4
 
-# using a wide stencil third derivative operator is significantly faster than using
+# using a narrow stencil third derivative operator is significantly faster than using
 # the upwind operator for the third derivative for a given N. However there are considerably more oscillations.
 # This can be improved by increasing N, which in fact leads to it being slower again.
 # TODO: This text maybe in the docs somewhere?
