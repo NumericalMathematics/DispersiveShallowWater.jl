@@ -43,6 +43,7 @@ using SummationByPartsOperators: SummationByPartsOperators,
                                  DerivativeOperator, UpwindOperators,
                                  UniformCoupledOperator,
                                  FourierDerivativeOperator,
+                                 VarCoefDerivativeOperator,
                                  periodic_derivative_operator,
                                  derivative_order, integrate, mass_matrix,
                                  scale_by_mass_matrix!

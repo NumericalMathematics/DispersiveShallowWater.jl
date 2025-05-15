@@ -130,7 +130,7 @@ function initial_condition_manufactured(x, t,
 
     return SVector(eta, v, D)
 end
-#= 
+#=
 The source terms where calculated using a CAS, here Symbolics.jl
 See code: https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/180#discussion_r2068562090
 For a chosen h and v, in this case
@@ -259,7 +259,7 @@ function source_terms_manufactured(q, x, t,
     return SVector(dh, dv, zero(dh))
 end
 
-# flat bathymetry
+# flat bathymetry with periodic boundary conditions
 function create_cache(mesh,
                       equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
                       solver,
@@ -325,7 +325,7 @@ function create_cache(mesh,
     return cache
 end
 
-# variable bathymetry
+# variable bathymetry with periodic boundary conditions
 function create_cache(mesh,
                       equations::SerreGreenNaghdiEquations1D,
                       solver,
@@ -895,6 +895,147 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
 
     return nothing
 end
+
+# flat bathymetry with reflecting boundary conditions
+function create_cache(mesh,
+                      equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
+                      solver,
+                      initial_condition,
+                      ::BoundaryConditionReflecting,
+                      RealT, uEltype)
+    (; D1, D2) = solver
+
+    # create temporary storage
+    h = ones(RealT, nnodes(mesh))
+    b = zero(h)
+    h_x = zero(h)
+    v_x = zero(h)
+    h2_x = zero(h)
+    hv_x = zero(h)
+    v2_x = zero(h)
+    h2_v_vx_x = zero(h)
+    h_vx_x = zero(h)
+    p_x = zero(h)
+    tmp = zero(h)
+    M_h = zero(h)
+
+    if D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator
+        # TODO: store the factorization or the system matrix?
+        cache = (; h, b, h_x, v_x, h2_x, hv_x, v2_x,
+                   h2_v_vx_x, h_vx_x, p_x, tmp,
+                   M_h,
+                   D1, D2)
+    else
+        throw(ArgumentError("Combination of operators not supported."))
+    end
+
+    return cache
+end
+
+function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
+                                 ::SerreGreenNaghdiEquations1D{BathymetryFlat})
+    (; M_h) = cache
+
+    @.. M_h = h
+    scale_by_mass_matrix!(M_h, D1)
+
+    # Floating point errors accumulate a bit and the system matrix
+    # is not necessarily perfectly symmetric but only up to
+    # round-off errors. We wrap it here to avoid issues with the
+    # factorization.
+    # TODO: Make this more efficient
+    @.. D2.b = h^3 / 3
+    A = Diagonal(M_h) - mass_matrix(D1) * BandedMatrix(D2)
+    A[begin, :] .= 0
+    A[:, begin] .= 0
+    A[begin, begin] = 1
+    A[end, :] .= 0
+    A[:, end] .= 0
+    A[end, end] = 1
+    # Main.debug[] = (; A = copy(A), h = copy(h))
+    return Symmetric(A)
+end
+
+function rhs!(dq, q, t, mesh,
+              equations::SerreGreenNaghdiEquations1D,
+              initial_condition,
+              boundary_conditions::BoundaryConditionReflecting,
+              source_terms::Nothing,
+              solver, cache)
+    # Unpack physical parameters and SBP operators `D1`, `D2`
+    g = gravity(equations)
+    (; D1, D2) = solver
+
+    if !(D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator)
+        throw(ArgumentError("Combination of operators not supported."))
+    end
+
+    # `q` and `dq` are `ArrayPartition`s. They collect the individual
+    # arrays for the water height `h` and the velocity `v`.
+    eta, v, D = q.x
+    dh, dv, dD = dq.x # dh = deta since b is constant in time
+    fill!(dD, zero(eltype(dD)))
+
+    @trixi_timeit timer() "hyperbolic terms" begin
+        # Compute all derivatives required below
+        (; h, b, h_x, v_x, h2_x, hv_x, v2_x,
+        h2_v_vx_x, h_vx_x, p_x, tmp) = cache
+
+        @.. b = equations.eta0 - D
+        @.. h = eta - b
+
+        mul!(h_x, D1, h)
+        mul!(v_x, D1, v)
+        @.. tmp = h^2
+        mul!(h2_x, D1, tmp)
+        @.. tmp = h * v
+        mul!(hv_x, D1, tmp)
+        @.. tmp = v^2
+        mul!(v2_x, D1, tmp)
+
+        @.. tmp = h^2 * v * v_x
+        mul!(h2_v_vx_x, D1, tmp)
+        @.. tmp = h * v_x
+        mul!(h_vx_x, D1, tmp)
+        inv6 = 1 / 6
+        @.. tmp = -inv6 * (h * h2_v_vx_x + h^2 * v * h_vx_x)
+        mul!(p_x, D1, tmp)
+        # assemble the variable coefficient of the second-derivative operator
+        @.. D2.b = 0.5 * h^2 * (h * v_x + h_x * v)
+        mul!(tmp, D2, v)
+        @.. p_x = p_x + tmp
+
+        # Split form for energy conservation:
+        # h_t + h_x v + h v_x = 0
+        @.. dh = -(h_x * v + h * v_x)
+
+        # Split form for energy conservation:
+        @.. dv = -(g * h2_x - g * h * h_x
+                   + 0.5 * h * v2_x
+                   - 0.5 * v^2 * h_x
+                   + 0.5 * hv_x * v
+                   - 0.5 * h * v * v_x
+                   + p_x)
+    end
+
+    # FIXME: add source term
+
+    # FIXME: elliptic system
+    @trixi_timeit timer() "assembling elliptic operator" begin
+        system_matrix = assemble_system_matrix!(cache, h,
+                                                D1, D2,
+                                                equations)
+    end
+
+    @trixi_timeit timer() "solving elliptic system" begin
+        copyto!(tmp, dv)
+        solve_system_matrix!(dv, system_matrix,
+                             tmp, equations, D1, cache, boundary_conditions)
+    end
+
+    return nothing
+end
+
 
 # The modified entropy/energy takes the whole `q` for every point in space
 """
