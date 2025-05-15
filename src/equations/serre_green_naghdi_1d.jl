@@ -160,9 +160,9 @@ function source_terms_manufactured(q, x, t,
     a7 = 5 + cospi(4t - 2x)
     a9 = 1 - a4
 
-    dh = 2π * (-a6 - a6 * a4 + a3 * a7)
+    dq1 = 2π * (-a6 - a6 * a4 + a3 * a7)
 
-    dv = (-π * a3 * a7
+    dq2 = (-π * a3 * a7
           + 2g * π * a6 * a7
           + 2π * a3 * a7 * a9
           -
@@ -176,7 +176,7 @@ function source_terms_manufactured(q, x, t,
           +
           (8 / 3) * π^3 * a3 * a7^3 * a9)
 
-    return SVector(dh, dv, zero(dh))
+    return SVector(dq1, dq2, zero(dh))
 end
 
 function source_terms_manufactured(q, x, t,

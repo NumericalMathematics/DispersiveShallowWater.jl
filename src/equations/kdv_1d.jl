@@ -63,24 +63,8 @@ end
 
 A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
 
-calculated using:
-```julia
-    using Symbolics
-    @variables x t 
-    Dt = Differential(t)
-    Dx = Differential(x)
-
-    @variables g D pi
-
-    η = 1 + exp(-t // 2) * sin(pi*(2 * (x - t // 2)))
-    η_t = (Dt(η))
-    η_x = (Dx(η))
-    η_xxx = (Dx(Dx(Dx(η))))
-
-    source_kdv = η_t + sqrt(g * D) * η_x + 3//2 * sqrt(g / D) * η * η_x + 1//6 * sqrt(g * D) * D^2 * η_xxx
-
-    source_julia_form = simplify(expand_derivatives(source_kdv))
-``` 
+detailed how it was calculated:
+https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/198/files#r2090805751
 """
 function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
     g = gravity(equations)
