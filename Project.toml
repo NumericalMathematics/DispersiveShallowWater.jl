@@ -26,7 +26,7 @@ TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 TrixiBase = "9a0f1c46-06d5-4909-a5a3-ce25d3fa3284"
 
 [compat]
-BandedMatrices = "1"
+BandedMatrices = "1.5"
 DiffEqBase = "6.157"
 FastBroadcast = "0.3.5"
 ForwardDiff = "0.10.36"
