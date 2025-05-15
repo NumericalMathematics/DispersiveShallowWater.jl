@@ -24,7 +24,7 @@ D1 = upwind_operators(periodic_derivative_operator;
                       derivative_order = 1, accuracy_order = 3,
                       xmin = xmin(mesh), xmax = xmax(mesh),
                       N = nnodes(mesh))
-solver = Solver(D1, nothing)
+solver = Solver(D1)
 
 # semidiscretization holds all the necessary data structures for the spatial discretization
 semi = Semidiscretization(mesh, equations, initial_condition, solver,

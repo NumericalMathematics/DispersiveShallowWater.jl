@@ -36,6 +36,10 @@ function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh
     g = gravity(equations)
     D = equations.D
 
+    # c = 1.5 * sqrt(g * D)
+    # A = 2*D * (c - sqrt(g * D)) / sqrt(g / D)
+
+
     A = 1.0 # amplitude (free parameter)
     K = 1 / 2 * sqrt(3 * A / D^3)
     c = (sqrt(g * D) + A * sqrt(g * D) / (2 * D))

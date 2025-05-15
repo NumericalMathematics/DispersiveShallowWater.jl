@@ -176,7 +176,7 @@ function source_terms_manufactured(q, x, t,
           +
           (8 / 3) * π^3 * a3 * a7^3 * a9)
 
-    return SVector(dq1, dq2, zero(dh))
+    return SVector(dq1, dq2, zero(dq1))
 end
 
 function source_terms_manufactured(q, x, t,
