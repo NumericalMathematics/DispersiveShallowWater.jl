@@ -920,10 +920,10 @@ function create_cache(mesh,
     M_h = zero(h)
 
     if D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator
-        # TODO: store the factorization or the system matrix?
+        A = BandedMatrix(D2)
         cache = (; h, b, h_x, v_x, h2_x, hv_x, v2_x,
                    h2_v_vx_x, h_vx_x, p_x, tmp,
-                   M_h,
+                   M_h, A,
                    D1, D2)
     else
         throw(ArgumentError("Combination of operators not supported."))
@@ -934,7 +934,7 @@ end
 
 function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
                                  ::SerreGreenNaghdiEquations1D{BathymetryFlat})
-    (; M_h) = cache
+    (; M_h, A) = cache
 
     @.. M_h = h
     scale_by_mass_matrix!(M_h, D1)
@@ -945,7 +945,8 @@ function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
     # factorization.
     # TODO: Make this more efficient
     @.. D2.b = h^3 / 3
-    A = Diagonal(M_h) - mass_matrix(D1) * BandedMatrix(D2)
+    copyto!(A, D2)
+    A = Diagonal(M_h) - mass_matrix(D1) * A
     A[begin, :] .= 0
     A[:, begin] .= 0
     A[begin, begin] = 1
