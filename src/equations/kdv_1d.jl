@@ -39,7 +39,6 @@ function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh
     # c = 1.5 * sqrt(g * D)
     # A = 2*D * (c - sqrt(g * D)) / sqrt(g / D)
 
-
     A = 1.0 # amplitude (free parameter)
     K = 1 / 2 * sqrt(3 * A / D^3)
     c = (sqrt(g * D) + A * sqrt(g * D) / (2 * D))
@@ -144,14 +143,14 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
         mul!(eta_x, D1, eta)
 
         @.. deta = -1.0 * (c_0 * eta_x +
-                    c_1 * (eta * eta_x +
-                           eta2_x))
+                           c_1 * (eta * eta_x +
+                                  eta2_x))
     end
-        
+
     @trixi_timeit timer() "third-order derivatives" begin
         # eta_xxx = D3 * eta
         mul!(eta_xxx, D3, eta)
-        
+
         @.. deta -= 1 / 6 * c_0 * DD * eta_xxx
     end
 

@@ -53,8 +53,8 @@ end
 """
     Solver(mesh, accuracy_order)
 
-Create a solver, where the summation-by-parts (SBP) operators are of order `accuracy_order` and
-associated to the `mesh`.
+Create a solver, where the three summation-by-parts (SBP) first-, second- and third-derivative operators
+are of accuracy order `accuracy_order` and associated to the `mesh`.
 """
 function Solver(mesh, accuracy_order)
     if isodd(accuracy_order)
@@ -71,12 +71,13 @@ end
 """
     Solver(D1, D2 = nothing, D3 = nothing)
 
-Create a solver, where `D1` is an `AbstractDerivativeOperator`
+Create a solver, where `D1` is an `AbstractDerivativeOperator` 
 from [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl)
-of first `derivative_order` and `D2` is an `AbstractDerivativeOperator`
-of second `derivative_order` or an `AbstractMatrix`. It can also be `nothing`
-if no second derivative is used by the discretization.
-Both summation-by-parts operators should be associated with the same grid.
+of first `derivative_order`, `D2` is an `AbstractDerivativeOperator` 
+of second `derivative_order` or an `AbstractMatrix`, and `D3` is an `AbstractDerivativeOperator`
+of third `derivative_order` or an `AbstractMatrix`. Each can also be `nothing`
+if that derivative is not used by the discretization.
+All given summation-by-parts operators should be associated with the same grid.
 """
 function Solver(D1::AbstractDerivativeOperator{RealT},
                 D2::Union{AbstractDerivativeOperator{RealT}, AbstractMatrix{RealT},
@@ -96,7 +97,8 @@ function Base.show(io::IO, ::MIME"text/plain", solver::Solver{RealT}) where {Rea
     else
         println(io, "Solver{", RealT, "}")
         println(io, "    D1: ", solver.D1)
-        print(io, "    D2: ", solver.D2)
+        println(io, "    D2: ", solver.D2)
+        println(io, "    D3: ", solver.D3)
     end
 end
 
