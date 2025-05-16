@@ -11,7 +11,7 @@ The equation is given by
 
 The unknown quantity of the KdV equation is the total water height ``\eta``.
 The gravitational acceleration `gravity` is denoted by ``g`` and the constant bottom topography (bathymetry) ``b = \eta_0 - D``,
-where \eta_0 is the constant still-water surface and ``D`` the still-water depth. The water height above
+where ``\eta_0`` is the constant still-water surface and ``D`` the still-water depth. The water height above
 the bathymetry is therefore given by ``h = \eta - \eta_0 + D``. The KdV equation is only implemented for ``\eta_0 = 0``.
 
 The equations only support a flat bathymetry.
@@ -30,15 +30,14 @@ where ``D_1`` is the first derivative operator and ``D`` the still-water depth.
 
 It conserves
 - the total water mass (integral of ``\eta``) as a linear invariant
-and if upwind operators (``D_3 = D_{1,+} D_1 D{1,-}``) or wide-stencil operators (``D_3 = D_1^3``) are used for the third derivative, it also conserves
-- the energy (integral of ``1/2\eta^2``) 
+and if upwind operators (``D_3 = D_{1,+} D_1 D_{1,-}``) or wide-stencil operators (``D_3 = D_1^3``) are used for the third derivative, it also conserves
+- the energy (integral of ``1/2\eta^2``)
 
 for periodic boundary conditions.
 
 - Diederik Korteweg and Gustav de Vries (1895). 
   On the change of form of long waves advancing in a rectangular canal, and on a new type of long stationary waves
   [DOI: 10.1080/14786449508620739](https://doi.org/10.1080/14786449508620739)
-
 - Abhijit Biswas, David I. Ketcheson, Hendrik Ranocha and Jochen Schütz (2025)
   Traveling-Wave Solutions and Structure-Preserving Numerical Methods for a Hyperbolic Approximation of the Korteweg-de Vries Equation
   [DOI: 10.1007/s10915-025-02898-x](https://doi.org/10.1007/s10915-025-02898-x)
