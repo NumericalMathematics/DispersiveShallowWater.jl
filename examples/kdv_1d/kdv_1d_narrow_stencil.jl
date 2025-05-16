@@ -24,12 +24,6 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 accuracy_order = 4
 solver = Solver(mesh, accuracy_order)
 
-D1_upwind = upwind_operators(periodic_derivative_operator;
-                             derivative_order = 1, accuracy_order = 3,
-                             xmin = xmin(mesh), xmax = xmax(mesh),
-                             N = nnodes(mesh))
-solver = Solver(D1_upwind)
-
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
