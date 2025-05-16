@@ -19,9 +19,16 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 # using a narrow stencil third derivative operator is significantly faster than using
 # the upwind operator for the third derivative for a given N. However there are considerably more oscillations.
 # This can be improved by increasing N, which in fact leads to it being slower again.
+# see: https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/198#discussion_r2093451059
 # TODO: This text maybe in the docs somewhere?
 accuracy_order = 4
 solver = Solver(mesh, accuracy_order)
+
+D1_upwind = upwind_operators(periodic_derivative_operator;
+                             derivative_order = 1, accuracy_order = 3,
+                             xmin = xmin(mesh), xmax = xmax(mesh),
+                             N = nnodes(mesh))
+solver = Solver(D1_upwind)
 
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
