@@ -41,6 +41,7 @@ factor = 0.1
 tspan = (0.0, factor * (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity)) # one period
 # tspan = (0.0, (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity)) # one period
 ode = semidiscretize(semi, tspan)
+ode.u0.x[2][begin] = 0; ode.u0.x[2][end] = 0; # FIXME
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,
                                      extra_analysis_errors = (:conservation_error,),
