@@ -1,10 +1,11 @@
 @doc raw"""
-KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
+    KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
+
 KdV (Korteweg-de Vries) equation in one spatial dimension.
 The equation is given by
 ```math
 \begin{aligned}
-  \eta_t+\sqrt{g D} \eta_x+3 / 2 \sqrt{g / D} \eta \eta_x+1 / 6 \sqrt{g D} D^2 \eta_{x x x} $= 0.
+  \eta_t+\sqrt{g D} \eta_x+3 / 2 \sqrt{g / D} \eta \eta_x+1 / 6 \sqrt{g D} D^2 \eta_{x x x} &= 0.
 \end{aligned}
 ```
 
@@ -17,26 +18,26 @@ The equations only support a flat bathymetry.
 
 The KdV equation is first introduced by Joseph Valentin Boussinesq (1877) and rediscovered by Diederik Korteweg and Gustav de Vries in 1895.
 
-The semidiscretization implemented here is a modification of the one proposed by Biswas, Ketcheson, Ranocha and Schütz (2025) for the non-dimensionalized KdV equation ``u_t+ u u_x + u_{x x x} = 0.``
+The semidiscretization implemented here is a modification of the one proposed by Biswas, Ketcheson, Ranocha, and Schütz (2025) for the non-dimensionalized KdV equation ``u_t + u u_x + u_{x x x} = 0.``
 
 The semidiscretization looks the following:
 ```math
 \begin{aligned}
-  \eta_t+\sqrt{g D} D^{x}\eta+ 1 / 2 \sqrt{g / D} \eta D^{x} \eta +  1 / 2 \sqrt{g / D} D^{x} \eta^2 +1 / 6 \sqrt{g D} D^2 {D^{x}}^3\eta $= 0.
+  \eta_t+\sqrt{g D} D_1\eta+ 1 / 2 \sqrt{g / D} \eta D_1 \eta +  1 / 2 \sqrt{g / D} D_1 \eta^2 +1 / 6 \sqrt{g D} D^2 D_3\eta &= 0.
 \end{aligned}
 ```
-where ``D^{x}`` is the first derivative operator and ``D`` the still-water depth.
+where ``D_1`` is the first derivative operator and ``D`` the still-water depth.
 
 It conserves
 - the total water mass (integral of ``\eta``) as a linear invariant
-and if upwind operators are used for the third derivative (``{D^{x}}^3 = D^{x}_{+} D^{x} D^{x}_{-}``), it also conserves
+and if upwind operators (``D_3 = D_{1,+} D_1 D{1,-}``) or wide-stencil operators (``D_3 = D_1^3``) are used for the third derivative, it also conserves
 - the energy (integral of ``1/2\eta^2``) 
 
 for periodic boundary conditions.
 
 - Abhijit Biswas, David I. Ketcheson, Hendrik Ranocha and Jochen Schütz (2025)
   Traveling-Wave Solutions and Structure-Preserving Numerical Methods for a Hyperbolic Approximation of the Korteweg-de Vries Equation
-  [J Sci Compute 103, 90 (2025)](https://doi.org/10.1007/s10915-025-02898-x)
+  [DOI: 10.1007/s10915-025-02898-x](https://doi.org/10.1007/s10915-025-02898-x)
 """
 struct KdVEquation1D{RealT <: Real} <: AbstractKdVEquation{1, 1}
     gravity::RealT # gravitational acceleration
@@ -81,7 +82,7 @@ end
 
 A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
 
-detailed how it was calculated:
+How it was calculated, is described in:
 https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/198/files#r2090805751
 """
 function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
@@ -143,7 +144,7 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
     eta, = q.x
     deta, = dq.x
 
-    (; D1, D3, c_0, c_1, DD,) = cache
+    (; D1, D3, c_0, c_1, DD) = cache
     # In order to use automatic differentiation, we need to extract
     # the storage vectors using `get_tmp` from PreallocationTools.jl
     # so they can also hold dual numbers when needed.
