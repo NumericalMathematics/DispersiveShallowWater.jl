@@ -68,151 +68,51 @@ end
     gamma_hi = 3 * one(tnew) / 2
 
     @unpack tmp1 = semi.cache # of size N
-    tmp222 = similar(qold) # of size nvariables * N
+    tmp2 = similar(qold) # of size nvariables * N
     # @unpack tmp222 = semi.cache # of size nvariables * N and ArrayPartition
 
-
     function relaxation_functional(tmp1, q, semi)
         return integrate_quantity!(tmp1, relaxation_callback.invariant, q, semi)
     end
 
-    function convex_combination!(tmp222, gamma, old, new)
-        @.. tmp222 = old + gamma * (new - old)
+    function convex_combination(gamma, told, tnew) # for scalars
+        return @.. told + gamma * (tnew - told)
+    end
+
+    function convex_combination!(tmp2, gamma, uold, unew) # for arrays
+        @.. tmp2 = uold + gamma * (unew - uold)
         return nothing
-    end
-
-    function convex_combination(gamma, old, new)
-        return @.. old + gamma * (new - old)
-    end
-
-    function root(g)
-        convex_combination!(tmp222, g, qold, qnew)
-        return (relaxation_functional(tmp1, tmp222 ,semi) - energy_old)
-    end
-
-    energy_old = relaxation_functional(tmp1, qold, semi)
-
-    @trixi_timeit timer() "relaxation" begin
-        convex_combination!(tmp222, gamma_lo, qold, qnew)
-        val1 = relaxation_functional(tmp1, tmp222, semi) - energy_old
-
-        convex_combination!(tmp222, gamma_hi, qold, qnew)
-        val2 = relaxation_functional(tmp1, tmp222, semi) - energy_old
-
-        if (val1 * val2) > 0
-            terminate_integration = true
-        else
-            gamma = find_zero(root, (gamma_lo, gamma_hi), AlefeldPotraShi())
-        end
-
-        if gamma < eps(typeof(gamma))
-            terminate_integration = true
-        end
-
- 
-        convex_combination!(tmp222, gamma, qold, qnew)
-        DiffEqBase.set_u!(integrator, tmp222)
-
-        if !isapprox(tnew, first(integrator.opts.tstops))
-
-            # convex_combination!(tmp222, gamma, told, tnew)
-            
-            tgamma = convex_combination(gamma, told, tnew)
-            DiffEqBase.set_t!(integrator, tgamma)
-        end
-
-        if terminate_integration
-            terminate!(integrator)
-        end
-    end
-    return nothing
-end
-
-
-
-#= This method is called as callback during the time integration.
-@inline function (relaxation_callback::RelaxationCallback)(integrator)
-    semi = integrator.p
-    told = integrator.tprev
-    qold = integrator.uprev
-    tnew = integrator.t
-    qnew = integrator.u
-
-    terminate_integration = false
-    gamma_lo = one(tnew) / 2
-    gamma_hi = 3 * one(tnew) / 2
-
-    @unpack tmp1 = semi.cache # of size N
-    @unpack tmp222 = semi.cache # of size nvariables * N
-    tmp2 = tmp222
-    tmp3 = similar(tmp2)
-
-
-
-    function relaxation_functional(tmp1, q, semi)
-        return integrate_quantity!(tmp1, relaxation_callback.invariant, q, semi)
-    end
-
-    function convex_combination!(tmp2, gamma, old, new)
-        @. tmp2 = old + gamma * (new - old)
-        return nothing
-    end
-
-    function convex_combination(gamma, old, new)
-        return @.. old + gamma * (new - old)
     end
 
     function root(g)
         convex_combination!(tmp2, g, qold, qnew)
-        return (relaxation_functional(tmp1, tmp2 ,semi) - energy_old)
-    end
-
-    function relaxation_functional2(q, semi)
-        @unpack tmp1 = semi.cache
-        return integrate_quantity!(tmp1, relaxation_callback.invariant, q, semi)
+        return (relaxation_functional(tmp1, tmp2, semi) - energy_old)
     end
 
     energy_old = relaxation_functional(tmp1, qold, semi)
 
     @trixi_timeit timer() "relaxation" begin
+        convex_combination!(tmp2, gamma_lo, qold, qnew)
+        val1 = relaxation_functional(tmp1, tmp2, semi) - energy_old
 
         convex_combination!(tmp2, gamma_hi, qold, qnew)
-        val2 = relaxation_functional2(tmp2, semi) - energy_old
-
-        convex_combination!(tmp3, gamma_lo, qold, qnew)
-        val1 = relaxation_functional2(tmp3, semi) - energy_old
-
-        
-        teststs = 
-        val1_dif = relaxation_functional2(convex_combination(gamma_lo, qold, qnew), semi) - energy_old
-        val2_dif = relaxation_functional2(convex_combination(gamma_hi, qold, qnew), semi) -energy_old
-
-        @show val1
-        @show val1_dif
-        @show val2
-        @show val2_dif
-
+        val2 = relaxation_functional(tmp1, tmp2, semi) - energy_old
 
         if (val1 * val2) > 0
             terminate_integration = true
         else
             gamma = find_zero(root, (gamma_lo, gamma_hi), AlefeldPotraShi())
-            @show gamma
         end
 
         if gamma < eps(typeof(gamma))
             terminate_integration = true
         end
 
- 
         convex_combination!(tmp2, gamma, qold, qnew)
         DiffEqBase.set_u!(integrator, tmp2)
 
         if !isapprox(tnew, first(integrator.opts.tstops))
-
-            # convex_combination!(tmp2, gamma, told, tnew)
-
-            tgamma = convex_combination(gamma, told, tnew)
+            tgamma = convex_combination(gamma, told, tnew) # scalar combination
             DiffEqBase.set_t!(integrator, tgamma)
         end
 
@@ -220,7 +120,5 @@ end
             terminate!(integrator)
         end
     end
-    @show "einmal durch"
     return nothing
 end
-=#
