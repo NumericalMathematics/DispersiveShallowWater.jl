@@ -13,7 +13,7 @@ end
     @test_allocations(semi, sol, allocs=5_000)
 end
 
-@testitem "kdv_1d_basic using ForwardDiff" setup=[Setup, KdVEquation1D] begin
+@testitem "kdv_1d_implicit" setup=[Setup, KdVEquation1D] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_implicit.jl"),
                         tspan=(0.0, 5.0),
                         l2=[0.001109209575787022],
