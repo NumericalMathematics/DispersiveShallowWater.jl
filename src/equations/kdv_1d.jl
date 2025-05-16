@@ -129,7 +129,7 @@ function create_cache(mesh, equations::KdVEquation1D,
     eta_x = DiffCache(zero(template), N)
     eta_xxx = DiffCache(zero(template), N)
 
-    if solver.D1 isa PeriodicUpwindOperators
+    if solver.D1 isa PeriodicUpwindOperators && solver.D3 == nothing
         D1 = solver.D1.central
 
         # calculate the third derivative operator using upwind operators

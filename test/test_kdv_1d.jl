@@ -5,10 +5,10 @@ end
 @testitem "kdv_1d_basic" setup=[Setup, KdVEquation1D] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_basic.jl"),
                         tspan=(0.0, 5.0),
-                        l2=[0.0011470884318895587],
-                        linf=[0.000850644033992265],
-                        cons_error=[2.495781359357352e-13],
-                        change_waterheight=2.495781359357352e-13)
+                        l2=[0.0007835879714086921],
+                        linf=[0.0005961613764309259],
+                        cons_error=[1.056932319443149e-13],
+                        change_waterheight=-1.056932319443149e-13)
 
     @test_allocations(semi, sol, allocs=5_000)
 end
@@ -16,10 +16,10 @@ end
 @testitem "kdv_1d_implicit" setup=[Setup, KdVEquation1D] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_implicit.jl"),
                         tspan=(0.0, 5.0),
-                        l2=[0.0011092095759535911],
-                        linf=[0.0008576326249670752],
-                        cons_error=[2.460254222569347e-13],
-                        change_waterheight=2.460254222569347e-13)
+                        l2=[0.0007767194276962612],
+                        linf=[0.0005970865294682159],
+                        cons_error=[1.1057821325266559e-13],
+                        change_waterheight=-1.1057821325266559e-13)
 
     @test_allocations(semi, sol, allocs=5_000)
 end
@@ -39,10 +39,10 @@ end
 @testitem "kdv_1d_manufactured" setup=[Setup, KdVEquation1D] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_manufactured.jl"),
                         tspan=(0.0, 1.0),
-                        l2=[8.09529983835206e-8],
-                        linf=[8.27538344516654e-8],
-                        cons_error=[7.111392141823103e-9],
-                        change_waterheight=-7.111392141823103e-9,
+                        l2=[5.365647127534639e-8],
+                        linf=[5.476293374329089e-8],
+                        cons_error=[1.0208189848981419e-10],
+                        change_waterheight=-1.0208189848981419e-10,
                         atol=1e-9,
                         atol_ints=1e-10) # to make CI pass
 
