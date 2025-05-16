@@ -35,6 +35,10 @@ and if upwind operators (``D_3 = D_{1,+} D_1 D{1,-}``) or wide-stencil operators
 
 for periodic boundary conditions.
 
+- Diederik Korteweg and Gustav de Vries (1895). 
+  On the change of form of long waves advancing in a rectangular canal, and on a new type of long stationary waves
+  [DOI: 10.1080/14786449508620739](https://doi.org/10.1080/14786449508620739)
+
 - Abhijit Biswas, David I. Ketcheson, Hendrik Ranocha and Jochen Schütz (2025)
   Traveling-Wave Solutions and Structure-Preserving Numerical Methods for a Hyperbolic Approximation of the Korteweg-de Vries Equation
   [DOI: 10.1007/s10915-025-02898-x](https://doi.org/10.1007/s10915-025-02898-x)
@@ -58,9 +62,9 @@ A traveling-wave solution used for convergence tests in a periodic domain, here 
 function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh)
     g = gravity(equations)
     D = equations.D
-    A = 1.0 # amplitude (free parameter)
+    c = 1.5 * sqrt(g * D)
+    A = 2*D * (c - sqrt(g * D)) / sqrt(g * D)
     K = 1 / 2 * sqrt(3 * A / D^3)
-    c = (sqrt(g * D) + A * sqrt(g * D) / (2 * D))
     x_t = mod(x - c * t - xmin(mesh), xmax(mesh) - xmin(mesh)) + xmin(mesh)
     eta = A * sech(K * x_t)^2
     return SVector(eta)
