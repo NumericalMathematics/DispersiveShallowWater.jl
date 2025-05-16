@@ -38,7 +38,6 @@ for periodic boundary conditions.
 - Diederik Korteweg and Gustav de Vries (1895). 
   On the change of form of long waves advancing in a rectangular canal, and on a new type of long stationary waves
   [DOI: 10.1080/14786449508620739](https://doi.org/10.1080/14786449508620739)
-
 - Abhijit Biswas, David I. Ketcheson, Hendrik Ranocha and Jochen Schütz (2025)
   Traveling-Wave Solutions and Structure-Preserving Numerical Methods for a Hyperbolic Approximation of the Korteweg-de Vries Equation
   [DOI: 10.1007/s10915-025-02898-x](https://doi.org/10.1007/s10915-025-02898-x)
