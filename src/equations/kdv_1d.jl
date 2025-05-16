@@ -35,7 +35,7 @@ and if upwind operators (``D_3 = D_{1,+} D_1 D_{1,-}``) or wide-stencil operator
 
 for periodic boundary conditions.
 
-- Diederik Korteweg and Gustav de Vries (1895). 
+- Diederik Korteweg and Gustav de Vries (1895)
   On the change of form of long waves advancing in a rectangular canal, and on a new type of long stationary waves
   [DOI: 10.1080/14786449508620739](https://doi.org/10.1080/14786449508620739)
 - Abhijit Biswas, David I. Ketcheson, Hendrik Ranocha and Jochen Schütz (2025)
@@ -61,8 +61,9 @@ A traveling-wave solution used for convergence tests in a periodic domain, here 
 function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh)
     g = gravity(equations)
     D = equations.D
-    c = 1.5 * sqrt(g * D)
-    A = 2 * D * (c - sqrt(g * D)) / sqrt(g * D)
+    c0 = sqrt(g * D)
+    c = 1.5 * c0
+    A = 2 * D * (c - c0) / c0
     K = 1 / 2 * sqrt(3 * A / D^3)
     x_t = mod(x - c * t - xmin(mesh), xmax(mesh) - xmin(mesh)) + xmin(mesh)
     eta = A * sech(K * x_t)^2
@@ -86,7 +87,7 @@ end
 A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
 
 How it was calculated, is described in:
-https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/198/files#r2090805751
+https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/198#discussion_r2090805751
 """
 function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
     g = gravity(equations)
@@ -132,13 +133,13 @@ function create_cache(mesh, equations::KdVEquation1D,
         D1 = solver.D1.central
 
         # calculate the third derivative operator using upwind operators
-        D3 = sparse(solver.D1.plus) * sparse(solver.D1.minus) * sparse(solver.D1.central)
+        D3 = sparse(solver.D1.plus) * sparse(solver.D1.central) * sparse(solver.D1.minus)
     else
         D1 = solver.D1
         D3 = solver.D3
     end
 
-    cache = (; D1, D3, c_0, c_1, DD, eta2, eta2_x, eta_x, eta_xxx,)
+    cache = (; D1, D3, c_0, c_1, DD, eta2, eta2_x, eta_x, eta_xxx)
     return cache
 end
 
