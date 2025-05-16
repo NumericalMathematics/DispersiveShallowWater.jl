@@ -26,7 +26,7 @@ The semidiscretization looks the following:
   \eta_t+\sqrt{g D} D_1\eta+ 1 / 2 \sqrt{g / D} \eta D_1 \eta +  1 / 2 \sqrt{g / D} D_1 \eta^2 +1 / 6 \sqrt{g D} D^2 D_3\eta &= 0.
 \end{aligned}
 ```
-where ``D_1`` is the first derivative operator and ``D`` the still-water depth.
+where ``D_1`` is a first-derivative operator, ``D_3`` a third-derivative operator, and ``D`` the still-water depth.
 
 It conserves
 - the total water mass (integral of ``\eta``) as a linear invariant
