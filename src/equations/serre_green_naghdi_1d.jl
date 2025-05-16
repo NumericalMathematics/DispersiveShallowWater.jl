@@ -268,9 +268,15 @@ with [`source_terms_manufactured_reflecting`](@ref).
 function initial_condition_manufactured_reflecting(x, t,
                                                    equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
                                                    mesh)
-    eta = exp(2 * t) * cospi(x)
-    v = exp(t) * x * sinpi(x)
-    D = 8
+    # eta = exp(2 * t) * cospi(x)
+    # v = exp(t) * x * sinpi(x)
+    # D = 8
+    h = 1 + exp(2 * t) * (cospi(x) + x + 2)
+    v = exp(-t * x) * x * sinpi(x)
+    D = zero(h)
+
+    b = -D
+    eta = h + b
 
     return SVector(eta, v, D)
 end
@@ -283,10 +289,12 @@ Dx = Differential(x)
 
 @variables g pi
 
-eta = exp(2 * t) * cos(pi * x)
-v = exp(t) * x * sin(pi * x)
-D = 8
-h = eta + D
+# eta = exp(2 * t) * cos(pi * x)
+# v = exp(t) * x * sin(pi * x)
+# D = 8
+# h = eta + D
+h = 1 + exp(2 * t) * (cos(pi * x) + x + 2)
+v = exp(-t * x) * x * sin(pi * x)
 
 h_t = Dt(h)
 v_t = Dt(v)
@@ -313,6 +321,7 @@ with [`initial_condition_manufactured_reflecting`](@ref).
 """
 function source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat})
     g = gravity(equations)
+    # FIXME: substitute
     a2 = sinpi(2 * x)
     a8 = cospi(x)
     a9 = sinpi(x)
@@ -322,8 +331,10 @@ function source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNagh
     a15 = exp(4 * t)
     a16 = exp(6 * t)
     a17 = exp(7 * t)
-    dq1 = 2cos(pi*x)*exp(2t) + (8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - pi*x*exp(3t)*(sin(pi*x)^2) + pi*x*cos(pi*x)*(8 + cos(pi*x)*exp(2t))*exp(t)
-    dq2 = x*(8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - g*pi*(8 + cos(pi*x)*exp(2t))*sin(pi*x)*exp(2t) + (1//2)*(2x*(sin(pi*x)^2)*exp(2t) + pi*(x^2)*exp(2t)*sin(2pi*x))*(8 + cos(pi*x)*exp(2t)) - (1//3)*((2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3) - 3pi*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t)) - (1//3)*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) + pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*((8 + cos(pi*x)*exp(2t))^2)*exp(3t)*(sin(pi*x)^2) - (1//3)*(-3(pi^2)*exp(t)*sin(pi*x) - (pi^3)*x*cos(pi*x)*exp(t))*x*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) - pi*((exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))^2)*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t) - (1//3)*pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*cos(pi*x)*((8 + cos(pi*x)*exp(2t))^3)*exp(t) + (2//3)*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)
+    # dq1 = 2cos(pi*x)*exp(2t) + (8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - pi*x*exp(3t)*(sin(pi*x)^2) + pi*x*cos(pi*x)*(8 + cos(pi*x)*exp(2t))*exp(t)
+    # dq2 = x*(8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - g*pi*(8 + cos(pi*x)*exp(2t))*sin(pi*x)*exp(2t) + (1//2)*(2x*(sin(pi*x)^2)*exp(2t) + pi*(x^2)*exp(2t)*sin(2pi*x))*(8 + cos(pi*x)*exp(2t)) - (1//3)*((2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3) - 3pi*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t)) - (1//3)*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) + pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*((8 + cos(pi*x)*exp(2t))^2)*exp(3t)*(sin(pi*x)^2) - (1//3)*(-3(pi^2)*exp(t)*sin(pi*x) - (pi^3)*x*cos(pi*x)*exp(t))*x*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) - pi*((exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))^2)*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t) - (1//3)*pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*cos(pi*x)*((8 + cos(pi*x)*exp(2t))^3)*exp(t) + (2//3)*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)
+    dq1 = 2(2 + x + cos(pi*x))*exp(2t) + (1 + (2 + x + cos(pi*x))*exp(2t))*sin(pi*x)*exp(-t*x) + (1 - pi*sin(pi*x))*x*exp(2t - t*x)*sin(pi*x) + pi*x*(1 + (2 + x + cos(pi*x))*exp(2t))*cos(pi*x)*exp(-t*x) - t*x*(1 + (2 + x + cos(pi*x))*exp(2t))*sin(pi*x)*exp(-t*x)
+    dq2 = g*(1 - pi*sin(pi*x))*(1 + (2 + x + cos(pi*x))*exp(2t))*exp(2t) - (1 + (2 + x + cos(pi*x))*exp(2t))*(x^2)*sin(pi*x)*exp(-t*x) + (1//2)*(2x*exp(-2t*x)*(sin(pi*x)^2) + pi*(x^2)*exp(-2t*x)*sin(2pi*x) - 2t*(x^2)*exp(-2t*x)*(sin(pi*x)^2))*(1 + (2 + x + cos(pi*x))*exp(2t)) - (1//3)*((-2sin(pi*x)*exp(-t*x) - 4pi*x*cos(pi*x)*exp(-t*x) + 4t*x*sin(pi*x)*exp(-t*x) + (pi^2)*(x^2)*sin(pi*x)*exp(-t*x) + 2pi*t*(x^2)*cos(pi*x)*exp(-t*x) - (t^2)*(x^2)*sin(pi*x)*exp(-t*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^3) + 3(-2x*sin(pi*x)*exp(-t*x) - pi*(x^2)*cos(pi*x)*exp(-t*x) + t*(x^2)*sin(pi*x)*exp(-t*x))*(1 - pi*sin(pi*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^2)*exp(2t)) - (1//3)*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*sin(pi*x)*exp(-t*x) + (-(1//1) + pi*sin(pi*x))*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*x*((1 + (2 + x + cos(pi*x))*exp(2t))^2)*exp(2t - t*x)*sin(pi*x) - (1//3)*(-3(pi^2)*sin(pi*x)*exp(-t*x) - 6pi*t*cos(pi*x)*exp(-t*x) + 3(t^2)*sin(pi*x)*exp(-t*x) - (pi^3)*x*cos(pi*x)*exp(-t*x) + 3(pi^2)*t*x*sin(pi*x)*exp(-t*x) + 3pi*(t^2)*x*cos(pi*x)*exp(-t*x) - (t^3)*x*sin(pi*x)*exp(-t*x))*x*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*sin(pi*x)*exp(-t*x) + (1//3)*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*t*x*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*sin(pi*x)*exp(-t*x) - (1//3)*pi*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*x*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*cos(pi*x)*exp(-t*x) + (2//3)*(sin(pi*x)*exp(-t*x) + pi*x*cos(pi*x)*exp(-t*x) - t*x*sin(pi*x)*exp(-t*x))*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^3) + (1 - pi*sin(pi*x))*((sin(pi*x)*exp(-t*x) + pi*x*cos(pi*x)*exp(-t*x) - t*x*sin(pi*x)*exp(-t*x))^2)*((1 + (2 + x + cos(pi*x))*exp(2t))^2)*exp(2t)
 
     return SVector(dq1, dq2, zero(dq1))
 end
@@ -1077,7 +1088,14 @@ function rhs!(dq, q, t, mesh,
 
         # Split form for energy conservation:
         # h_t + h_x v + h v_x = 0
-        @.. dh = -(h_x * v + h * v_x)
+        @.. dh = -(h_x * v + h * v_x) # FIXME
+        # @.. dh = -hv_x
+        # @.. dh = -0.5 * (hv_x + h_x * v + h * v_x)
+        # let a = 10.0
+        #     @.. dh = -(a * hv_x + (1 - a) * (h_x * v + h * v_x))
+        # end
+        # dh[begin] -= h[begin] * v[begin] / SummationByPartsOperators.left_boundary_weight(D1)
+        # dh[end] += h[end] * v[end] / SummationByPartsOperators.right_boundary_weight(D1)
 
         # Split form for energy conservation:
         @.. dv = -(g * h2_x - g * h * h_x
@@ -1092,7 +1110,7 @@ function rhs!(dq, q, t, mesh,
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
                                                        solver)
 
-    # FIXME: elliptic system
+    # elliptic system
     @trixi_timeit timer() "assembling elliptic operator" begin
         system_matrix = assemble_system_matrix!(cache, h,
                                                 D1, D2,
