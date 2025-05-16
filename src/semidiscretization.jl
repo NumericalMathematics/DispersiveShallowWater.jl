@@ -57,7 +57,9 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                             # while `uEltype` is used as element type of solutions etc.
                             RealT = real(solver), uEltype = RealT,
                             # tmp1 is needed for the `RelaxationCallback`
-                            initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),))
+                            initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
+                                             tmp222 = ArrayPartition(ntuple(_ -> zeros(real(solver), nnodes(mesh)),
+                                 Val(nvariables(equations))))))
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
                           RealT, uEltype)...,
