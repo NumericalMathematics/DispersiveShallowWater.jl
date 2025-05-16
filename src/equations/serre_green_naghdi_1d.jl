@@ -131,7 +131,7 @@ function initial_condition_manufactured(x, t,
     return SVector(eta, v, D)
 end
 #=
-The source terms where calculated using a CAS, here Symbolics.jl
+The source terms were calculated using a CAS, here Symbolics.jl
 See code: https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/180#discussion_r2068562090
 For a chosen h and v, in this case
 h = 5 + cos(pi * (2 * (x - 2 * t)))
@@ -257,6 +257,75 @@ function source_terms_manufactured(q, x, t,
           20 * a5 * a7^2 + 100 * a5 * a7 + 500 * a5 / 3)
 
     return SVector(dh, dv, zero(dh))
+end
+
+"""
+    initial_condition_manufactured_reflecting(x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat}, mesh)
+
+A smooth manufactured solution for reflecting boundary conditions in combination
+with [`source_terms_manufactured_reflecting`](@ref).
+"""
+function initial_condition_manufactured_reflecting(x, t,
+                                                   equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
+                                                   mesh)
+    eta = exp(2 * t) * cospi(x)
+    v = exp(t) * x * sinpi(x)
+    D = 8
+
+    return SVector(eta, v, D)
+end
+
+#=
+using Symbolics
+@variables x t
+Dt = Differential(t)
+Dx = Differential(x)
+
+@variables g pi
+
+eta = exp(2 * t) * cos(pi * x)
+v = exp(t) * x * sin(pi * x)
+D = 8
+h = eta + D
+
+h_t = Dt(h)
+v_t = Dt(v)
+v_x = Dx(v)
+hv_x = Dx(h * v)
+
+v_xx = Dx(Dx(v))
+v_tx = Dt(Dx(v))
+
+p = 1 // 3 * h^3 * v_x^2 - 1 // 3 * h^3 * v * v_xx
+p_x = Dx(p)
+
+source1 = simplify(expand_derivatives(h_t + hv_x))
+
+s2 = (h * v_t - 1 // 3 * Dx(h^3 * v_tx) + 1 // 2 * g * Dx(h^2) + 1 // 2 * h * Dx(v^2) + p_x)
+source2 = simplify(expand_derivatives(s2))
+
+=#
+"""
+    source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat}, mesh)
+
+A smooth manufactured solution for reflecting boundary conditions in combination
+with [`initial_condition_manufactured_reflecting`](@ref).
+"""
+function source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat})
+    g = gravity(equations)
+    a2 = sinpi(2 * x)
+    a8 = cospi(x)
+    a9 = sinpi(x)
+    a10 = exp(t)
+    a11 = exp(2 * t)
+    a14 = exp(3 * t)
+    a15 = exp(4 * t)
+    a16 = exp(6 * t)
+    a17 = exp(7 * t)
+    dq1 = 2cos(pi*x)*exp(2t) + (8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - pi*x*exp(3t)*(sin(pi*x)^2) + pi*x*cos(pi*x)*(8 + cos(pi*x)*exp(2t))*exp(t)
+    dq2 = x*(8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - g*pi*(8 + cos(pi*x)*exp(2t))*sin(pi*x)*exp(2t) + (1//2)*(2x*(sin(pi*x)^2)*exp(2t) + pi*(x^2)*exp(2t)*sin(2pi*x))*(8 + cos(pi*x)*exp(2t)) - (1//3)*((2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3) - 3pi*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t)) - (1//3)*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) + pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*((8 + cos(pi*x)*exp(2t))^2)*exp(3t)*(sin(pi*x)^2) - (1//3)*(-3(pi^2)*exp(t)*sin(pi*x) - (pi^3)*x*cos(pi*x)*exp(t))*x*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) - pi*((exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))^2)*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t) - (1//3)*pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*cos(pi*x)*((8 + cos(pi*x)*exp(2t))^3)*exp(t) + (2//3)*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)
+
+    return SVector(dq1, dq2, zero(dq1))
 end
 
 # flat bathymetry with periodic boundary conditions
@@ -961,7 +1030,7 @@ function rhs!(dq, q, t, mesh,
               equations::SerreGreenNaghdiEquations1D,
               initial_condition,
               boundary_conditions::BoundaryConditionReflecting,
-              source_terms::Nothing,
+              source_terms,
               solver, cache)
     # Unpack physical parameters and SBP operators `D1`, `D2`
     g = gravity(equations)
@@ -1019,7 +1088,9 @@ function rhs!(dq, q, t, mesh,
                    + p_x)
     end
 
-    # FIXME: add source term
+    # add source term
+    @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
+                                                       solver)
 
     # FIXME: elliptic system
     @trixi_timeit timer() "assembling elliptic operator" begin
