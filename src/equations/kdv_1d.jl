@@ -63,7 +63,7 @@ function initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh
     g = gravity(equations)
     D = equations.D
     c = 1.5 * sqrt(g * D)
-    A = 2*D * (c - sqrt(g * D)) / sqrt(g * D)
+    A = 2 * D * (c - sqrt(g * D)) / sqrt(g * D)
     K = 1 / 2 * sqrt(3 * A / D^3)
     x_t = mod(x - c * t - xmin(mesh), xmax(mesh) - xmin(mesh)) + xmin(mesh)
     eta = A * sech(K * x_t)^2
