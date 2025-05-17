@@ -58,10 +58,11 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                             RealT = real(solver), uEltype = RealT,
                             # tmp1 is needed for the `RelaxationCallback`
                             initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
-                                             #tmp222 = ArrayPartition(ntuple(_ -> zeros(real(solver), nnodes(mesh)),
-                                             #tmp222 = Array{RealT}(undef, nvariables(equations)*nnodes(mesh),
-                                             # Val(nvariables(equations)))
-                                             ))
+                                             tmp_partitioned = ArrayPartition(ntuple(_ -> zeros(real(solver),
+                                                                                                nnodes(mesh)),
+                                                                                     Val(nvariables(equations))))))
+    #  tmp222 = Array{RealT}(undef, nvariables(equations)*nnodes(mesh))
+
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
                           RealT, uEltype)...,
@@ -145,6 +146,7 @@ function integrate_quantity!(quantity, func, q, semi::Semidiscretization)
     for i in eachnode(semi)
         quantity[i] = func(get_node_vars(q, semi.equations, i), semi.equations)
     end
+    # @show "hey"
     integrate(quantity, semi)
 end
 
