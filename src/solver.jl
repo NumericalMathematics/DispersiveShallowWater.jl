@@ -62,7 +62,7 @@ function Solver(mesh, accuracy_order)
     end
     D1 = periodic_derivative_operator(1, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
     D2 = periodic_derivative_operator(2, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
-    D3 = periodic_derivative_operator(3, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
+    D3 = periodic_derivative_operator(3, accuracy_order + 2, mesh.xmin, mesh.xmax, mesh.N)
     @assert real(D1) == real(D2)
     Solver{real(D1), typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
 end
