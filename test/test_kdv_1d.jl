@@ -46,7 +46,7 @@ end
                         atol=1e-9,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=5_100)
+    @test_allocations(semi, sol, allocs=5_000)
 end
 
 @testitem "kdv_1d_narrow_stencil" setup=[Setup, KdVEquation1D] begin
