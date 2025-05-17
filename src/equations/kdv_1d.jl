@@ -172,8 +172,7 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
         # eta_x = D1 * eta
         mul!(tmp_1, D1, eta)
 
-        # deta -= -1.0 * (sqrt(g * D) * eta_x +
-        #                 # 1 / 2 * sqrt(g / D) (* eta * eta_x + eta2_x) 
+        # deta -= sqrt(g * D) * eta_x + 1 / 2 * sqrt(g / D) * (eta * eta_x + eta2_x) 
         @.. deta -= (c_0 * tmp_1 + c_1 * (eta * tmp_1 + tmp_2))
     end
 
