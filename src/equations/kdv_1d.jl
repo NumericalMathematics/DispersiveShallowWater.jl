@@ -174,9 +174,7 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
 
         # deta -= -1.0 * (sqrt(g * D) * eta_x +
         #                 # 1 / 2 * sqrt(g / D) (* eta * eta_x + eta2_x) 
-        @.. deta += -1.0 * (c_0 * tmp_1 +
-                            c_1 * (eta * tmp_1 +
-                                   tmp_2))
+        @.. deta -= (c_0 * tmp_1 + c_1 * (eta * tmp_1 + tmp_2))
     end
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
