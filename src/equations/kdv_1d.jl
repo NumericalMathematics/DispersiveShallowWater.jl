@@ -144,7 +144,7 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
 
     @trixi_timeit timer() "third-order derivatives" begin
         if solver.D1 isa PeriodicUpwindOperators && isnothing(solver.D3)
-            # eta_xxx = Dm * Dc * Dp * eta
+            # eta_xxx = Dp * Dc * Dm * eta
             mul!(tmp_1, solver.D1.minus, eta)
             mul!(tmp_2, solver.D1.central, tmp_1)
             mul!(tmp_1, solver.D1.plus, tmp_2)
