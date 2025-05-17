@@ -126,8 +126,6 @@ function create_cache(mesh, equations::KdVEquation1D,
     tmp_1 = DiffCache(zero(template), N)
     tmp_2 = DiffCache(zero(template), N)
 
- 
-
     cache = (; c_0, c_1, DD, tmp_1, tmp_2)
     return cache
 end
@@ -144,27 +142,25 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
     tmp_1 = get_tmp(cache.tmp_1, eta)
     tmp_2 = get_tmp(cache.tmp_2, eta)
 
-
     @trixi_timeit timer() "third-order derivatives" begin
-
-        if solver.D1 isa PeriodicUpwindOperators && solver.D3 == nothing  
+        if solver.D1 isa PeriodicUpwindOperators && solver.D3 == nothing
             # eta_xxx = Dm * Dc * Dp * eta
             mul!(tmp_1, solver.D1.minus, eta)
             mul!(tmp_2, solver.D1.central, tmp_1)
             mul!(tmp_1, solver.D1.plus, tmp_2)
 
             # set D1 for hyperbolic terms
-            D1 = solver.D1.central 
+            D1 = solver.D1.central
         else
             # eta_xxx = D3 * eta
             mul!(tmp_1, solver.D3, eta)
 
             # set D1 for hyperbolic terms
             D1 = solver.D1
-        end      
+        end
 
         # deta = 1 / 6 sqrt(g * D) D^2 eta_xxx 
-        @.. deta = - 1 / 6 * c_0 * DD * tmp_1
+        @.. deta = -1 / 6 * c_0 * DD * tmp_1
     end
 
     @trixi_timeit timer() "hyperbolic" begin
@@ -179,11 +175,9 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
         # deta -= -1.0 * (sqrt(g * D) * eta_x +
         #                 # 1 / 2 * sqrt(g / D) (* eta * eta_x + eta2_x) 
         @.. deta += -1.0 * (c_0 * tmp_1 +
-                           c_1 * (eta * tmp_1 +
-                                  tmp_2))
+                            c_1 * (eta * tmp_1 +
+                                   tmp_2))
     end
-
-
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
                                                        solver)
