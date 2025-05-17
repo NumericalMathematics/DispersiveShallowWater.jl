@@ -254,8 +254,8 @@ function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
     # via ForwardDiff.jl. We also pass the second argument determining the chunk size since the
     # typical use case is to compute Jacobians of the full `rhs!` evaluation, where the complete
     # state vector is `q`, which is bigger than the storage for a single scalar variable.
-    # 5: eta, v, D, w, H
-    N = ForwardDiff.pickchunksize(5 * nnodes(mesh))
+    # nvariables(equations) = 5: eta, v, D, w, H 
+    N = ForwardDiff.pickchunksize(nvariables(equations) * nnodes(mesh))
     template = ones(RealT, nnodes(mesh))
     h = DiffCache(template, N)
     b = DiffCache(zero(template), N)

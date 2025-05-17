@@ -15,12 +15,6 @@ N = 512
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
 # create solver with periodic SBP operators of accuracy order 4
-
-# using a narrow stencil third derivative operator is significantly faster than using
-# the upwind operator for the third derivative for a given N. However there are considerably more oscillations.
-# This can be improved by increasing N, which in fact leads to it being slower again.
-# see: https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/198#discussion_r2093451059
-# TODO: This text maybe in the docs somewhere?
 accuracy_order = 4
 solver = Solver(mesh, accuracy_order)
 

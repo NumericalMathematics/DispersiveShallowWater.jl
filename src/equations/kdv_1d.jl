@@ -119,27 +119,16 @@ function create_cache(mesh, equations::KdVEquation1D,
 
     # We use `DiffCache` from PreallocationTools.jl to enable automatic/algorithmic differentiation
     # via ForwardDiff.jl. 
-    # 1: eta
-    N = ForwardDiff.pickchunksize(1 * nnodes(mesh))
+    # nvariables(equations) = 1: eta
+    N = ForwardDiff.pickchunksize(nvariables(equations) * nnodes(mesh))
     template = ones(RealT, nnodes(mesh))
 
-    eta2 = DiffCache(zero(template), N)
-    eta2_x = DiffCache(zero(template), N)
+    tmp_1 = DiffCache(zero(template), N)
+    tmp_2 = DiffCache(zero(template), N)
 
-    eta_x = DiffCache(zero(template), N)
-    eta_xxx = DiffCache(zero(template), N)
+ 
 
-    if solver.D1 isa PeriodicUpwindOperators && solver.D3 == nothing
-        D1 = solver.D1.central
-
-        # calculate the third derivative operator using upwind operators
-        D3 = sparse(solver.D1.plus) * sparse(solver.D1.central) * sparse(solver.D1.minus)
-    else
-        D1 = solver.D1
-        D3 = solver.D3
-    end
-
-    cache = (; D1, D3, c_0, c_1, DD, eta2, eta2_x, eta_x, eta_xxx)
+    cache = (; c_0, c_1, DD, tmp_1, tmp_2)
     return cache
 end
 
@@ -148,34 +137,53 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
     eta, = q.x
     deta, = dq.x
 
-    (; D1, D3, c_0, c_1, DD) = cache
+    (; c_0, c_1, DD) = cache
     # In order to use automatic differentiation, we need to extract
     # the storage vectors using `get_tmp` from PreallocationTools.jl
     # so they can also hold dual numbers when needed.
-    eta2 = get_tmp(cache.eta2, eta)
-    eta2_x = get_tmp(cache.eta2_x, eta2)
-    eta_x = get_tmp(cache.eta_x, eta)
-    eta_xxx = get_tmp(cache.eta_xxx, eta)
+    tmp_1 = get_tmp(cache.tmp_1, eta)
+    tmp_2 = get_tmp(cache.tmp_2, eta)
 
-    @trixi_timeit timer() "hyperbolic" begin
-        @.. eta2 = eta^2
-        # eta2_x = D1 * eta2
-        mul!(eta2_x, D1, eta2)
-
-        # eta_x = D1 * eta
-        mul!(eta_x, D1, eta)
-
-        @.. deta = -1.0 * (c_0 * eta_x +
-                           c_1 * (eta * eta_x +
-                                  eta2_x))
-    end
 
     @trixi_timeit timer() "third-order derivatives" begin
-        # eta_xxx = D3 * eta
-        mul!(eta_xxx, D3, eta)
 
-        @.. deta -= 1 / 6 * c_0 * DD * eta_xxx
+        if solver.D1 isa PeriodicUpwindOperators && solver.D3 == nothing  
+            # eta_xxx = Dm * Dc * Dp * eta
+            mul!(tmp_1, solver.D1.minus, eta)
+            mul!(tmp_2, solver.D1.central, tmp_1)
+            mul!(tmp_1, solver.D1.plus, tmp_2)
+
+            # set D1 for hyperbolic terms
+            D1 = solver.D1.central 
+        else
+            # eta_xxx = D3 * eta
+            mul!(tmp_1, solver.D3, eta)
+
+            # set D1 for hyperbolic terms
+            D1 = solver.D1
+        end      
+
+        # deta = 1 / 6 sqrt(g * D) D^2 eta_xxx 
+        @.. deta = - 1 / 6 * c_0 * DD * tmp_1
     end
+
+    @trixi_timeit timer() "hyperbolic" begin
+        # eta2 = eta^2
+        @.. tmp_1 = eta^2
+        # eta2_x = D1 * eta2
+        mul!(tmp_2, D1, tmp_1)
+
+        # eta_x = D1 * eta
+        mul!(tmp_1, D1, eta)
+
+        # deta -= -1.0 * (sqrt(g * D) * eta_x +
+        #                 # 1 / 2 * sqrt(g / D) (* eta * eta_x + eta2_x) 
+        @.. deta += -1.0 * (c_0 * tmp_1 +
+                           c_1 * (eta * tmp_1 +
+                                  tmp_2))
+    end
+
+
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
                                                        solver)
