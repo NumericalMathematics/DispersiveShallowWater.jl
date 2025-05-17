@@ -40,7 +40,7 @@ end
                           accuracy_order = accuracy_order, xmin = mesh.xmin,
                           xmax = mesh.xmax,
                           N = mesh.N)
-    solver = Solver(D1, nothing)
+    solver = Solver(D1)
     @test_trixi_include(joinpath(EXAMPLES_DIR, "svaerd_kalisch_1d_basic_reflecting.jl"),
                         tspan=(0.0, 1.0),
                         solver=solver,

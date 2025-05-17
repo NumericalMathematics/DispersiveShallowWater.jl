@@ -160,23 +160,23 @@ function source_terms_manufactured(q, x, t,
     a7 = 5 + cospi(4t - 2x)
     a9 = 1 - a4
 
-    dh = 2π * (-a6 - a6 * a4 + a3 * a7)
+    dq1 = 2π * (-a6 - a6 * a4 + a3 * a7)
 
-    dv = (-π * a3 * a7
-          + 2g * π * a6 * a7
-          + 2π * a3 * a7 * a9
-          -
-          (1 / 3) * (-12π^3 * a6 * a4 * a7^2
-                     +
-                     4π^3 * a3 * a7^3)
-          + (4 / 3) * π^3 * a5 * a7^3
-          + 8π^3 * a6 * a3^2 * a7^2
-          -
-          8π^3 * a6 * a7^2 * a9 * a4
-          +
-          (8 / 3) * π^3 * a3 * a7^3 * a9)
+    dq2 = (-π * a3 * a7
+           + 2g * π * a6 * a7
+           + 2π * a3 * a7 * a9
+           -
+           (1 / 3) * (-12π^3 * a6 * a4 * a7^2
+                      +
+                      4π^3 * a3 * a7^3)
+           + (4 / 3) * π^3 * a5 * a7^3
+           + 8π^3 * a6 * a3^2 * a7^2
+           -
+           8π^3 * a6 * a7^2 * a9 * a4
+           +
+           (8 / 3) * π^3 * a3 * a7^3 * a9)
 
-    return SVector(dh, dv, zero(dh))
+    return SVector(dq1, dq2, zero(dq1))
 end
 
 function source_terms_manufactured(q, x, t,

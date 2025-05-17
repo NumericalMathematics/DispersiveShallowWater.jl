@@ -64,6 +64,7 @@ include("util.jl")
 export examples_dir, get_examples, default_example, convergence_test
 
 export AbstractShallowWaterEquations,
+       KdVEquation1D,
        BBMEquation1D, BBMBBMEquations1D,
        SvärdKalischEquations1D, SvaerdKalischEquations1D,
        SerreGreenNaghdiEquations1D, HyperbolicSerreGreenNaghdiEquations1D

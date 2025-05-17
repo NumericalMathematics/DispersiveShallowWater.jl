@@ -8,6 +8,9 @@ for human readability.
 
 ## Changes when updating to v0.7 from v0.6.x
 
+#### Added
+- Add `KdVEquation1D` ([#198]).
+
 #### Changed
 
 - The default parameters of the `SvaerdKalischEquations1D` changed from

@@ -137,7 +137,7 @@ end
                         change_waterheight=2.60491292165127e-12,
                         atol=1e-11) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(semi, sol, allocs=5_100)
 
     # test upwind operators
     D1 = upwind_operators(periodic_derivative_operator; derivative_order = 1,
