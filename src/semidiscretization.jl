@@ -53,7 +53,6 @@ end
 
 Construct a semidiscretization of a PDE.
 """
-
 function Semidiscretization(mesh, equations, initial_condition, solver;
                             source_terms = nothing,
                             boundary_conditions = boundary_condition_periodic,
