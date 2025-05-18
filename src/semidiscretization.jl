@@ -47,9 +47,9 @@ end
                        RealT=real(solver),
                        uEltype=RealT,
                        initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
-                                        tmp_partitioned = ArrayPartition(ntuple(_ -> zeros(real(solver),
-                                                                                           nnodes(mesh)),
-                                                                                 Val(nvariables(equations))))))
+                                        tmp_partitioned = allocate_coefficients(mesh,
+                                                                                     equations,
+                                                                                     solver)))
 
 Construct a semidiscretization of a PDE.
 """
@@ -61,9 +61,9 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                             RealT = real(solver), uEltype = RealT,
                             # tmp1 is needed for the `RelaxationCallback`
                             initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
-                                             tmp_partitioned = ArrayPartition(ntuple(_ -> zeros(real(solver),
-                                                                                                nnodes(mesh)),
-                                                                                     Val(nvariables(equations))))))
+                                             tmp_partitioned = allocate_coefficients(mesh,
+                                                                                     equations,
+                                                                                     solver)))
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
                           RealT, uEltype)...,
