@@ -57,7 +57,7 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                             # `RealT` is used as real type for node locations etc.
                             # while `uEltype` is used as element type of solutions etc.
                             RealT = real(solver), uEltype = RealT,
-                            # tmp1 is needed for the `RelaxationCallback`
+                            # `tmp1` and `tmp_partitioned` are needed for the `RelaxationCallback`
                             initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
                                              tmp_partitioned = allocate_coefficients(mesh,
                                                                                      equations,
