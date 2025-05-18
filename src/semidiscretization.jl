@@ -46,10 +46,14 @@ end
                        boundary_conditions=boundary_condition_periodic,
                        RealT=real(solver),
                        uEltype=RealT,
-                       initial_cache=(tmp1 = Array{RealT}(undef, nnodes(mesh)),))
+                       initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
+                                        tmp_partitioned = ArrayPartition(ntuple(_ -> zeros(real(solver),
+                                                                                           nnodes(mesh)),
+                                                                                 Val(nvariables(equations))))))
 
 Construct a semidiscretization of a PDE.
 """
+
 function Semidiscretization(mesh, equations, initial_condition, solver;
                             source_terms = nothing,
                             boundary_conditions = boundary_condition_periodic,
@@ -61,7 +65,6 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                                              tmp_partitioned = ArrayPartition(ntuple(_ -> zeros(real(solver),
                                                                                                 nnodes(mesh)),
                                                                                      Val(nvariables(equations))))))
-
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
                           RealT, uEltype)...,
