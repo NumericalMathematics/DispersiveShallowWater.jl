@@ -61,7 +61,6 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                                              tmp_partitioned = ArrayPartition(ntuple(_ -> zeros(real(solver),
                                                                                                 nnodes(mesh)),
                                                                                      Val(nvariables(equations))))))
-    #  tmp222 = Array{RealT}(undef, nvariables(equations)*nnodes(mesh))
 
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
@@ -146,7 +145,6 @@ function integrate_quantity!(quantity, func, q, semi::Semidiscretization)
     for i in eachnode(semi)
         quantity[i] = func(get_node_vars(q, semi.equations, i), semi.equations)
     end
-    # @show "hey"
     integrate(quantity, semi)
 end
 
