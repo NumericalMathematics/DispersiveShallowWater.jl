@@ -15,7 +15,8 @@ coordinates_max = 50.0
 N = 512
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-# create solver with periodic SBP operators of accuracy order 3;
+# create solver with periodic SBP operators of accuracy order 3,
+# which results in a 4th order accurate semi discretizations.
 # we can set the accuracy order of the upwind operators to 3 since
 # we only use central versions/combinations of the upwind operators
 D1_upwind = upwind_operators(periodic_derivative_operator;
