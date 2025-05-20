@@ -90,7 +90,8 @@ You can directly refer to DispersiveShallowWater.jl as
 ## Authors
 
 The package is mainly developed and maintained by Joshua Lampert (University of Hamburg)
-with contributions from Hendrik Ranocha (Johannes Gutenberg University Mainz).
+with contributions from Hendrik Ranocha (Johannes Gutenberg University Mainz)
+and Collin Wittenstein (Johannes Gutenberg University Mainz).
 Some parts of this repository are based on parts of
 [Dispersive-wave-schemes-notebooks. A Broad Class of Conservative Numerical Methods for Dispersive Wave Equations](https://github.com/ranocha/Dispersive-wave-schemes-notebooks)
 by Hendrik Ranocha, Dimitrios Mitsotakis and David Ketcheson.
