@@ -350,7 +350,8 @@ end
     Setup,
     SerreGreenNaghdiEquations1D
 ] begin
-    @test_trixi_include(joinpath(EXAMPLES_DIR, "serre_green_naghdi_manufactured_reflecting.jl"),
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting.jl"),
                         bathymetry_type=bathymetry_flat,
                         l2=[0.04796208178381881, 0.0002741366926568415, 0.0],
                         linf=[0.37478770827386043, 0.0004746167686715472, 0.0])

@@ -1,6 +1,7 @@
 using OrdinaryDiffEqTsit5
 using DispersiveShallowWater
-using SummationByPartsOperators: Mattsson2012, derivative_operator, var_coef_derivative_operator
+using SummationByPartsOperators: Mattsson2012, derivative_operator,
+                                 var_coef_derivative_operator
 
 ###############################################################################
 # Semidiscretization of the Serre-Green-Naghdi equations

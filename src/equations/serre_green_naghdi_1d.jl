@@ -268,9 +268,6 @@ with [`source_terms_manufactured_reflecting`](@ref).
 function initial_condition_manufactured_reflecting(x, t,
                                                    equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
                                                    mesh)
-    # eta = exp(2 * t) * cospi(x)
-    # v = exp(t) * x * sinpi(x)
-    # D = 8
     h = 1 + exp(2 * t) * (cospi(x) + x + 2)
     v = exp(-t * x) * x * sinpi(x)
     D = zero(h)
@@ -319,7 +316,8 @@ source2 = simplify(expand_derivatives(s2))
 A smooth manufactured solution for reflecting boundary conditions in combination
 with [`initial_condition_manufactured_reflecting`](@ref).
 """
-function source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat})
+function source_terms_manufactured_reflecting(q, x, t,
+                                              equations::SerreGreenNaghdiEquations1D{BathymetryFlat})
     g = gravity(equations)
     # FIXME: substitute
     a2 = sinpi(2 * x)
@@ -327,14 +325,43 @@ function source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNagh
     a9 = sinpi(x)
     a10 = exp(t)
     a11 = exp(2 * t)
-    a14 = exp(3 * t)
-    a15 = exp(4 * t)
-    a16 = exp(6 * t)
-    a17 = exp(7 * t)
-    # dq1 = 2cos(pi*x)*exp(2t) + (8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - pi*x*exp(3t)*(sin(pi*x)^2) + pi*x*cos(pi*x)*(8 + cos(pi*x)*exp(2t))*exp(t)
-    # dq2 = x*(8 + cos(pi*x)*exp(2t))*exp(t)*sin(pi*x) - g*pi*(8 + cos(pi*x)*exp(2t))*sin(pi*x)*exp(2t) + (1//2)*(2x*(sin(pi*x)^2)*exp(2t) + pi*(x^2)*exp(2t)*sin(2pi*x))*(8 + cos(pi*x)*exp(2t)) - (1//3)*((2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3) - 3pi*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t)) - (1//3)*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) + pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*((8 + cos(pi*x)*exp(2t))^2)*exp(3t)*(sin(pi*x)^2) - (1//3)*(-3(pi^2)*exp(t)*sin(pi*x) - (pi^3)*x*cos(pi*x)*exp(t))*x*((8 + cos(pi*x)*exp(2t))^3)*exp(t)*sin(pi*x) - pi*((exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))^2)*((8 + cos(pi*x)*exp(2t))^2)*sin(pi*x)*exp(2t) - (1//3)*pi*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*x*cos(pi*x)*((8 + cos(pi*x)*exp(2t))^3)*exp(t) + (2//3)*(exp(t)*sin(pi*x) + pi*x*cos(pi*x)*exp(t))*(2pi*cos(pi*x)*exp(t) - (pi^2)*x*exp(t)*sin(pi*x))*((8 + cos(pi*x)*exp(2t))^3)
-    dq1 = 2(2 + x + cos(pi*x))*exp(2t) + (1 + (2 + x + cos(pi*x))*exp(2t))*sin(pi*x)*exp(-t*x) + (1 - pi*sin(pi*x))*x*exp(2t - t*x)*sin(pi*x) + pi*x*(1 + (2 + x + cos(pi*x))*exp(2t))*cos(pi*x)*exp(-t*x) - t*x*(1 + (2 + x + cos(pi*x))*exp(2t))*sin(pi*x)*exp(-t*x)
-    dq2 = g*(1 - pi*sin(pi*x))*(1 + (2 + x + cos(pi*x))*exp(2t))*exp(2t) - (1 + (2 + x + cos(pi*x))*exp(2t))*(x^2)*sin(pi*x)*exp(-t*x) + (1//2)*(2x*exp(-2t*x)*(sin(pi*x)^2) + pi*(x^2)*exp(-2t*x)*sin(2pi*x) - 2t*(x^2)*exp(-2t*x)*(sin(pi*x)^2))*(1 + (2 + x + cos(pi*x))*exp(2t)) - (1//3)*((-2sin(pi*x)*exp(-t*x) - 4pi*x*cos(pi*x)*exp(-t*x) + 4t*x*sin(pi*x)*exp(-t*x) + (pi^2)*(x^2)*sin(pi*x)*exp(-t*x) + 2pi*t*(x^2)*cos(pi*x)*exp(-t*x) - (t^2)*(x^2)*sin(pi*x)*exp(-t*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^3) + 3(-2x*sin(pi*x)*exp(-t*x) - pi*(x^2)*cos(pi*x)*exp(-t*x) + t*(x^2)*sin(pi*x)*exp(-t*x))*(1 - pi*sin(pi*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^2)*exp(2t)) - (1//3)*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*sin(pi*x)*exp(-t*x) + (-(1//1) + pi*sin(pi*x))*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*x*((1 + (2 + x + cos(pi*x))*exp(2t))^2)*exp(2t - t*x)*sin(pi*x) - (1//3)*(-3(pi^2)*sin(pi*x)*exp(-t*x) - 6pi*t*cos(pi*x)*exp(-t*x) + 3(t^2)*sin(pi*x)*exp(-t*x) - (pi^3)*x*cos(pi*x)*exp(-t*x) + 3(pi^2)*t*x*sin(pi*x)*exp(-t*x) + 3pi*(t^2)*x*cos(pi*x)*exp(-t*x) - (t^3)*x*sin(pi*x)*exp(-t*x))*x*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*sin(pi*x)*exp(-t*x) + (1//3)*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*t*x*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*sin(pi*x)*exp(-t*x) - (1//3)*pi*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*x*((1 + (2 + x + cos(pi*x))*exp(2t))^3)*cos(pi*x)*exp(-t*x) + (2//3)*(sin(pi*x)*exp(-t*x) + pi*x*cos(pi*x)*exp(-t*x) - t*x*sin(pi*x)*exp(-t*x))*(2pi*cos(pi*x)*exp(-t*x) - 2t*sin(pi*x)*exp(-t*x) - (pi^2)*x*sin(pi*x)*exp(-t*x) - 2pi*t*x*cos(pi*x)*exp(-t*x) + (t^2)*x*sin(pi*x)*exp(-t*x))*((1 + (2 + x + cos(pi*x))*exp(2t))^3) + (1 - pi*sin(pi*x))*((sin(pi*x)*exp(-t*x) + pi*x*cos(pi*x)*exp(-t*x) - t*x*sin(pi*x)*exp(-t*x))^2)*((1 + (2 + x + cos(pi*x))*exp(2t))^2)*exp(2t)
+    a14 = exp(-t)
+    a15 = exp(2 * t - t * x)
+    a16 = exp(-2 * t * x)
+    dq1 = 2(2 + x + a8) * a11 + (1 + (2 + x + a8) * a11) * a9 * a14 +
+          (1 - pi * a9) * x * a15 * a9 + pi * x * (1 + (2 + x + a8) * a11) * a8 * a14 -
+          t * x * (1 + (2 + x + a8) * a11) * a9 * a14
+    dq2 = g * (1 - pi * a9) * (1 + (2 + x + a8) * a11) * a11 -
+          (1 + (2 + x + a8) * a11) * (x^2) * a9 * a14 +
+          (1 // 2) *
+          (2x * a16 * (a9^2) + pi * (x^2) * a16 * a2 - 2t * (x^2) * a16 * (a9^2)) *
+          (1 + (2 + x + a8) * a11) -
+          (1 // 3) * ((-2a9 * a14 - 4pi * x * a8 * a14 + 4t * x * a9 * a14 +
+            (pi^2) * (x^2) * a9 * a14 + 2pi * t * (x^2) * a8 * a14 -
+            (t^2) * (x^2) * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) +
+           3(-2x * a9 * a14 - pi * (x^2) * a8 * a14 + t * (x^2) * a9 * a14) *
+           (1 - pi * a9) * ((1 + (2 + x + a8) * a11)^2) * a11) -
+          (1 // 3) *
+          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+           (t^2) * x * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 +
+          (-(1 // 1) + pi * a9) *
+          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+           (t^2) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^2) * a15 * a9 -
+          (1 // 3) *
+          (-3(pi^2) * a9 * a14 - 6pi * t * a8 * a14 + 3(t^2) * a9 * a14 -
+           (pi^3) * x * a8 * a14 + 3(pi^2) * t * x * a9 * a14 + 3pi * (t^2) * x * a8 * a14 -
+           (t^3) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 +
+          (1 // 3) *
+          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+           (t^2) * x * a9 * a14) * t * x * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 -
+          (1 // 3) * pi *
+          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+           (t^2) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^3) * a8 * a14 +
+          (2 // 3) * (a9 * a14 + pi * x * a8 * a14 - t * x * a9 * a14) *
+          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+           (t^2) * x * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) +
+          (1 - pi * a9) * ((a9 * a14 + pi * x * a8 * a14 - t * x * a9 * a14)^2) *
+          ((1 + (2 + x + a8) * a11)^2) * a11
 
     return SVector(dq1, dq2, zero(dq1))
 end
@@ -1002,9 +1029,9 @@ function create_cache(mesh,
     if D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator
         A = BandedMatrix(D2)
         cache = (; h, b, h_x, v_x, h2_x, hv_x, v2_x,
-                   h2_v_vx_x, h_vx_x, p_x, tmp,
-                   M_h, A,
-                   D1, D2)
+                 h2_v_vx_x, h_vx_x, p_x, tmp,
+                 M_h, A,
+                 D1, D2)
     else
         throw(ArgumentError("Combination of operators not supported."))
     end
@@ -1093,11 +1120,16 @@ function rhs!(dq, q, t, mesh,
         # Split form for energy conservation:
         # h v_t + ... = 0
         @.. dv = -(g * h2_x - g * h * h_x
-                   + 0.5 * h * v2_x
-                   - 0.5 * v^2 * h_x
-                   + 0.5 * hv_x * v
-                   - 0.5 * h * v * v_x
-                   + p_x)
+                   +
+                   0.5 * h * v2_x
+                   -
+                   0.5 * v^2 * h_x
+                   +
+                   0.5 * hv_x * v
+                   -
+                   0.5 * h * v * v_x
+                   +
+                   p_x)
     end
 
     # add source term
@@ -1118,7 +1150,6 @@ function rhs!(dq, q, t, mesh,
 
     return nothing
 end
-
 
 # The modified entropy/energy takes the whole `q` for every point in space
 """
