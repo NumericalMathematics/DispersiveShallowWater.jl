@@ -559,6 +559,11 @@ abstract type AbstractSerreGreenNaghdiEquations{NDIMS, NVARS} <:
 include("serre_green_naghdi_1d.jl")
 include("hyperbolic_serre_green_naghdi_1d.jl")
 
+# KdV equation
+abstract type AbstractKdVEquation{NDIMS, NVARS} <:
+              AbstractEquations{NDIMS, NVARS} end
+include("kdv_1d.jl")
+
 function solve_system_matrix!(dv, system_matrix, rhs,
                               equations::Union{SvaerdKalischEquations1D,
                                                SerreGreenNaghdiEquations1D},

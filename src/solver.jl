@@ -13,32 +13,48 @@ A `struct` that holds the summation-by-parts (SBP) operators that are used for t
 struct Solver{RealT <: Real,
               FirstDerivative <: AbstractDerivativeOperator{RealT},
               SecondDerivative <:
+              Union{AbstractDerivativeOperator{RealT}, AbstractMatrix{RealT}, Nothing},
+              ThirdDerivative <:
               Union{AbstractDerivativeOperator{RealT}, AbstractMatrix{RealT}, Nothing}} <:
        AbstractSolver
     D1::FirstDerivative
     D2::SecondDerivative
+    D3::ThirdDerivative
 
-    function Solver{RealT, FirstDerivative, SecondDerivative}(D1::FirstDerivative,
-                                                              D2::SecondDerivative) where {
-                                                                                           RealT,
-                                                                                           FirstDerivative,
-                                                                                           SecondDerivative
-                                                                                           }
+    function Solver{RealT,
+                    FirstDerivative,
+                    SecondDerivative,
+                    ThirdDerivative}(D1::FirstDerivative,
+                                     D2::SecondDerivative,
+                                     D3::ThirdDerivative) where {
+                                                                 RealT,
+                                                                 FirstDerivative,
+                                                                 SecondDerivative,
+                                                                 ThirdDerivative
+                                                                 }
         @assert derivative_order(D1) == 1
+
         if D2 isa AbstractDerivativeOperator &&
            !(D2 isa SummationByPartsOperators.FourierPolynomialDerivativeOperator) &&
            !(D2 isa SummationByPartsOperators.PeriodicRationalDerivativeOperator)
             @assert derivative_order(D2) == 2
         end
-        new(D1, D2)
+
+        if D3 isa AbstractDerivativeOperator &&
+           !(D3 isa SummationByPartsOperators.FourierPolynomialDerivativeOperator) &&
+           !(D3 isa SummationByPartsOperators.PeriodicRationalDerivativeOperator)
+            @assert derivative_order(D3) == 3
+        end
+
+        new(D1, D2, D3)
     end
 end
 
 """
     Solver(mesh, accuracy_order)
 
-Create a solver, where the summation-by-parts (SBP) operators are of order `accuracy_order` and
-associated to the `mesh`.
+Create a solver, where the three summation-by-parts (SBP) first-, second-, and third-derivative operators
+are of accuracy order `accuracy_order` and associated to the `mesh`.
 """
 function Solver(mesh, accuracy_order)
     if isodd(accuracy_order)
@@ -46,25 +62,29 @@ function Solver(mesh, accuracy_order)
     end
     D1 = periodic_derivative_operator(1, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
     D2 = periodic_derivative_operator(2, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
+    D3 = periodic_derivative_operator(3, accuracy_order + 2, mesh.xmin, mesh.xmax, mesh.N)
     @assert real(D1) == real(D2)
-    Solver{real(D1), typeof(D1), typeof(D2)}(D1, D2)
+    Solver{real(D1), typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
 end
 
 # Also allow to pass custom SBP operators (for convenience without explicitly specifying the type)
 """
-    Solver(D1, D2)
+    Solver(D1, D2 = nothing, D3 = nothing)
 
 Create a solver, where `D1` is an `AbstractDerivativeOperator`
 from [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl)
-of first `derivative_order` and `D2` is an `AbstractDerivativeOperator`
-of second `derivative_order` or an `AbstractMatrix`. It can also be `nothing`
-if no second derivative is used by the discretization.
-Both summation-by-parts operators should be associated with the same grid.
+of first `derivative_order`, `D2` is an `AbstractDerivativeOperator` 
+of second `derivative_order` or an `AbstractMatrix`, and `D3` is an `AbstractDerivativeOperator`
+of third `derivative_order` or an `AbstractMatrix`. `D2` and `D3` can also be `nothing`
+if that derivative is not used by the discretization.
+All given summation-by-parts operators should be associated with the same grid.
 """
 function Solver(D1::AbstractDerivativeOperator{RealT},
                 D2::Union{AbstractDerivativeOperator{RealT}, AbstractMatrix{RealT},
-                          Nothing}) where {RealT}
-    Solver{RealT, typeof(D1), typeof(D2)}(D1, D2)
+                          Nothing} = nothing,
+                D3::Union{AbstractDerivativeOperator{RealT}, AbstractMatrix{RealT},
+                          Nothing} = nothing) where {RealT}
+    Solver{RealT, typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
 end
 
 function Base.show(io::IO, solver::Solver{RealT}) where {RealT}
@@ -77,7 +97,8 @@ function Base.show(io::IO, ::MIME"text/plain", solver::Solver{RealT}) where {Rea
     else
         println(io, "Solver{", RealT, "}")
         println(io, "    D1: ", solver.D1)
-        print(io, "    D2: ", solver.D2)
+        println(io, "    D2: ", solver.D2)
+        println(io, "    D3: ", solver.D3)
     end
 end
 
