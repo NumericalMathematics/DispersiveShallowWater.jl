@@ -196,11 +196,11 @@ function source_terms_manufactured_reflecting(q, x, t, equations::BBMBBMEquation
     a12 = cospi(3 * x)
     a13 = sinpi(3 * x)
     s1 = (pi * x * a11 * a1 + 4 * pi * x * a8 + 3 * pi * x * a12 +
-           20 * pi^2 * (1 - a1)^2 * a10 * a8 / 3 + a11 * a2 / 2 + 2 * a10 * a8 +
-           7 * pi^2 * a10 * a8 / 3 + 14 * pi^2 * a10 * a12 + 4 * a9 + a13) * a10
+          20 * pi^2 * (1 - a1)^2 * a10 * a8 / 3 + a11 * a2 / 2 + 2 * a10 * a8 +
+          7 * pi^2 * a10 * a8 / 3 + 14 * pi^2 * a10 * a12 + 4 * a9 + a13) * a10
     s2 = (-pi * g * a10 * a9 + pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9 +
-           pi * (400 * pi * x * a9^5 - 824 * pi * x * a9^3 + 385 * pi * x * a9 -
-            160 * a9^4 * a8 + 336 * a9^2 * a8 - 98 * a8) / 6) * a10
+          pi * (400 * pi * x * a9^5 - 824 * pi * x * a9^3 + 385 * pi * x * a9 -
+           160 * a9^4 * a8 + 336 * a9^2 * a8 - 98 * a8) / 6) * a10
 
     return SVector(s1, s2, zero(s1))
 end
@@ -216,9 +216,9 @@ function source_terms_manufactured_reflecting(q, x, t,
     a10 = exp(t)
     a11 = exp(2 * t)
     s1 = (pi^2 * D^2 * a10 * a8 / 3 + pi * D * x * a8 + D * a9 + pi * x * a11 * a1 +
-           a11 * a2 / 2 + 2 * a10 * a8) * a10
+          a11 * a2 / 2 + 2 * a10 * a8) * a10
     s2 = (pi * D^2 * (pi * x * a9 - 2 * a8) / 6 - pi * g * a10 * a9 +
-           pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9) * a10
+          pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9) * a10
 
     return SVector(s1, s2, zero(s1))
 end

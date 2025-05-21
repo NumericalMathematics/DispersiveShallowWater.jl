@@ -100,9 +100,9 @@ function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
     c1 = sqrt(g / D)
 
     s1 = -0.5 * a1 * b1 - pi * a2 * b1 +
-          2pi * a2 * c0 * b1 +
-          3pi * a2 * c1 * (1 + a1 * b1) * b1 -
-          (4 / 3) * D^2 * pi^3 * a2 * c0 * b1
+         2pi * a2 * c0 * b1 +
+         3pi * a2 * c1 * (1 + a1 * b1) * b1 -
+         (4 / 3) * D^2 * pi^3 * a2 * c0 * b1
 
     return SVector(s1)
 end
