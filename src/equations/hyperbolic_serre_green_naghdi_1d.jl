@@ -222,28 +222,24 @@ function source_terms_manufactured(q, x, t,
 
     a1 = sinpi(4 * t - 2 * x)
     a2 = cospi(4 * t - 2 * x)
-    a3 = sinpi(2 * t - x)
-    a4 = cospi(2 * t - x)
     a5 = sinpi(t - 2 * x)
     a6 = cospi(t - 2 * x)
     a7 = sinpi(2 * x)
     a8 = cospi(2 * x)
-    a9 = sinpi(2 * t - 4 * x)
-    e1 = exp(t)
-    e2 = exp(t / 2)
+    a9 = (-a2 - 2 * a8 - 7)
+    a10 = (2 * pi * a1 - 4 * pi * a7)
 
     # Source terms for variable bathymetry
-    dh = -4 * pi * a1 - a5 * (2 * pi * a1 - 4 * pi * a7) + 2 * pi * a6 * (a2 + 2 * a8 + 7)
-    dv = -2 * pi * a5 * a6 - pi * a6 + 4 * pi * a7 * g + g * (2 * pi * a1 - 4 * pi * a7)
-    dD = zero(dh)
-    dw = 8 * pi^2 * a1 * a6 -
-         a5 *
-         (4 * pi^2 * a5 * (-a2 - 2 * a8 - 7) + 2 * pi * a6 * (-2 * pi * a1 + 4 * pi * a7)) -
-         2 * pi^2 * a5 * (-a2 - 2 * a8 - 7)
-    dH = -4 * pi * a1 - 6 * pi * a5 * a7 - a5 * (2 * pi * a1 - 4 * pi * a7) -
-         2 * pi * a6 * (-a2 - 2 * a8 - 7)
+    s1 = -4 * pi * a1 - a5 * a10 - 2 * pi * a6 * a9
+    s2 = -2 * pi * a5 * a6 - pi * a6 + 4 * pi * a7 * g + g * a10
+    s3 = zero(s1)
+    s4 = 8 * pi^2 * a1 * a6 -
+         a5 * (4 * pi^2 * a5 * a9 - 2 * pi * a6 * a10) -
+         2 * pi^2 * a5 * a9
+    s5 = -4 * pi * a1 - 6 * pi * a5 * a7 - a5 * a10 -
+         2 * pi * a6 * a9
 
-    return SVector(dh, dv, dD, dw, dH)
+    return SVector(s1, s2, s3, s4, s5)
 end
 
 function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
@@ -254,7 +250,7 @@ function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
     # via ForwardDiff.jl. We also pass the second argument determining the chunk size since the
     # typical use case is to compute Jacobians of the full `rhs!` evaluation, where the complete
     # state vector is `q`, which is bigger than the storage for a single scalar variable.
-    # nvariables(equations) = 5: eta, v, D, w, H 
+    # nvariables(equations) = 5: eta, v, D, w, H
     N = ForwardDiff.pickchunksize(nvariables(equations) * nnodes(mesh))
     template = ones(RealT, nnodes(mesh))
     h = DiffCache(template, N)
