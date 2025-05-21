@@ -1049,7 +1049,10 @@ function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
     # is not necessarily perfectly symmetric but only up to
     # round-off errors. We wrap it here to avoid issues with the
     # factorization.
-    # TODO: Make this more efficient
+    # TODO: This can be made more efficient, maybe by implementing a
+    #       new interface in SummationByPartsOperators.jl to allow
+    #       evaluating the product of a derivative operator with the
+    #       corresponding mass amtrix directly.
     @.. D2.b = h^3 / 3
     copyto!(A, D2)
     A = Diagonal(M_h) - mass_matrix(D1) * A
@@ -1059,7 +1062,6 @@ function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
     A[end, :] .= 0
     A[:, end] .= 0
     A[end, end] = 1
-    # Main.debug[] = (; A = copy(A), h = copy(h))
     return Symmetric(A)
 end
 
