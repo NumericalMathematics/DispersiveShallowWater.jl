@@ -345,3 +345,15 @@ end
 
     @test_allocations(semi, sol, allocs=410_000)
 end
+
+@testitem "serre_green_naghdi_manufactured_reflecting.jl with bathymetry_flat" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR, "serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_flat,
+                        l2=[0.04796208178381881, 0.0002741366926568415, 0.0],
+                        linf=[0.37478770827386043, 0.0004746167686715472, 0.0])
+
+    @test_allocations(semi, sol, allocs=300_000)
+end

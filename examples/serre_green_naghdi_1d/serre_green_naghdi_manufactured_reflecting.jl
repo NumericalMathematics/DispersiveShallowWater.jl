@@ -15,7 +15,6 @@ boundary_conditions = boundary_condition_reflecting
 # create homogeneous mesh
 coordinates_min = 0.0
 coordinates_max = 1.0
-# N = 512 FIXME
 N = 64
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
@@ -39,11 +38,10 @@ tspan = (0.0, 1.0)
 ode = semidiscretize(semi, tspan)
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 10,
-                                     extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
-                                                                 velocity, entropy))
+                                                                 velocity,
+                                                                 entropy))
 callbacks = CallbackSet(analysis_callback, summary_callback)
 
-# saveat = range(tspan..., length = 100)
 sol = solve(ode, Tsit5(); abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks)

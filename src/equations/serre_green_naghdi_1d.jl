@@ -1088,16 +1088,10 @@ function rhs!(dq, q, t, mesh,
 
         # Split form for energy conservation:
         # h_t + h_x v + h v_x = 0
-        @.. dh = -(h_x * v + h * v_x) # FIXME
-        # @.. dh = -hv_x
-        # @.. dh = -0.5 * (hv_x + h_x * v + h * v_x)
-        # let a = 10.0
-        #     @.. dh = -(a * hv_x + (1 - a) * (h_x * v + h * v_x))
-        # end
-        # dh[begin] -= h[begin] * v[begin] / SummationByPartsOperators.left_boundary_weight(D1)
-        # dh[end] += h[end] * v[end] / SummationByPartsOperators.right_boundary_weight(D1)
+        @.. dh = -(h_x * v + h * v_x)
 
         # Split form for energy conservation:
+        # h v_t + ... = 0
         @.. dv = -(g * h2_x - g * h * h_x
                    + 0.5 * h * v2_x
                    - 0.5 * v^2 * h_x
@@ -1107,20 +1101,19 @@ function rhs!(dq, q, t, mesh,
     end
 
     # add source term
-    @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
-                                                       solver)
+    @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms,
+                                                       equations, solver)
 
     # elliptic system
     @trixi_timeit timer() "assembling elliptic operator" begin
-        system_matrix = assemble_system_matrix!(cache, h,
-                                                D1, D2,
+        system_matrix = assemble_system_matrix!(cache, h, D1, D2,
                                                 equations)
     end
 
     @trixi_timeit timer() "solving elliptic system" begin
         copyto!(tmp, dv)
-        solve_system_matrix!(dv, system_matrix,
-                             tmp, equations, D1, cache, boundary_conditions)
+        solve_system_matrix!(dv, system_matrix, tmp,
+                             equations, D1, cache, boundary_conditions)
     end
 
     return nothing
