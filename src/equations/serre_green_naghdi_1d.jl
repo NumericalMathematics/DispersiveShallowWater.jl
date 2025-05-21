@@ -319,7 +319,6 @@ with [`initial_condition_manufactured_reflecting`](@ref).
 function source_terms_manufactured_reflecting(q, x, t,
                                               equations::SerreGreenNaghdiEquations1D{BathymetryFlat})
     g = gravity(equations)
-    # FIXME: substitute
     a2 = sinpi(2 * x)
     a8 = cospi(x)
     a9 = sinpi(x)
