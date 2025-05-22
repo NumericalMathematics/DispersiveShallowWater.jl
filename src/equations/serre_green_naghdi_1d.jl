@@ -233,10 +233,10 @@ function source_terms_manufactured(q, x, t,
     a7 = cospi(4t - 2x)
     a8 = 5 + a7
     a9 = a6 * a7
-    a10 = a9 * a7
+    a10 = a6 * a7^2
     a11 = 1 - a4
     a12 = a2 * a4
-    a13 = a12 * a4
+    a13 = a2 * a4^2
 
     s1 = 2π * (a6 * a11 + a3 * a8 - 2 * a6)
 
