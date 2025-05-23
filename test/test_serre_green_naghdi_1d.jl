@@ -365,10 +365,10 @@ end
 ] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "serre_green_naghdi_soliton_reflecting.jl"),
-                        l2=[0.05707428411228419, 2.2993870916947245, 0.0],
-                        linf=[0.025227609289903752, 1.1292515592357313, 0.0],
-                        change_waterheight=1.4210854715202004e-14,
-                        change_entropy_modified=9.064566484084935e-7,)
+                        l2=[0.10552684163688769, 0.29652604909005625, 0.0],
+                        linf=[0.04598348365474836, 0.12697474293455474, 0.0],
+                        change_waterheight=4.263256414560601e-14,
+                        change_entropy_modified=-1.8172034401686687e-6,)
 
     @test_allocations(semi, sol, allocs=60_000)
 end
