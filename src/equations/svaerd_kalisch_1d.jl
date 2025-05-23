@@ -122,26 +122,28 @@ function source_terms_manufactured(q, x, t, equations::SvaerdKalischEquations1D)
             3.2 * pi^2 * alpha * a12 * a13 * a1^2 / a11 + 0.56 * pi^2 * alpha * a12 * a1^2) *
            a9 * a7 / (a14) -
            10.0 * pi * a15 * a16^2 * a9 * a7 / (alpha^2 * g * a13^4 * a11))
+    a22 = 2 * pi^2 * a8
+    a23 = a15 * a17
 
-    dq1 = -5.0 * a21 + a20 + 4 * pi * a9 * a7 + a10 - 5.0 * a15 * a17 * a16 / (a14)
+    s1 = -5.0 * a21 + a20 + 4 * pi * a9 * a7 + a10 - 5.0 * a23 * a16 / (a14)
 
-    dq2 = -25.0 * beta * (-2 * pi^2 * a8 * a3 + 4 * pi^3 * a8 * a4) * a13^2 * a11 +
-          100.0 * pi * beta * (2 * pi^2 * a8 * a3 + pi * a8 * a4) * a13^2 * a1 +
-          40.0 * pi * beta * (2 * pi^2 * a8 * a3 + pi * a8 * a4) * a13 * a11 * a1 -
-          2 * pi * g * a19 * a9 * a7 + 100.0 * pi^3 * gamma * a12 * a13^2 * a11 * a8 * a4 -
-          300.0 * pi^3 * gamma * a12 * a13^2 * a8 * a1 * a3 -
-          80.0 * pi^3 * gamma * a12 * a13 * a11 * a8 * a1 * a3 -
-          pi^3 * gamma * a12 *
-          (-50.0 * (3.2 * a13 * a2 - 1.28 * a1^2) * a11 * a6 -
-           50.0 * (4.0 * a2 / a11 + 0.16 * a1^2 / a13^2) * a13^2 * a11 * a6 -
-           200.0 * a13^2 * a11 * a6 - 1200.0 * a13^2 * a1 * a5 - 400.0 * a13^2 * a2 * a6 +
-           800.0 * a13^2 * a1^2 * a6 / a11 - 320.0 * a13 * a11 * a1 * a5 +
-           960.0 * a13 * a1^2 * a6) * a8 / 2 - 10.0 * pi * a15 * a17 * a8 * a4 -
-          2.5 * a21 * a8 * a3 + (5.0 * a21 + 5.0 * a15 * a17 * a16 / (a14)) * a8 * a3 / 2 +
-          (a8 * a3 / 2 - pi * a8 * a4) * a19 + a18 * a9 * a3^2 / 2 - (a20) * a8 * a3 / 2 +
-          3 * pi * a19 * a9 * a3 * a4 - 2.5 * a15 * a17 * a16 * a8 * a3 / (a14)
+    s2 = -25.0 * beta * (-a22 * a3 + 4 * pi^3 * a8 * a4) * a13^2 * a11 +
+         100.0 * pi * beta * (a22 * a3 + pi * a8 * a4) * a13^2 * a1 +
+         40.0 * pi * beta * (a22 * a3 + pi * a8 * a4) * a13 * a11 * a1 -
+         2 * pi * g * a19 * a9 * a7 + 100.0 * pi^3 * gamma * a12 * a13^2 * a11 * a8 * a4 -
+         300.0 * pi^3 * gamma * a12 * a13^2 * a8 * a1 * a3 -
+         80.0 * pi^3 * gamma * a12 * a13 * a11 * a8 * a1 * a3 -
+         pi^3 * gamma * a12 *
+         (-50.0 * (3.2 * a13 * a2 - 1.28 * a1^2) * a11 * a6 -
+          50.0 * (4.0 * a2 / a11 + 0.16 * a1^2 / a13^2) * a13^2 * a11 * a6 -
+          200.0 * a13^2 * a11 * a6 - 1200.0 * a13^2 * a1 * a5 - 400.0 * a13^2 * a2 * a6 +
+          800.0 * a13^2 * a1^2 * a6 / a11 - 320.0 * a13 * a11 * a1 * a5 +
+          960.0 * a13 * a1^2 * a6) * a8 / 2 - 10.0 * pi * a23 * a8 * a4 -
+         2.5 * a21 * a8 * a3 + (5.0 * a21 + 5.0 * a23 * a16 / (a14)) * a8 * a3 / 2 +
+         (a8 * a3 / 2 - pi * a8 * a4) * a19 + a18 * a9 * a3^2 / 2 - (a20) * a8 * a3 / 2 +
+         3 * pi * a19 * a9 * a3 * a4 - 2.5 * a23 * a16 * a8 * a3 / (a14)
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 """
@@ -185,14 +187,14 @@ function source_terms_manufactured_reflecting(q, x, t, equations::SvaerdKalischE
     a29 = -pi * a24 * a22 - 4.0 * pi * a1
     a30 = a26 * a24
     a31 = a26 * a27
-    dq1 = x * a29 * a27 + pi * x * a26 * a9 * a23 + a31 + 2 * a25
-    dq2 = 100.0 * pi * beta * a28 * a13^2 * a1 + 40.0 * pi * beta * a28 * a13 * a11 * a1 -
-          25.0 * beta * (-pi^2 * x * a27 + 2 * pi * a9 * a23) * a13^2 * a11 -
-          pi * g * a30 * a22 + x^2 * a29 * a24 * a22^2 / 2 + pi * x^2 * a30 * a22 * a23 +
-          x * a28 * a31 / 2 + x * a30 * a22^2 + x * a31 -
-          x * (x * a29 * a27 + pi * x * a26 * a9 * a23 + a31) * a27 / 2
+    s1 = x * a29 * a27 + pi * x * a26 * a9 * a23 + a31 + 2 * a25
+    s2 = 100.0 * pi * beta * a28 * a13^2 * a1 + 40.0 * pi * beta * a28 * a13 * a11 * a1 -
+         25.0 * beta * (-pi^2 * x * a27 + 2 * pi * a9 * a23) * a13^2 * a11 -
+         pi * g * a30 * a22 + x^2 * a29 * a24 * a22^2 / 2 + pi * x^2 * a30 * a22 * a23 +
+         x * a28 * a31 / 2 + x * a30 * a22^2 + x * a31 -
+         x * (x * a29 * a27 + pi * x * a26 * a9 * a23 + a31) * a27 / 2
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 # For periodic boundary conditions
