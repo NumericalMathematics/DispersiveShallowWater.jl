@@ -54,7 +54,7 @@ function KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
 end
 
 """
-    initial_condition_convergence_test(x, t, equations::KdVEquation1D, mesh)
+    initial_condition_soliton(x, t, equations::KdVEquation1D, mesh)
 
 A classical soliton solution of the KdV equation in dimensional variables. This can be used
 for convergence tests in a periodic domain, see [`initial_condition_convergence_test`](@ref).
@@ -77,7 +77,7 @@ end
 A soliton solution used for convergence tests in a periodic domain. Same as
 [`initial_condition_soliton`](@ref) for the [`KdVEquation1D`](@ref).
 """
-function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D,
+function initial_condition_convergence_test(x, t, equations::KdVEquation1D,
                                             mesh)
     return initial_condition_soliton(x, t, equations, mesh)
 end
