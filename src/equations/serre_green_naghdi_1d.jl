@@ -264,6 +264,13 @@ end
 
 A smooth manufactured solution for reflecting boundary conditions in combination
 with [`source_terms_manufactured_reflecting`](@ref).
+
+## Rerefences
+
+- Dimitrios Mitsotakis, C. SYnolakis, and M. McGuinness (2016)
+  A modified Galerkin/finite element method for the numerical
+  solution of the Serre-Green-Naghdi system.
+  [DOI: 10.1002/fld.4293](https://doi.org/10.1002/fld.4293)
 """
 function initial_condition_manufactured_reflecting(x, t,
                                                    equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
@@ -322,47 +329,48 @@ function source_terms_manufactured_reflecting(q, x, t,
     a2 = sinpi(2 * x)
     a8 = cospi(x)
     a9 = sinpi(x)
-    a10 = exp(t)
     a11 = exp(2 * t)
-    a14 = exp(-t)
+    a14 = exp(-t * x)
     a15 = exp(2 * t - t * x)
     a16 = exp(-2 * t * x)
-    dq1 = 2(2 + x + a8) * a11 + (1 + (2 + x + a8) * a11) * a9 * a14 +
-          (1 - pi * a9) * x * a15 * a9 + pi * x * (1 + (2 + x + a8) * a11) * a8 * a14 -
-          t * x * (1 + (2 + x + a8) * a11) * a9 * a14
-    dq2 = g * (1 - pi * a9) * (1 + (2 + x + a8) * a11) * a11 -
-          (1 + (2 + x + a8) * a11) * (x^2) * a9 * a14 +
-          (1 // 2) *
-          (2x * a16 * (a9^2) + pi * (x^2) * a16 * a2 - 2t * (x^2) * a16 * (a9^2)) *
-          (1 + (2 + x + a8) * a11) -
-          (1 // 3) * ((-2a9 * a14 - 4pi * x * a8 * a14 + 4t * x * a9 * a14 +
-            (pi^2) * (x^2) * a9 * a14 + 2pi * t * (x^2) * a8 * a14 -
-            (t^2) * (x^2) * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) +
-           3(-2x * a9 * a14 - pi * (x^2) * a8 * a14 + t * (x^2) * a9 * a14) *
-           (1 - pi * a9) * ((1 + (2 + x + a8) * a11)^2) * a11) -
-          (1 // 3) *
-          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
-           (t^2) * x * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 +
-          (-(1 // 1) + pi * a9) *
-          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
-           (t^2) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^2) * a15 * a9 -
-          (1 // 3) *
-          (-3(pi^2) * a9 * a14 - 6pi * t * a8 * a14 + 3(t^2) * a9 * a14 -
-           (pi^3) * x * a8 * a14 + 3(pi^2) * t * x * a9 * a14 + 3pi * (t^2) * x * a8 * a14 -
-           (t^3) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 +
-          (1 // 3) *
-          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
-           (t^2) * x * a9 * a14) * t * x * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 -
-          (1 // 3) * pi *
-          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
-           (t^2) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^3) * a8 * a14 +
-          (2 // 3) * (a9 * a14 + pi * x * a8 * a14 - t * x * a9 * a14) *
-          (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
-           (t^2) * x * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) +
-          (1 - pi * a9) * ((a9 * a14 + pi * x * a8 * a14 - t * x * a9 * a14)^2) *
-          ((1 + (2 + x + a8) * a11)^2) * a11
 
-    return SVector(dq1, dq2, zero(dq1))
+    s1 = 2(2 + x + a8) * a11 + (1 + (2 + x + a8) * a11) * a9 * a14 +
+         (1 - pi * a9) * x * a15 * a9 + pi * x * (1 + (2 + x + a8) * a11) * a8 * a14 -
+         t * x * (1 + (2 + x + a8) * a11) * a9 * a14
+    s2 = g * (1 - pi * a9) * (1 + (2 + x + a8) * a11) * a11 -
+         (1 + (2 + x + a8) * a11) * (x^2) * a9 * a14 +
+         (1 // 2) *
+         (2x * a16 * (a9^2) + pi * (x^2) * a16 * a2 - 2t * (x^2) * a16 * (a9^2)) *
+         (1 + (2 + x + a8) * a11) -
+         (1 // 3) *
+         ((-2a9 * a14 - 4pi * x * a8 * a14 + 4t * x * a9 * a14 + (pi^2) * (x^2) * a9 * a14 +
+           2pi * t * (x^2) * a8 * a14 - (t^2) * (x^2) * a9 * a14) *
+          ((1 + (2 + x + a8) * a11)^3) +
+          3(-2x * a9 * a14 - pi * (x^2) * a8 * a14 + t * (x^2) * a9 * a14) * (1 - pi * a9) *
+          ((1 + (2 + x + a8) * a11)^2) * a11) -
+         (1 // 3) *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+          (t^2) * x * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 +
+         (-(1 // 1) + pi * a9) *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+          (t^2) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^2) * a15 * a9 -
+         (1 // 3) *
+         (-3(pi^2) * a9 * a14 - 6pi * t * a8 * a14 + 3(t^2) * a9 * a14 -
+          (pi^3) * x * a8 * a14 + 3(pi^2) * t * x * a9 * a14 + 3pi * (t^2) * x * a8 * a14 -
+          (t^3) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 +
+         (1 // 3) *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+          (t^2) * x * a9 * a14) * t * x * ((1 + (2 + x + a8) * a11)^3) * a9 * a14 -
+         (1 // 3) * pi *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+          (t^2) * x * a9 * a14) * x * ((1 + (2 + x + a8) * a11)^3) * a8 * a14 +
+         (2 // 3) * (a9 * a14 + pi * x * a8 * a14 - t * x * a9 * a14) *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * x * a9 * a14 - 2pi * t * x * a8 * a14 +
+          (t^2) * x * a9 * a14) * ((1 + (2 + x + a8) * a11)^3) +
+         (1 - pi * a9) * ((a9 * a14 + pi * x * a8 * a14 - t * x * a9 * a14)^2) *
+         ((1 + (2 + x + a8) * a11)^2) * a11
+
+    return SVector(s1, s2, zero(s1))
 end
 
 # flat bathymetry with periodic boundary conditions
@@ -1244,7 +1252,8 @@ function energy_total_modified!(e, q_global,
             end
         end
 
-        @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
+        @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 +
+                1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
         if equations.bathymetry_type isa BathymetryVariable
             @.. e += 1 / 8 * h * (v * b_x)^2
         end

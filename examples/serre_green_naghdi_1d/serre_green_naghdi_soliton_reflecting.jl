@@ -37,9 +37,10 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
 
 ###############################################################################
 # Create `ODEProblem` and run the simulation
-periods = 2.0 # if the soliton was in a domain with periodic BCs, this would be the
-              # number of periods it travels through the domain
-tspan = (0.0, factor * (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity))
+# if the soliton was in a domain with periodic BCs, this would be the
+# number of periods it travels through the domain
+periods = 2.0
+tspan = (0.0, periods * (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity))
 ode = semidiscretize(semi, tspan)
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,

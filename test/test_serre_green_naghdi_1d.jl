@@ -353,8 +353,8 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "serre_green_naghdi_manufactured_reflecting.jl"),
                         bathymetry_type=bathymetry_flat,
-                        l2=[1.3165139178315586, 0.07989258678215888, 0.0],
-                        linf=[1.9541031981140478, 0.11373159241219735, 0.0])
+                        l2=[0.047962081783820484, 0.0002741366926583432, 0.0],
+                        linf=[0.37478770827387464, 0.0004746167686701802, 0.0])
 
     @test_allocations(semi, sol, allocs=1_000)
 end
