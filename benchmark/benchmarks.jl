@@ -14,7 +14,9 @@ elixirs = [joinpath(examples_dir(), "bbm_1d", "bbm_1d_basic.jl"),
     joinpath(examples_dir(), "serre_green_naghdi_1d",
              "serre_green_naghdi_well_balanced.jl"),
     joinpath(examples_dir(), "svaerd_kalisch_1d",
-             "svaerd_kalisch_1d_dingemans_relaxation.jl")]
+             "svaerd_kalisch_1d_dingemans_relaxation.jl"),
+    joinpath(examples_dir(), "kdv_1d", "kdv_1d_basic.jl"),
+    joinpath(examples_dir(), "kdv_1d", "kdv_1d_implicit.jl")]
 
 for elixir in elixirs
     benchname = joinpath(basename(dirname(elixir)), basename(elixir))
