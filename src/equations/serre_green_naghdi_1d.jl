@@ -1186,7 +1186,7 @@ function energy_total_modified!(e, q_global,
                                 cache)
     # unpack physical parameters and SBP operator `D1`
     g = gravity(equations)
-    (; D1, h, b, v_x) = cache
+    (; D1, h, b) = cache
 
     # `q_global` is an `ArrayPartition`. It collects the individual arrays for
     # the total water height `eta = h + b` and the velocity `v`.
@@ -1194,30 +1194,60 @@ function energy_total_modified!(e, q_global,
     @.. b = equations.eta0 - D
     @.. h = eta - b
 
-    # 1/2 g eta^2 + 1/2 h v^2 + 1/6 h^3 w^2
+    # 1/2 g eta^2 + 1/2 h v^2 + 1/6 h w^2
     # and + 1/8 h (v b_x)^2 for full bathymetry without mild-slope approximation
-    if D1 isa PeriodicUpwindOperators
-        mul!(v_x, D1.minus, v)
-    else
-        mul!(v_x, D1, v)
-    end
+    # Here, w = -h v_x + 1.5 v b_x.
+    # For reflecting boundary conditions, ∫ 1/6 h^3 v_x^2 dx is approximated
+    # using a second-derivative operator with variable coefficients.
+    if D1 isa AbstractNonperiodicDerivativeOperator
+        # Non-periodic boundary conditions
+        # (only reflecting boundary conditions are implemented so far)
+        (; D2) = cache
+        @assert D2 isa VarCoefDerivativeOperator
+        @assert equations.bathymetry_type isa BathymetryFlat
 
-    if equations.bathymetry_type isa BathymetryFlat
-        b_x = cache.tmp
-        fill!(b_x, zero(eltype(b_x)))
+        # The ∫ 1/6 h^3 v_x^2 dx part of the energy is approximated as
+        # -v^T M D2 v with variable coefficient D2.b = 1/6 h^3.
+        # To make this work with the current approach to define a pointwise
+        # energy e that is `integrate`d over the domain, we need to scale
+        # the product D2 v by the mass matrix M, multiply pointwise by the
+        # velocity v, and scale by the inverse mass matrix M^{-1} again.
+        # This is equivalent to the above expression when `integrate`d over
+        # the domain, i.e., multiplied by 1^T M from the left.
+        @.. D2.b = (1 / 6) * h^3
+        mul!(e, D2, v)
+        scale_by_mass_matrix!(e, D1)
+        @.. e = -e * v
+        scale_by_inverse_mass_matrix!(e, D1)
+
+        @.. e = e + 1 / 2 * g * eta^2 + 1 / 2 * h * v^2
     else
-        (; b, b_x) = cache
-        @.. b = equations.eta0 - q_global.x[3]
+        # Periodic boundary conditions
+        (; v_x) = cache
+
         if D1 isa PeriodicUpwindOperators
-            mul!(b_x, D1.central, b)
+            mul!(v_x, D1.minus, v)
         else
-            mul!(b_x, D1, b)
+            mul!(v_x, D1, v)
         end
-    end
 
-    @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
-    if equations.bathymetry_type isa BathymetryVariable
-        @.. e += 1 / 8 * h * (v * b_x)^2
+        if equations.bathymetry_type isa BathymetryFlat
+            b_x = cache.tmp
+            fill!(b_x, zero(eltype(b_x)))
+        else
+            (; b, b_x) = cache
+            @.. b = equations.eta0 - q_global.x[3]
+            if D1 isa PeriodicUpwindOperators
+                mul!(b_x, D1.central, b)
+            else
+                mul!(b_x, D1, b)
+            end
+        end
+
+        @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
+        if equations.bathymetry_type isa BathymetryVariable
+            @.. e += 1 / 8 * h * (v * b_x)^2
+        end
     end
 
     return e

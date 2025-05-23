@@ -38,6 +38,7 @@ using SimpleUnPack: @unpack
 using SparseArrays: sparse, issparse
 using SummationByPartsOperators: SummationByPartsOperators,
                                  AbstractDerivativeOperator,
+                                 AbstractNonperiodicDerivativeOperator,
                                  PeriodicDerivativeOperator, PeriodicUpwindOperators,
                                  UniformPeriodicCoupledOperator,
                                  DerivativeOperator, UpwindOperators,
@@ -46,7 +47,8 @@ using SummationByPartsOperators: SummationByPartsOperators,
                                  VarCoefDerivativeOperator,
                                  periodic_derivative_operator,
                                  derivative_order, integrate, mass_matrix,
-                                 scale_by_mass_matrix!
+                                 scale_by_mass_matrix!,
+                                 scale_by_inverse_mass_matrix!
 import SummationByPartsOperators: grid, xmin, xmax, semidiscretize
 using TimerOutputs: TimerOutputs, print_timer, reset_timer!
 @reexport using TrixiBase: trixi_include

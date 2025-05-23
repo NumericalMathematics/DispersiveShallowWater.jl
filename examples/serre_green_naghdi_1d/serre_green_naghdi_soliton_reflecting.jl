@@ -21,8 +21,8 @@ coordinates_max = 50.0
 N = 512
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-# create solver with SBP operators of accuracy order 4
-accuracy_order = 4
+# create solver with SBP operators of accuracy order 2
+accuracy_order = 2
 D1 = derivative_operator(Mattsson2012();
                          derivative_order = 1, accuracy_order,
                          xmin = xmin(mesh), xmax = xmax(mesh), N = N)
@@ -37,24 +37,17 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
 
 ###############################################################################
 # Create `ODEProblem` and run the simulation
-# FIXME
-factor = 0.5
-tspan = (0.0, factor * (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity)) # one period
-# tspan = (0.0, (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity)) # one period
+periods = 2.0 # if the soliton was in a domain with periodic BCs, this would be the
+              # number of periods it travels through the domain
+tspan = (0.0, factor * (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * equations.gravity))
 ode = semidiscretize(semi, tspan)
-ode.u0.x[2][begin] = 0;
-ode.u0.x[2][end] = 0; # FIXME
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  entropy_modified))
-# callbacks = CallbackSet(analysis_callback, summary_callback)
-# FIXME: The current way to define a pointwise modified energy does not work
-#        immediately since we define the derivative term using a quadratic form in
-#        the velocity
-callbacks = CallbackSet(summary_callback)
+callbacks = CallbackSet(analysis_callback, summary_callback)
 
-# saveat = range(tspan..., length = 100)
-sol = solve(ode, Tsit5(); abstol = 1e-7, reltol = 1e-7,
+alg = Tsit5()
+sol = solve(ode, alg; abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks)
