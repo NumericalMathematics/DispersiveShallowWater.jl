@@ -19,8 +19,8 @@ coordinates_max = 1.0
 N = 64
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-# create solver with SBP operators of accuracy order 4
-accuracy_order = 4
+# create solver with SBP operators of accuracy order 2
+accuracy_order = 2
 D1 = derivative_operator(Mattsson2012();
                          derivative_order = 1, accuracy_order,
                          xmin = xmin(mesh), xmax = xmax(mesh), N = N)
@@ -38,7 +38,7 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver;
 tspan = (0.0, 1.0)
 ode = semidiscretize(semi, tspan)
 summary_callback = SummaryCallback()
-analysis_callback = AnalysisCallback(semi; interval = 10,
+analysis_callback = AnalysisCallback(semi; interval = 100,
                                      extra_analysis_integrals = (waterheight_total,
                                                                  velocity,
                                                                  entropy))
