@@ -130,7 +130,7 @@ function initial_condition_manufactured(x, t,
 
     return SVector(eta, v, D)
 end
-#= 
+#=
 The source terms where calculated using a CAS, here Symbolics.jl
 See code: https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/180#discussion_r2068562090
 For a chosen h and v, in this case
@@ -158,25 +158,25 @@ function source_terms_manufactured(q, x, t,
     a5 = sinpi(2t - 4x)
     a6 = sinpi(4t - 2x)
     a7 = 5 + cospi(4t - 2x)
+    a8 = a3 * a7^3
     a9 = 1 - a4
+    a10 = 8π^3 * a6 * a7^2
 
-    dq1 = 2π * (-a6 - a6 * a4 + a3 * a7)
+    s1 = 2π * (-a6 - a6 * a4 + a3 * a7)
 
-    dq2 = (-π * a3 * a7
-           + 2g * π * a6 * a7
-           + 2π * a3 * a7 * a9
-           -
-           (1 / 3) * (-12π^3 * a6 * a4 * a7^2
-                      +
-                      4π^3 * a3 * a7^3)
-           + (4 / 3) * π^3 * a5 * a7^3
-           + 8π^3 * a6 * a3^2 * a7^2
-           -
-           8π^3 * a6 * a7^2 * a9 * a4
-           +
-           (8 / 3) * π^3 * a3 * a7^3 * a9)
+    s2 = (-π * a3 * a7
+          + 2g * π * a6 * a7
+          + 2π * a3 * a7 * a9
+          -
+          (1 / 3) * (-12π^3 * a6 * a4 * a7^2
+                     +
+                     4π^3 * a8)
+          + (4 / 3) * π^3 * a5 * a7^3
+          + a10 * a3^2 - a10 * a9 * a4
+          +
+          (8 / 3) * π^3 * a8 * a9)
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 function source_terms_manufactured(q, x, t,
@@ -194,9 +194,9 @@ function source_terms_manufactured(q, x, t,
     a8 = 5 + a7
     a11 = 1 - a4
 
-    dh = 2π * (a6 * a11 + a3 * a8 - 2 * a6)
+    s1 = 2π * (a6 * a11 + a3 * a8 - 2 * a6)
 
-    dv = π *
+    s2 = π *
          (2 * g * a2 * a7 + 10 * g * a2 + 2 * g * a6 * a7 + 10 * g * a6 + a3 * a7 + 5 * a3 -
           2 * a3 * a4 * a7 - 10 * a3 * a4) +
          π^3 * (8 * a1 * a2 * a4^2 * a7 + 40 * a1 * a2 * a4^2 - 16 * a1 * a2 * a4 * a7 -
@@ -217,7 +217,7 @@ function source_terms_manufactured(q, x, t,
           4 * a4 * a6 * a7^2 - 40 * a4 * a6 * a7 - 100 * a4 * a6 + 4 * a5 * a7^3 / 3 +
           20 * a5 * a7^2 + 100 * a5 * a7 + 500 * a5 / 3)
 
-    return SVector(dh, dv, zero(dh))
+    return SVector(s1, s2, zero(s1))
 end
 
 function source_terms_manufactured(q, x, t,
@@ -232,31 +232,35 @@ function source_terms_manufactured(q, x, t,
     a6 = sinpi(4t - 2x)
     a7 = cospi(4t - 2x)
     a8 = 5 + a7
+    a9 = a6 * a7
+    a10 = a6 * a7^2
     a11 = 1 - a4
+    a12 = a2 * a4
+    a13 = a2 * a4^2
 
-    dh = 2π * (a6 * a11 + a3 * a8 - 2 * a6)
+    s1 = 2π * (a6 * a11 + a3 * a8 - 2 * a6)
 
-    dv = π * (2 * a2 * a7 * g + 10 * a2 * g - 2 * a3 * a4 * a7 - 10 * a3 * a4 + a3 * a7 +
-          5 * a3 + 2 * a6 * a7 * g + 10 * a6 * g) +
-         π^3 * (6 * a1 * a2 * a4^2 * a7 + 30 * a1 * a2 * a4^2 - 12 * a1 * a2 * a4 * a7 -
-          60 * a1 * a2 * a4 + 6 * a1 * a2 * a7 + 30 * a1 * a2 - 12 * a1 * a3 * a4 * a7^2 -
+    s2 = π * (2 * a2 * a7 * g + 10 * a2 * g - 2 * a3 * a4 * a7 - 10 * a3 * a4 + a3 * a7 +
+          5 * a3 + 2 * a9 * g + 10 * a6 * g) +
+         π^3 * (6 * a1 * a13 * a7 + 30 * a1 * a13 - 12 * a1 * a12 * a7 -
+          60 * a1 * a12 + 6 * a1 * a2 * a7 + 30 * a1 * a2 - 12 * a1 * a3 * a4 * a7^2 -
           120 * a1 * a3 * a4 * a7 - 300 * a1 * a3 * a4 + 10 * a1 * a3 * a7^2 +
-          100 * a1 * a3 * a7 + 250 * a1 * a3 + 8 * a1 * a4^2 * a6 * a7 +
-          40 * a1 * a4^2 * a6 - 16 * a1 * a4 * a6 * a7 - 80 * a1 * a4 * a6 +
-          8 * a1 * a6 * a7 + 40 * a1 * a6 - 6 * a2^2 * a3 * a4 * a7 - 30 * a2^2 * a3 * a4 +
+          100 * a1 * a3 * a7 + 250 * a1 * a3 + 8 * a1 * a4^2 * a9 +
+          40 * a1 * a4^2 * a6 - 16 * a1 * a4 * a9 - 80 * a1 * a4 * a6 +
+          8 * a1 * a9 + 40 * a1 * a6 - 6 * a2^2 * a3 * a4 * a7 - 30 * a2^2 * a3 * a4 +
           3 * a2^2 * a3 * a7 + 15 * a2^2 * a3 + 8 * a2 * a3^2 * a7^2 + 80 * a2 * a3^2 * a7 +
-          200 * a2 * a3^2 - 8 * a2 * a3 * a4 * a6 * a7 - 40 * a2 * a3 * a4 * a6 +
-          4 * a2 * a3 * a6 * a7 + 20 * a2 * a3 * a6 - 4 * a2 * a4^2 * a7^2 -
-          40 * a2 * a4^2 * a7 - 100 * a2 * a4^2 + 8 * a2 * a4 * a7^2 + 80 * a2 * a4 * a7 +
-          200 * a2 * a4 - 4 * a2 * a7^2 - 40 * a2 * a7 - 100 * a2 + 8 * a3^2 * a6 * a7^2 +
-          80 * a3^2 * a6 * a7 + 200 * a3^2 * a6 - 8 * a3 * a4 * a7^3 / 3 -
+          200 * a2 * a3^2 - 8 * a2 * a3 * a4 * a9 - 40 * a2 * a3 * a4 * a6 +
+          4 * a2 * a3 * a9 + 20 * a2 * a3 * a6 - 4 * a13 * a7^2 -
+          40 * a13 * a7 - 100 * a13 + 8 * a12 * a7^2 + 80 * a12 * a7 +
+          200 * a12 - 4 * a2 * a7^2 - 40 * a2 * a7 - 100 * a2 + 8 * a3^2 * a10 +
+          80 * a3^2 * a9 + 200 * a3^2 * a6 - 8 * a3 * a4 * a7^3 / 3 -
           40 * a3 * a4 * a7^2 - 200 * a3 * a4 * a7 - 1000 * a3 * a4 / 3 +
           4 * a3 * a7^3 / 3 + 20 * a3 * a7^2 + 100 * a3 * a7 + 500 * a3 / 3 +
-          8 * a4^2 * a6 * a7^2 + 80 * a4^2 * a6 * a7 + 200 * a4^2 * a6 -
-          4 * a4 * a6 * a7^2 - 40 * a4 * a6 * a7 - 100 * a4 * a6 + 4 * a5 * a7^3 / 3 +
+          8 * a4^2 * a10 + 80 * a4^2 * a6 * a7 + 200 * a4^2 * a6 -
+          4 * a4 * a10 - 40 * a4 * a6 * a7 - 100 * a4 * a6 + 4 * a5 * a7^3 / 3 +
           20 * a5 * a7^2 + 100 * a5 * a7 + 500 * a5 / 3)
 
-    return SVector(dh, dv, zero(dh))
+    return SVector(s1, s2, zero(s1))
 end
 
 # flat bathymetry

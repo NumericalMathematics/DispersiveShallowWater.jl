@@ -125,19 +125,19 @@ function source_terms_manufactured(q, x, t, equations::BBMBBMEquations1D)
     a10 = exp(t)
     a14 = exp(t / 2)
     a15 = exp(3 * t / 2)
-    dq1 = -2 * pi^2 * (4 * pi * a6 - a7) * (2 * a1 + 5)^2 * a10 / 3 +
-          8 * pi^2 * (a6 + 4 * pi * a7) * (2 * a1 + 5) * a10 * a2 / 3 +
-          2 * pi * (2 * a1 + 5) * a14 * a3 - 2 * pi * a15 * a4 * a6 +
-          2 * pi * a15 * a3 * a7 + 4 * pi * a14 * a2 * a4 -
-          4 * pi * a10 * a6 + a10 * a7
-    dq2 = 2 * pi * g * a10 * a6 -
-          pi^2 *
-          (8 * (2 * pi * a4 - a3) * (2 * a1 + 5) * a2 +
-           (a4 + 2 * pi * a3) * (2 * a1 + 5)^2 +
-           4 * (a4 + 2 * pi * a3) * (16 * a9^4 - 26 * a9^2 + 7)) * a14 /
-          3 - a14 * a4 / 2 - pi * a14 * a3 - pi * a10 * a5
+    s1 = -2 * pi^2 * (4 * pi * a6 - a7) * (2 * a1 + 5)^2 * a10 / 3 +
+         8 * pi^2 * (a6 + 4 * pi * a7) * (2 * a1 + 5) * a10 * a2 / 3 +
+         2 * pi * (2 * a1 + 5) * a14 * a3 - 2 * pi * a15 * a4 * a6 +
+         2 * pi * a15 * a3 * a7 + 4 * pi * a14 * a2 * a4 -
+         4 * pi * a10 * a6 + a10 * a7
+    s2 = 2 * pi * g * a10 * a6 -
+         pi^2 *
+         (8 * (2 * pi * a4 - a3) * (2 * a1 + 5) * a2 +
+          (a4 + 2 * pi * a3) * (2 * a1 + 5)^2 +
+          4 * (a4 + 2 * pi * a3) * (16 * a9^4 - 26 * a9^2 + 7)) * a14 /
+         3 - a14 * a4 / 2 - pi * a14 * a3 - pi * a10 * a5
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 function source_terms_manufactured(q, x, t, equations::BBMBBMEquations1D{BathymetryFlat})
@@ -151,13 +151,13 @@ function source_terms_manufactured(q, x, t, equations::BBMBBMEquations1D{Bathyme
     a10 = exp(t)
     a14 = exp(t / 2)
     a15 = exp(3 * t / 2)
-    dq1 = -2 * pi^2 * D^2 * (4 * pi * a6 - a7) * a10 / 3 + 2 * pi * D * a14 * a3 -
-          2 * pi * a15 * a4 * a6 + 2 * pi * a15 * a3 * a7 -
-          4 * pi * a10 * a6 + a10 * a7
-    dq2 = -pi^2 * D^2 * (a4 + 2 * pi * a3) * a14 / 3 + 2 * pi * g * a10 * a6 -
-          a14 * a4 / 2 - pi * a14 * a3 - pi * a10 * a5
+    s1 = -2 * pi^2 * D^2 * (4 * pi * a6 - a7) * a10 / 3 + 2 * pi * D * a14 * a3 -
+         2 * pi * a15 * a4 * a6 + 2 * pi * a15 * a3 * a7 -
+         4 * pi * a10 * a6 + a10 * a7
+    s2 = -pi^2 * D^2 * (a4 + 2 * pi * a3) * a14 / 3 + 2 * pi * g * a10 * a6 -
+         a14 * a4 / 2 - pi * a14 * a3 - pi * a10 * a5
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 """
@@ -195,14 +195,14 @@ function source_terms_manufactured_reflecting(q, x, t, equations::BBMBBMEquation
     a11 = exp(2 * t)
     a12 = cospi(3 * x)
     a13 = sinpi(3 * x)
-    dq1 = (pi * x * a11 * a1 + 4 * pi * x * a8 + 3 * pi * x * a12 +
-           20 * pi^2 * (1 - a1)^2 * a10 * a8 / 3 + a11 * a2 / 2 + 2 * a10 * a8 +
-           7 * pi^2 * a10 * a8 / 3 + 14 * pi^2 * a10 * a12 + 4 * a9 + a13) * a10
-    dq2 = (-pi * g * a10 * a9 + pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9 +
-           pi * (400 * pi * x * a9^5 - 824 * pi * x * a9^3 + 385 * pi * x * a9 -
-            160 * a9^4 * a8 + 336 * a9^2 * a8 - 98 * a8) / 6) * a10
+    s1 = (pi * x * a11 * a1 + 4 * pi * x * a8 + 3 * pi * x * a12 +
+          20 * pi^2 * (1 - a1)^2 * a10 * a8 / 3 + a11 * a2 / 2 + 2 * a10 * a8 +
+          7 * pi^2 * a10 * a8 / 3 + 14 * pi^2 * a10 * a12 + 4 * a9 + a13) * a10
+    s2 = (-pi * g * a10 * a9 + pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9 +
+          pi * (400 * pi * x * a9^5 - 824 * pi * x * a9^3 + 385 * pi * x * a9 -
+           160 * a9^4 * a8 + 336 * a9^2 * a8 - 98 * a8) / 6) * a10
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 function source_terms_manufactured_reflecting(q, x, t,
@@ -215,12 +215,12 @@ function source_terms_manufactured_reflecting(q, x, t,
     a9 = sinpi(x)
     a10 = exp(t)
     a11 = exp(2 * t)
-    dq1 = (pi^2 * D^2 * a10 * a8 / 3 + pi * D * x * a8 + D * a9 + pi * x * a11 * a1 +
-           a11 * a2 / 2 + 2 * a10 * a8) * a10
-    dq2 = (pi * D^2 * (pi * x * a9 - 2 * a8) / 6 - pi * g * a10 * a9 +
-           pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9) * a10
+    s1 = (pi^2 * D^2 * a10 * a8 / 3 + pi * D * x * a8 + D * a9 + pi * x * a11 * a1 +
+          a11 * a2 / 2 + 2 * a10 * a8) * a10
+    s2 = (pi * D^2 * (pi * x * a9 - 2 * a8) / 6 - pi * g * a10 * a9 +
+          pi * x^2 * a10 * a2 / 2 + x * a10 * a9^2 + x * a9) * a10
 
-    return SVector(dq1, dq2, zero(dq1))
+    return SVector(s1, s2, zero(s1))
 end
 
 """

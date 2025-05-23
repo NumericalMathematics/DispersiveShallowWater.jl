@@ -104,10 +104,10 @@ function source_terms_manufactured(q, x, t, equations::BBMEquation1D)
     a4 = sinpi(t - 2 * x)
     a5 = sinpi(2 * t - 4 * x)
     a6 = exp(t / 2)
-    dq1 = -pi^2 * D^2 * (a4 + 2 * pi * a3) * a6 / 3 - 3 * pi * a2 * exp(t) * a5 / 2 +
-          2 * pi * a1 * a6 * a3 - a6 * a4 / 2 - pi * a6 * a3
+    s1 = -pi^2 * D^2 * (a4 + 2 * pi * a3) * a6 / 3 - 3 * pi * a2 * exp(t) * a5 / 2 +
+         2 * pi * a1 * a6 * a3 - a6 * a4 / 2 - pi * a6 * a3
 
-    return SVector(dq1)
+    return SVector(s1)
 end
 
 function create_cache(mesh, equations::BBMEquation1D,
