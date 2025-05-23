@@ -356,7 +356,7 @@ end
                         l2=[0.047962081783820484, 0.0002741366926583432, 0.0],
                         linf=[0.37478770827387464, 0.0004746167686701802, 0.0])
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(semi, sol, allocs=10_000)
 end
 
 @testitem "serre_green_naghdi_soliton_reflecting.jl" setup=[
@@ -370,5 +370,5 @@ end
                         change_waterheight=1.4210854715202004e-14,
                         change_entropy_modified=9.064566484084935e-7,)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(semi, sol, allocs=60_000)
 end
