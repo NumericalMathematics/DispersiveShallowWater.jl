@@ -81,12 +81,12 @@ function SerreGreenNaghdiEquations1D(; bathymetry_type = bathymetry_variable,
 end
 
 """
-    initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
+    initial_condition_soliton(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
 
-A soliton solution used for convergence tests in a periodic domain.
+A classical soliton solution of the Serre-Green-Naghdi equations. This can be used
+for convergence tests in a periodic domain, see [`initial_condition_convergence_test`](@ref).
 """
-function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D,
-                                            mesh)
+function initial_condition_soliton(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
     g = gravity(equations)
 
     # setup parameters data
@@ -104,6 +104,17 @@ function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEqu
     eta = h + b
 
     return SVector(eta, v, D)
+end
+
+"""
+    initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
+
+A soliton solution used for convergence tests in a periodic domain. Same as
+[`initial_condition_soliton`](@ref) for the [`SerreGreenNaghdiEquations1D`](@ref).
+"""
+function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D,
+                                            mesh)
+    return initial_condition_soliton(x, t, equations, mesh)
 end
 
 """
