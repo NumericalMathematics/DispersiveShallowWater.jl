@@ -266,6 +266,21 @@ Return the gravitational acceleration ``g`` for a given set of `equations`.
 end
 
 """
+    DispersiveShallowWater.have_stiff_terms(equations)
+
+Returns `Val{true}()` if the equations have stiff terms that benefit from
+implicit time integration methods and `Val{false}()` otherwise (default).
+
+This trait is used to determine whether to create a `SplitFunction` in
+[`semidiscretize`](@ref) for IMEX time integration methods.
+
+!!! note "Implementation details"
+    This function is used for internal dispatch to determine the appropriate
+    ODE problem formulation.
+"""
+have_stiff_terms(::AbstractEquations) = Val{false}()
+
+"""
     energy_total(q, equations)
 
 Return the total energy of the primitive variables `q` for a given set of

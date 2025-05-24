@@ -83,6 +83,7 @@ end
     solver = Solver(mesh, 4)
     semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver)
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
+    @test_throws ArgumentError semidiscretize(semi, (0.0, 1.0), split_ode = Val{true}())
 end
 
 @testitem "Boundary conditions" setup=[Setup] begin
