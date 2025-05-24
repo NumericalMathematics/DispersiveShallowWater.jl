@@ -345,3 +345,30 @@ end
 
     @test_allocations(semi, sol, allocs=410_000)
 end
+
+@testitem "serre_green_naghdi_manufactured_reflecting.jl with bathymetry_flat" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_flat,
+                        l2=[0.047962081783820484, 0.0002741366926583432, 0.0],
+                        linf=[0.37478770827387464, 0.0004746167686701802, 0.0])
+
+    @test_allocations(semi, sol, allocs=10_000)
+end
+
+@testitem "serre_green_naghdi_soliton_reflecting.jl" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_soliton_reflecting.jl"),
+                        l2=[0.10552684163688769, 0.29652604909005625, 0.0],
+                        linf=[0.04598348365474836, 0.12697474293455474, 0.0],
+                        change_waterheight=4.263256414560601e-14,
+                        change_entropy_modified=-1.8172034401686687e-6,)
+
+    @test_allocations(semi, sol, allocs=60_000)
+end
