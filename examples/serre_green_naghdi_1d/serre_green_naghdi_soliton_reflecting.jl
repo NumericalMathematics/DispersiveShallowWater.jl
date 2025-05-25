@@ -27,7 +27,7 @@ D1 = derivative_operator(Mattsson2012();
                          derivative_order = 1, accuracy_order,
                          xmin = xmin(mesh), xmax = xmax(mesh), N = N)
 # we create a variable-coefficient second-derivative operator and
-# initilize the variable coefficient as `one` - the variable coefficients
+# initialize the variable coefficient as `one` - the variable coefficients
 # will be set internally during a simulation
 D2 = var_coef_derivative_operator(Mattsson2012(),
                                   2, accuracy_order,
