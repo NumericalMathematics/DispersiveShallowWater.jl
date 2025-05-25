@@ -100,7 +100,7 @@ function initial_condition_soliton(x, t, equations::SerreGreenNaghdiEquations1D,
     v = c * (1 - h1 / h)
 
     D = zero(h)
-    b = -D
+    b = equations.eta0 - D
     eta = h + b
 
     return SVector(eta, v, D)
@@ -134,7 +134,7 @@ function initial_condition_manufactured(x, t,
         D = -(1.5 - cospi(2 * x))
     end
 
-    b = -D
+    b = equations.eta0 - D
     # watch out: The rhs! calculates using `h`
     # but the initial condition needs to be given as `eta`.
     eta = h + b
@@ -294,7 +294,7 @@ function initial_condition_manufactured_reflecting(x, t,
     v = exp(-t * x) * x * sinpi(x)
     D = zero(h)
 
-    b = -D
+    b = equations.eta0 - D
     eta = h + b
 
     return SVector(eta, v, D)
