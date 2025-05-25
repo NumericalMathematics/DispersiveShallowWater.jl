@@ -1084,7 +1084,7 @@ function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
 end
 
 function rhs!(dq, q, t, mesh,
-              equations::SerreGreenNaghdiEquations1D,
+              equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
               initial_condition,
               boundary_conditions::BoundaryConditionReflecting,
               source_terms,
