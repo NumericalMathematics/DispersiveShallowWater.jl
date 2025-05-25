@@ -280,9 +280,9 @@ end
 A smooth manufactured solution for reflecting boundary conditions in combination
 with [`source_terms_manufactured_reflecting`](@ref).
 
-## Rerefences
+## References
 
-- Dimitrios Mitsotakis, C. SYnolakis, and M. McGuinness (2016)
+- D. Mitsotakis, C. Synolakis, and M. McGuinness (2016)
   A modified Galerkin/finite element method for the numerical
   solution of the Serre-Green-Naghdi system.
   [DOI: 10.1002/fld.4293](https://doi.org/10.1002/fld.4293)
@@ -1070,7 +1070,7 @@ function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
     # TODO: This can be made more efficient, maybe by implementing a
     #       new interface in SummationByPartsOperators.jl to allow
     #       evaluating the product of a derivative operator with the
-    #       corresponding mass amtrix directly.
+    #       corresponding mass matrix directly.
     @.. D2.b = h^3 / 3
     copyto!(A, D2)
     A = Diagonal(M_h) - mass_matrix(D1) * A
