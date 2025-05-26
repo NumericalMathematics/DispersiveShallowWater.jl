@@ -81,12 +81,12 @@ function SerreGreenNaghdiEquations1D(; bathymetry_type = bathymetry_variable,
 end
 
 """
-    initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
+    initial_condition_soliton(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
 
-A soliton solution used for convergence tests in a periodic domain.
+A classical soliton solution of the Serre-Green-Naghdi equations. This can be used
+for convergence tests in a periodic domain, see [`initial_condition_convergence_test`](@ref).
 """
-function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D,
-                                            mesh)
+function initial_condition_soliton(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
     g = gravity(equations)
 
     # setup parameters data
@@ -100,10 +100,21 @@ function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEqu
     v = c * (1 - h1 / h)
 
     D = zero(h)
-    b = -D
+    b = equations.eta0 - D
     eta = h + b
 
     return SVector(eta, v, D)
+end
+
+"""
+    initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D, mesh)
+
+A soliton solution used for convergence tests in a periodic domain. Same as
+[`initial_condition_soliton`](@ref) for the [`SerreGreenNaghdiEquations1D`](@ref).
+"""
+function initial_condition_convergence_test(x, t, equations::SerreGreenNaghdiEquations1D,
+                                            mesh)
+    return initial_condition_soliton(x, t, equations, mesh)
 end
 
 """
@@ -123,7 +134,7 @@ function initial_condition_manufactured(x, t,
         D = -(1.5 - cospi(2 * x))
     end
 
-    b = -D
+    b = equations.eta0 - D
     # watch out: The rhs! calculates using `h`
     # but the initial condition needs to be given as `eta`.
     eta = h + b
@@ -131,7 +142,7 @@ function initial_condition_manufactured(x, t,
     return SVector(eta, v, D)
 end
 #=
-The source terms where calculated using a CAS, here Symbolics.jl
+The source terms were calculated using a CAS, here Symbolics.jl
 See code: https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/180#discussion_r2068562090
 For a chosen h and v, in this case
 h = 5 + cos(pi * (2 * (x - 2 * t)))
@@ -263,7 +274,116 @@ function source_terms_manufactured(q, x, t,
     return SVector(s1, s2, zero(s1))
 end
 
-# flat bathymetry
+"""
+    initial_condition_manufactured_reflecting(x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat}, mesh)
+
+A smooth manufactured solution for reflecting boundary conditions in combination
+with [`source_terms_manufactured_reflecting`](@ref).
+
+## References
+
+- D. Mitsotakis, C. Synolakis, and M. McGuinness (2016)
+  A modified Galerkin/finite element method for the numerical
+  solution of the Serre-Green-Naghdi system.
+  [DOI: 10.1002/fld.4293](https://doi.org/10.1002/fld.4293)
+"""
+function initial_condition_manufactured_reflecting(x, t,
+                                                   equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
+                                                   mesh)
+    h = 1 + exp(2 * t) * (cospi(x) + x + 2)
+    v = exp(-t * x) * x * sinpi(x)
+    D = zero(h)
+
+    b = equations.eta0 - D
+    eta = h + b
+
+    return SVector(eta, v, D)
+end
+
+#=
+using Symbolics
+@variables x t
+Dt = Differential(t)
+Dx = Differential(x)
+
+@variables g pi
+
+# eta = exp(2 * t) * cos(pi * x)
+# v = exp(t) * x * sin(pi * x)
+# D = 8
+# h = eta + D
+h = 1 + exp(2 * t) * (cos(pi * x) + x + 2)
+v = exp(-t * x) * x * sin(pi * x)
+
+h_t = Dt(h)
+v_t = Dt(v)
+v_x = Dx(v)
+hv_x = Dx(h * v)
+
+v_xx = Dx(Dx(v))
+v_tx = Dt(Dx(v))
+
+p = 1 // 3 * h^3 * v_x^2 - 1 // 3 * h^3 * v * v_xx
+p_x = Dx(p)
+
+source1 = simplify(expand_derivatives(h_t + hv_x))
+
+s2 = (h * v_t - 1 // 3 * Dx(h^3 * v_tx) + 1 // 2 * g * Dx(h^2) + 1 // 2 * h * Dx(v^2) + p_x)
+source2 = simplify(expand_derivatives(s2))
+
+=#
+"""
+    source_terms_manufactured_reflecting(q, x, t, equations::SerreGreenNaghdiEquations1D{BathymetryFlat}, mesh)
+
+A smooth manufactured solution for reflecting boundary conditions in combination
+with [`initial_condition_manufactured_reflecting`](@ref).
+"""
+function source_terms_manufactured_reflecting(q, x, t,
+                                              equations::SerreGreenNaghdiEquations1D{BathymetryFlat})
+    g = gravity(equations)
+    a2 = sinpi(2 * x)
+    a8 = cospi(x)
+    a9 = sinpi(x)
+    a11 = exp(2 * t)
+    a14 = exp(-t * x)
+    a15 = exp(2 * t - t * x)
+    a16 = exp(-2 * t * x)
+    a17 = (2 + x + a8)
+    a18 = (1 + a17 * a11)
+    a19 = (1 - pi * a9)
+    a20 = 2pi * t * x * a8 * a14
+    a21 = x * a9 * a14
+    a22 = x * a8 * a14
+
+    s1 = 2a17 * a11 + a18 * a9 * a14 + a19 * x * a15 * a9 + pi * x * a18 * a8 * a14 -
+         t * x * a18 * a9 * a14
+    s2 = g * a19 * a18 * a11 - a18 * (x^2) * a9 * a14 +
+         (1 // 2) *
+         (2x * a16 * (a9^2) + pi * (x^2) * a16 * a2 - 2t * (x^2) * a16 * (a9^2)) * a18 -
+         (1 // 3) * ((-2a9 * a14 - 4pi * a22 + 4t * a21 + (pi^2) * (x^2) * a9 * a14 +
+           2pi * t * (x^2) * a8 * a14 - (t^2) * (x^2) * a9 * a14) * (a18^3) +
+          3(-2a21 - pi * (x^2) * a8 * a14 + t * (x^2) * a9 * a14) * a19 * (a18^2) * a11) -
+         (1 // 3) * (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * a21 - a20 + (t^2) * a21) *
+         (a18^3) * a9 * a14 +
+         (-(1 // 1) + pi * a9) *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * a21 - a20 + (t^2) * a21) * x * (a18^2) *
+         a15 * a9 -
+         (1 // 3) *
+         (-3(pi^2) * a9 * a14 - 6pi * t * a8 * a14 + 3(t^2) * a9 * a14 - (pi^3) * a22 +
+          3(pi^2) * t * a21 + 3pi * (t^2) * a22 - (t^3) * a21) * x * (a18^3) * a9 * a14 +
+         (1 // 3) * (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * a21 - a20 + (t^2) * a21) *
+         t * x * (a18^3) * a9 * a14 -
+         (1 // 3) * pi *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * a21 - a20 + (t^2) * a21) * x * (a18^3) *
+         a8 * a14 +
+         (2 // 3) * (a9 * a14 + pi * a22 - t * a21) *
+         (2pi * a8 * a14 - 2t * a9 * a14 - (pi^2) * a21 - a20 + (t^2) * a21) * (a18^3) +
+         a19 * ((a9 * a14 + pi * a22 - t * a21)^2) * (a18^2) * a11
+
+    return SVector(s1, s2, zero(s1))
+end
+
+# flat bathymetry with periodic boundary conditions
 function create_cache(mesh,
                       equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
                       solver,
@@ -329,7 +449,7 @@ function create_cache(mesh,
     return cache
 end
 
-# variable bathymetry
+# variable bathymetry with periodic boundary conditions
 function create_cache(mesh,
                       equations::SerreGreenNaghdiEquations1D,
                       solver,
@@ -900,6 +1020,156 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
     return nothing
 end
 
+# flat bathymetry with reflecting boundary conditions
+function create_cache(mesh,
+                      equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
+                      solver,
+                      initial_condition,
+                      ::BoundaryConditionReflecting,
+                      RealT, uEltype)
+    (; D1, D2) = solver
+
+    # create temporary storage
+    h = ones(RealT, nnodes(mesh))
+    b = zero(h)
+    h_x = zero(h)
+    v_x = zero(h)
+    h2_x = zero(h)
+    hv_x = zero(h)
+    v2_x = zero(h)
+    h2_v_vx_x = zero(h)
+    h_vx_x = zero(h)
+    p_x = zero(h)
+    tmp = zero(h)
+    M_h = zero(h)
+
+    if D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator
+        A = BandedMatrix(D2)
+        cache = (; h, b, h_x, v_x, h2_x, hv_x, v2_x,
+                 h2_v_vx_x, h_vx_x, p_x, tmp,
+                 M_h, A,
+                 D1, D2)
+    else
+        throw(ArgumentError("Combination of operators not supported."))
+    end
+
+    return cache
+end
+
+function assemble_system_matrix!(cache, h, D1, D2::VarCoefDerivativeOperator,
+                                 ::SerreGreenNaghdiEquations1D{BathymetryFlat})
+    (; M_h, A) = cache
+
+    @.. M_h = h
+    scale_by_mass_matrix!(M_h, D1)
+
+    # Floating point errors accumulate a bit and the system matrix
+    # is not necessarily perfectly symmetric but only up to
+    # round-off errors. We wrap it here to avoid issues with the
+    # factorization.
+    # TODO: This can be made more efficient, maybe by implementing a
+    #       new interface in SummationByPartsOperators.jl to allow
+    #       evaluating the product of a derivative operator with the
+    #       corresponding mass matrix directly.
+    @.. D2.b = h^3 / 3
+    copyto!(A, D2)
+    A = Diagonal(M_h) - mass_matrix(D1) * A
+    A[begin, :] .= 0
+    A[:, begin] .= 0
+    A[begin, begin] = 1
+    A[end, :] .= 0
+    A[:, end] .= 0
+    A[end, end] = 1
+    return Symmetric(A)
+end
+
+function rhs!(dq, q, t, mesh,
+              equations::SerreGreenNaghdiEquations1D{BathymetryFlat},
+              initial_condition,
+              boundary_conditions::BoundaryConditionReflecting,
+              source_terms,
+              solver, cache)
+    # Unpack physical parameters and SBP operators `D1`, `D2`
+    g = gravity(equations)
+    (; D1, D2) = solver
+
+    if !(D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator)
+        throw(ArgumentError("Combination of operators not supported."))
+    end
+
+    # `q` and `dq` are `ArrayPartition`s. They collect the individual
+    # arrays for the water height `h` and the velocity `v`.
+    eta, v, D = q.x
+    dh, dv, dD = dq.x # dh = deta since b is constant in time
+    fill!(dD, zero(eltype(dD)))
+
+    @trixi_timeit timer() "hyperbolic terms" begin
+        # Compute all derivatives required below
+        (; h, b, h_x, v_x, h2_x, hv_x, v2_x,
+        h2_v_vx_x, h_vx_x, p_x, tmp) = cache
+
+        @.. b = equations.eta0 - D
+        @.. h = eta - b
+
+        mul!(h_x, D1, h)
+        mul!(v_x, D1, v)
+        @.. tmp = h^2
+        mul!(h2_x, D1, tmp)
+        @.. tmp = h * v
+        mul!(hv_x, D1, tmp)
+        @.. tmp = v^2
+        mul!(v2_x, D1, tmp)
+
+        @.. tmp = h^2 * v * v_x
+        mul!(h2_v_vx_x, D1, tmp)
+        @.. tmp = h * v_x
+        mul!(h_vx_x, D1, tmp)
+        inv6 = 1 / 6
+        @.. tmp = -inv6 * (h * h2_v_vx_x + h^2 * v * h_vx_x)
+        mul!(p_x, D1, tmp)
+        # assemble the variable coefficient of the second-derivative operator
+        @.. D2.b = 0.5 * h^2 * (h * v_x + h_x * v)
+        mul!(tmp, D2, v)
+        @.. p_x = p_x + tmp
+
+        # Split form for energy conservation:
+        # h_t + h_x v + h v_x = 0
+        @.. dh = -(h_x * v + h * v_x)
+
+        # Split form for energy conservation:
+        # h v_t + ... = 0
+        @.. dv = -(g * h2_x - g * h * h_x
+                   +
+                   0.5 * h * v2_x
+                   -
+                   0.5 * v^2 * h_x
+                   +
+                   0.5 * hv_x * v
+                   -
+                   0.5 * h * v * v_x
+                   +
+                   p_x)
+    end
+
+    # add source term
+    @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms,
+                                                       equations, solver)
+
+    # elliptic system
+    @trixi_timeit timer() "assembling elliptic operator" begin
+        system_matrix = assemble_system_matrix!(cache, h, D1, D2,
+                                                equations)
+    end
+
+    @trixi_timeit timer() "solving elliptic system" begin
+        copyto!(tmp, dv)
+        solve_system_matrix!(dv, system_matrix, tmp,
+                             equations, D1, cache, boundary_conditions)
+    end
+
+    return nothing
+end
+
 # The modified entropy/energy takes the whole `q` for every point in space
 """
     DispersiveShallowWater.energy_total_modified!(e, q_global, equations::SerreGreenNaghdiEquations1D, cache)
@@ -934,7 +1204,7 @@ function energy_total_modified!(e, q_global,
                                 cache)
     # unpack physical parameters and SBP operator `D1`
     g = gravity(equations)
-    (; D1, h, b, v_x) = cache
+    (; D1, h, b) = cache
 
     # `q_global` is an `ArrayPartition`. It collects the individual arrays for
     # the total water height `eta = h + b` and the velocity `v`.
@@ -942,30 +1212,61 @@ function energy_total_modified!(e, q_global,
     @.. b = equations.eta0 - D
     @.. h = eta - b
 
-    # 1/2 g eta^2 + 1/2 h v^2 + 1/6 h^3 w^2
+    # 1/2 g eta^2 + 1/2 h v^2 + 1/6 h w^2
     # and + 1/8 h (v b_x)^2 for full bathymetry without mild-slope approximation
-    if D1 isa PeriodicUpwindOperators
-        mul!(v_x, D1.minus, v)
-    else
-        mul!(v_x, D1, v)
-    end
+    # Here, w = -h v_x + 1.5 v b_x.
+    # For reflecting boundary conditions, ∫ 1/6 h^3 v_x^2 dx is approximated
+    # using a second-derivative operator with variable coefficients.
+    if D1 isa AbstractNonperiodicDerivativeOperator
+        # Non-periodic boundary conditions
+        # (only reflecting boundary conditions are implemented so far)
+        (; D2) = cache
+        @assert D2 isa VarCoefDerivativeOperator
+        @assert equations.bathymetry_type isa BathymetryFlat
 
-    if equations.bathymetry_type isa BathymetryFlat
-        b_x = cache.tmp
-        fill!(b_x, zero(eltype(b_x)))
+        # The ∫ 1/6 h^3 v_x^2 dx part of the energy is approximated as
+        # -v^T M D2 v with variable coefficient D2.b = 1/6 h^3.
+        # To make this work with the current approach to define a pointwise
+        # energy e that is `integrate`d over the domain, we need to scale
+        # the product D2 v by the mass matrix M, multiply pointwise by the
+        # velocity v, and scale by the inverse mass matrix M^{-1} again.
+        # This is equivalent to the above expression when `integrate`d over
+        # the domain, i.e., multiplied by 1^T M from the left.
+        @.. D2.b = (1 / 6) * h^3
+        mul!(e, D2, v)
+        scale_by_mass_matrix!(e, D1)
+        @.. e = -e * v
+        scale_by_inverse_mass_matrix!(e, D1)
+
+        @.. e = e + 1 / 2 * g * eta^2 + 1 / 2 * h * v^2
     else
-        (; b, b_x) = cache
-        @.. b = equations.eta0 - q_global.x[3]
+        # Periodic boundary conditions
+        (; v_x) = cache
+
         if D1 isa PeriodicUpwindOperators
-            mul!(b_x, D1.central, b)
+            mul!(v_x, D1.minus, v)
         else
-            mul!(b_x, D1, b)
+            mul!(v_x, D1, v)
         end
-    end
 
-    @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
-    if equations.bathymetry_type isa BathymetryVariable
-        @.. e += 1 / 8 * h * (v * b_x)^2
+        if equations.bathymetry_type isa BathymetryFlat
+            b_x = cache.tmp
+            fill!(b_x, zero(eltype(b_x)))
+        else
+            (; b, b_x) = cache
+            @.. b = equations.eta0 - q_global.x[3]
+            if D1 isa PeriodicUpwindOperators
+                mul!(b_x, D1.central, b)
+            else
+                mul!(b_x, D1, b)
+            end
+        end
+
+        @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 +
+                1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
+        if equations.bathymetry_type isa BathymetryVariable
+            @.. e += 1 / 8 * h * (v * b_x)^2
+        end
     end
 
     return e
