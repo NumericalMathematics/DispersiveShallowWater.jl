@@ -30,7 +30,7 @@ using RecursiveArrayTools: ArrayPartition
 using Reexport: @reexport
 using Roots: AlefeldPotraShi, find_zero
 
-using SciMLBase: SciMLBase, DiscreteCallback, ODEProblem, ODESolution
+using SciMLBase: SciMLBase, DiscreteCallback, ODEProblem, ODESolution, SplitFunction
 import SciMLBase: u_modified!
 
 @reexport using StaticArrays: SVector
@@ -77,7 +77,7 @@ export LinearDispersionRelation, EulerEquations1D, wave_speed
 export prim2prim, prim2cons, cons2prim, prim2phys,
        waterheight_total, waterheight,
        velocity, momentum, discharge,
-       gravity,
+       gravity, have_stiff_terms,
        bathymetry, still_water_surface,
        energy_total, entropy, lake_at_rest_error,
        energy_total_modified, entropy_modified,
