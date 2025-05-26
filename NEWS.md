@@ -6,6 +6,13 @@ used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
 
+## Changes in the v0.7 lifecycle
+
+#### Added
+
+- Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (only flat bathymetry: [#205]).
+
+
 ## Changes when updating to v0.7 from v0.6.x
 
 #### Added
