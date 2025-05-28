@@ -23,7 +23,7 @@ accuracy_order = 4
 D1 = derivative_operator(MattssonNordström2004(),
                          derivative_order = 1, accuracy_order = accuracy_order,
                          xmin = mesh.xmin, xmax = mesh.xmax, N = mesh.N)
-solver = Solver(D1, nothing)
+solver = Solver(D1)
 
 # semidiscretization holds all the necessary data structures for the spatial discretization
 semi = Semidiscretization(mesh, equations, initial_condition, solver,

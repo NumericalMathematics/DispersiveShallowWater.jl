@@ -12,7 +12,10 @@ end
 @testitem "Solver" setup=[Setup, AdditionalImports] begin
     mesh = Mesh1D(-1.0, 1.0, 10)
     p = 3
-    solver = @test_nowarn Solver(mesh, p)
+    @test_logs (:warn,
+                "DispersiveShallowWater.jl is expecting a central difference operator. This is not given for an odd accuracy (got $p) order.\n This can lead to a significant reduction in the order of convergence of the solution.") Solver(mesh,
+                                                                                                                                                                                                                                              p)
+    solver = @test_nowarn Solver(mesh, p + 1)
     @test_nowarn print(solver)
     @test_nowarn display(solver)
     @test solver.D1 isa PeriodicDerivativeOperator
@@ -89,6 +92,26 @@ end
     boundary_conditions = boundary_condition_reflecting
     @test_nowarn print(boundary_conditions)
     @test_nowarn display(boundary_conditions)
+end
+
+@testitem "KdVEquation1D" setup=[Setup] begin
+    equations = @test_nowarn @inferred KdVEquation1D(gravity = 1.0)
+    @test_nowarn print(equations)
+    @test_nowarn display(equations)
+    conversion_functions = [
+        waterheight_total,
+        waterheight
+    ]
+    for conversion in conversion_functions
+        @test DispersiveShallowWater.varnames(conversion, equations) isa Tuple
+    end
+    q = [42.0]
+    @test isapprox(@inferred(cons2prim(prim2cons(q, equations), equations)), q)
+    @test @inferred(prim2prim(q, equations)) == q
+    @test @inferred(waterheight_total(q, equations)) == 42.0
+    @test @inferred(waterheight(q, equations)) == 43.0
+    @test @inferred(still_water_surface(q, equations)) == 0.0
+    @test @inferred(prim2phys(q, equations)) == @inferred(prim2prim(q, equations))
 end
 
 @testitem "BBMEquation1D" setup=[Setup] begin
@@ -427,7 +450,10 @@ end
     for (i, equations) in enumerate((EulerEquations1D(gravity = g),
                                      BBMEquation1D(gravity = g),
                                      BBMBBMEquations1D(gravity = g),
-                                     SvärdKalischEquations1D(gravity = g),
+                                     SvaerdKalischEquations1D(gravity = g,
+                                                              alpha = 0.0,
+                                                              beta = 0.2308939393939394,
+                                                              gamma = 0.04034343434343434),
                                      SerreGreenNaghdiEquations1D(gravity = g)))
         @test isapprox(disp_rel(equations, k), frequencies[i])
         @test isapprox(wave_speed(disp_rel, equations, k), wave_speeds[i])

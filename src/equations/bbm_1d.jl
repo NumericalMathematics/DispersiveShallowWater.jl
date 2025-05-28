@@ -56,7 +56,7 @@ end
 """
     initial_condition_convergence_test(x, t, equations::BBMEquation1D, mesh)
 
-A travelling-wave solution used for convergence tests in a periodic domain, here generalized
+A traveling-wave solution used for convergence tests in a periodic domain, here generalized
 for dimensional variables.
 
 See section 4.1.3 in (there is an error in paper: it should be `sech^2` instead of `cosh`):
@@ -104,10 +104,10 @@ function source_terms_manufactured(q, x, t, equations::BBMEquation1D)
     a4 = sinpi(t - 2 * x)
     a5 = sinpi(2 * t - 4 * x)
     a6 = exp(t / 2)
-    dq1 = -pi^2 * D^2 * (a4 + 2 * pi * a3) * a6 / 3 - 3 * pi * a2 * exp(t) * a5 / 2 +
-          2 * pi * a1 * a6 * a3 - a6 * a4 / 2 - pi * a6 * a3
+    s1 = -pi^2 * D^2 * (a4 + 2 * pi * a3) * a6 / 3 - 3 * pi * a2 * exp(t) * a5 / 2 +
+         2 * pi * a1 * a6 * a3 - a6 * a4 / 2 - pi * a6 * a3
 
-    return SVector(dq1)
+    return SVector(s1)
 end
 
 function create_cache(mesh, equations::BBMEquation1D,

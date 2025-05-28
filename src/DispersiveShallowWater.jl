@@ -16,7 +16,7 @@ See also: [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/Di
 module DispersiveShallowWater
 
 using BandedMatrices: BandedMatrix
-using DiffEqBase: DiffEqBase, SciMLBase, terminate!
+using DiffEqBase: DiffEqBase, terminate!
 using FastBroadcast: @..
 using ForwardDiff: ForwardDiff
 using Interpolations: Interpolations, linear_interpolation
@@ -30,7 +30,7 @@ using RecursiveArrayTools: ArrayPartition
 using Reexport: @reexport
 using Roots: AlefeldPotraShi, find_zero
 
-using SciMLBase: DiscreteCallback, ODEProblem, ODESolution
+using SciMLBase: SciMLBase, DiscreteCallback, ODEProblem, ODESolution
 import SciMLBase: u_modified!
 
 @reexport using StaticArrays: SVector
@@ -38,14 +38,17 @@ using SimpleUnPack: @unpack
 using SparseArrays: sparse, issparse
 using SummationByPartsOperators: SummationByPartsOperators,
                                  AbstractDerivativeOperator,
+                                 AbstractNonperiodicDerivativeOperator,
                                  PeriodicDerivativeOperator, PeriodicUpwindOperators,
                                  UniformPeriodicCoupledOperator,
                                  DerivativeOperator, UpwindOperators,
                                  UniformCoupledOperator,
                                  FourierDerivativeOperator,
+                                 VarCoefDerivativeOperator,
                                  periodic_derivative_operator,
                                  derivative_order, integrate, mass_matrix,
-                                 scale_by_mass_matrix!
+                                 scale_by_mass_matrix!,
+                                 scale_by_inverse_mass_matrix!
 import SummationByPartsOperators: grid, xmin, xmax, semidiscretize
 using TimerOutputs: TimerOutputs, print_timer, reset_timer!
 @reexport using TrixiBase: trixi_include
@@ -64,6 +67,7 @@ include("util.jl")
 export examples_dir, get_examples, default_example, convergence_test
 
 export AbstractShallowWaterEquations,
+       KdVEquation1D,
        BBMEquation1D, BBMBBMEquations1D,
        SvärdKalischEquations1D, SvaerdKalischEquations1D,
        SerreGreenNaghdiEquations1D, HyperbolicSerreGreenNaghdiEquations1D

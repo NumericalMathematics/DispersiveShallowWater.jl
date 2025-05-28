@@ -559,6 +559,11 @@ abstract type AbstractSerreGreenNaghdiEquations{NDIMS, NVARS} <:
 include("serre_green_naghdi_1d.jl")
 include("hyperbolic_serre_green_naghdi_1d.jl")
 
+# KdV equation
+abstract type AbstractKdVEquation{NDIMS, NVARS} <:
+              AbstractEquations{NDIMS, NVARS} end
+include("kdv_1d.jl")
+
 function solve_system_matrix!(dv, system_matrix, rhs,
                               equations::Union{SvaerdKalischEquations1D,
                                                SerreGreenNaghdiEquations1D},
@@ -568,12 +573,19 @@ function solve_system_matrix!(dv, system_matrix, rhs,
 end
 
 function solve_system_matrix!(dv, system_matrix, rhs,
-                              equations::Union{SvaerdKalischEquations1D,
-                                               SerreGreenNaghdiEquations1D},
+                              equations::SvaerdKalischEquations1D,
                               D1, cache, ::BoundaryConditionReflecting)
     scale_by_mass_matrix!(rhs, D1)
     solve_system_matrix!(dv, system_matrix, (@view rhs[(begin + 1):(end - 1)]), equations,
                          D1, cache)
+end
+
+function solve_system_matrix!(dv, system_matrix, rhs,
+                              equations::SerreGreenNaghdiEquations1D,
+                              D1, cache, ::BoundaryConditionReflecting)
+    scale_by_mass_matrix!(rhs, D1)
+    rhs[begin] = rhs[end] = 0
+    solve_system_matrix!(dv, system_matrix, rhs, equations, D1, cache)
 end
 
 function solve_system_matrix!(dv, system_matrix, rhs,

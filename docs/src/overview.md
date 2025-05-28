@@ -73,8 +73,8 @@ far to the left in order to avoid an interaction of the left- and right-travelin
 
 In the next step, we build a [`Semidiscretization`](@ref) that bundles all ingredients for the spatial discretization of the model. Especially, we need to
 define a [`Solver`](@ref). The simplest way to define a solver is to call the constructor by providing the mesh and a desired order of accuracy. In the
-following example, we use an accuracy order of 4. The default constructor simply creates periodic first- and second-derivative central finite difference
-summation-by-parts (SBP) operators of the provided order of accuracy. How to use other summation-by-parts operators, is described in the section on
+following example, we use an accuracy order of 4. The default constructor simply creates periodic first-, second-, and third-derivative central finite
+difference summation-by-parts (SBP) operators of the provided order of accuracy. How to use other summation-by-parts operators, is described in the section on
 [how to customize the solver](@ref customize_solver). Note that for non-periodic boundary conditions, the solver also needs to be created with non-periodic
 operators, see, e.g. [examples/bbm\_bbm\_1d/bbm\_bbm\_1d\_basic\_reflecting.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/blob/main/examples/bbm_bbm_1d/bbm_bbm_1d_basic_reflecting.jl).
 
@@ -144,7 +144,9 @@ nothing # hide
 ![shoaling solution](shoaling_solution.png)
 
 By default, this will plot the bathymetry, but not the initial (analytical) solution. You can adjust this by passing the boolean values `plot_bathymetry` (if `true`
-always plot to first subplot) and `plot_initial`. You can also provide a `conversion` function that converts the solution. A conversion function should take the values
+always plot to first subplot) and `plot_initial`. Note that `plot_initial = true` will plot the initial solution at the same time as the numerical solution is plotted
+(the final time by default), i.e., if the initial condition is also used as an analytical solution, this will plot the analytical solution.
+You can also provide a `conversion` function that converts the solution. A conversion function should take the values
 of the primitive variables `q` at one node, and the `equations` as input and should return an `SVector` of any length as output. For a user defined conversion function,
 there should also exist a function `varnames(conversion, equations)` that returns a `Tuple` of the variable names used for labelling. The conversion function can, e.g.,
 be [`prim2cons`](@ref) or [`waterheight_total`](@ref) if one only wants to plot the total water height. The resulting plot will have one subplot for each of the returned
@@ -180,7 +182,7 @@ This creates the following figure:
 ![analysis callback](analysis_callback.png)
 
 You can see that the linear invariants ``\int_\Omega\eta\textrm{d}x`` and ``\int_\Omega v\textrm{d}x`` are indeed conserved exactly. The entropy, however, starts
-growing at around ``t = 17``  and rises up to approximately ``5e-5``. This is because of the fact that, during the time integration, a nonlinear invariant is not
+growing at around ``t = 17``  and rises up to approximately `5e-5`. This is because of the fact that, during the time integration, a nonlinear invariant is not
 necessarily conserved, even if the semidiscretization conserves the quantity exactly. How to obtain a fully-discrete structure-preserving numerical scheme is explained
 in the following section.
 
