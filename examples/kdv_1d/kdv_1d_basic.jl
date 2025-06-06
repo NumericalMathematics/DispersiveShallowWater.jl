@@ -29,7 +29,7 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
 tspan = (0.0, 5.0)
-ode = semidiscretize(semi, tspan)
+ode = semidiscretize(semi, tspan, split_ode = Val{false}()) # no IMEX for now
 
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,
