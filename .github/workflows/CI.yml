@@ -56,7 +56,6 @@ jobs:
         include:
           - version: '1.11'
             os: ubuntu-latest
-        include:
           - version: '~1.12.0-0'
             os: ubuntu-latest
     steps:
