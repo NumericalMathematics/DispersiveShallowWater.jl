@@ -56,6 +56,9 @@ jobs:
         include:
           - version: '1.11'
             os: ubuntu-latest
+        include:
+          - version: '~1.12.0-0'
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
