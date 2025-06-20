@@ -56,21 +56,4 @@ saveat = range(tspan..., length = 100)
 sol = solve(ode, Tsit5(), abstol = 1e-8, reltol = 1e-8,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
-#= 
-How to plot the dimensional and non-dimensional solution:"
-# Plot the dimensional solution
-plot(semi => sol, plot_initial = true, plot_bathymetry = true)
-
-# Convert the solution to non-dimensional variables
-sol_nondim = prim2nondim(sol, equations)
-
-# changing the global `semi` to using `initial_condition_non_dimensional` instead of
-# `initial_condition_non_dimensional_converted` so `plot_initial = true` plots
-# the initial condition of the non-dimensional KdV equation at the final time.
-semi = Semidiscretization(mesh, equations, initial_condition_non_dimensional, solver)
-
-plot(semi => sol_nondim, plot_initial = true, plot_bathymetry = true,
-     title = "u",
-     xlabel = "x", ylabel = "u",
-     plot_title = "Non-dimensional KdV equation at t = $(round(sol.t[end], digits=5))")
-=#
+# plot(semi => sol, conversion = prim2nondim, plot_initial = true)
