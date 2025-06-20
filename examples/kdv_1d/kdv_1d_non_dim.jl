@@ -42,7 +42,7 @@ solver = Solver(D1_upwind)
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
-tspan = (0.0, 30.0)
+tspan = (0.0, 50.0)
 ode = semidiscretize(semi, tspan)
 
 summary_callback = SummaryCallback()
@@ -55,54 +55,17 @@ saveat = range(tspan..., length = 100)
 
 sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks, saveat = saveat)
+p1 = plot(semi => sol, plot_initial = true, plot_bathymetry = true)
+
+# Convert the solution to non-dimensional variables
 sol_nondim = prim2nondim(sol, equations)
 
-plot(semi => sol_nondim)
+# changing the global `semi` to using `initial_condition_non_dimensional` instead of
+# `initial_condition_non_dimensional_converted` so `plot_initial = true` plots
+# the initial condition of the non-dimensional KdV equation at the final time.
+semi = Semidiscretization(mesh, equations, initial_condition_non_dimensional, solver)
 
-
-
-grid = SummationByPartsOperators.grid(D1_upwind)
-
-
-semi = Semidiscretization(mesh, equations, initial_condition_non_dimensional, solver,
-                          boundary_conditions = boundary_conditions)
-ode = semidiscretize(semi, (tspan[2], tspan[2] + 1e-12))
-u_analitical = ode.u0
-plot!(grid, u_analitical, label = "analytical solution")
-
-
-
-
-plot(ode.u0)
-
-sol.u[end] .= 2.0
-
-function prim2nondim!(sol::ODESolution{…}, equations::KdVEquation1D)
-    # Convert the solution from primitive variables to non-dimensional variables
-    # using the conversion defined in `nondim2prim`.
-    eta = sol.u[end]
-    u = prim2nondim(eta, equations)
-    return u
-end
-eachindex(sol.u)
-
-i = 1
-eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
-@btime sol.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
-
-for i in eachindex(sol.u)
-    eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
-    sol.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
-end
-
-
-prim2nondim.(eta, equations)
-
-function prim2nondim!(sol::ODESolution{}, equations::KdVEquation1D)
-    for i in eachindex(sol.u)
-        eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
-        sol.u[i].x[1] .= prim2nondim(eta, equations)  # Convert and update in-place
-    end
-    return nothing
-end
-
+p2 = plot(semi => sol_nondim, plot_initial = true, plot_bathymetry = true,
+     title = "u",
+     xlabel = "x", ylabel = "u",
+     plot_title = "Non-dimensional KdV equation at t = $(round(sol.t[end], digits=5))")
