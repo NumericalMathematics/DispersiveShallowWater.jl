@@ -139,6 +139,20 @@ function cons2prim(u, equations::AbstractEquations{1, 1})
     return SVector(eta)
 end
 
+
+
+function nondim2prim(u, equations::KdVEquation1D)
+    eta = @. equations.D * (u - 2 / 3)
+    return eta
+end
+
+function prim2nondim(eta, equations::KdVEquation1D)
+    u = @. eta / equations.D + 2 / 3
+    return u
+end
+
+
+
 """
     waterheight_total(q, equations)
 
