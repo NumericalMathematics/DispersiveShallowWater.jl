@@ -59,3 +59,14 @@ end
 
     @test_allocations(semi, sol, allocs=5_000)
 end
+
+@testitem "kdv_1d_non_dim" setup=[Setup, KdVEquation1D] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR, "kdv_1d_non_dim.jl"),
+                        tspan=(0.0, 50.0),
+                        l2=[0.00031784195202372095],
+                        linf=[8.131770758672274e-5],
+                        cons_error=[2.842170943040401e-14],
+                        change_waterheight=2.842170943040401e-14)
+
+    @test_allocations(semi, sol, allocs=5_000)
+end
