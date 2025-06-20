@@ -131,9 +131,17 @@ The transformation is given by:
 ```
 where `D` is the still-water depth.
 
+!!! warning "Parameter constraints"
+    This conversion is only valid for equations with specific parameter values:
+    - `gravity = 4/27` 
+    - `D = 3.0` 
+    
+    These values ensure the dimensional KdV equation matches the standard 
+    non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
+
 This function allows converting solutions from the standard non-dimensional 
-KdV form `u_t + u u_x + u_{xxx} = 0` commonly found in literature to the 
-dimensional form implemented in DispersiveShallowWater.jl.
+KdV form commonly found in literature to the dimensional form implemented 
+in DispersiveShallowWater.jl.
 
 See also [`prim2nondim`](@ref).
 """
@@ -154,10 +162,18 @@ u = \\frac{\\eta}{D} + \\frac{2}{3}
 ```
 where `D` is the still-water depth.
 
+!!! warning "Parameter constraints"
+    This conversion is only valid for equations with specific parameter values:
+    - `gravity = 4/27` 
+    - `D = 3.0`
+    
+    These values ensure the dimensional KdV equation matches the standard 
+    non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
+
 This function allows converting solutions from the dimensional form implemented 
 in DispersiveShallowWater.jl to the standard non-dimensional KdV form 
-`u_t + u u_x + u_{xxx} = 0` commonly found in literature, enabling comparison 
-with theoretical results and other implementations.
+commonly found in literature, enabling comparison with theoretical results 
+and other implementations.
 
 See also [`nondim2prim`](@ref).
 """
@@ -182,6 +198,14 @@ u = \\frac{\\eta}{D} + \\frac{2}{3}
 
 where `D` is the still-water depth from `equations`.
 
+!!! warning "Parameter constraints"
+    This conversion is only valid for equations with specific parameter values:
+    - `gravity = 4/27` 
+    - `D = 3.0`
+    
+    These values ensure the dimensional KdV equation matches the standard 
+    non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
+
 # Arguments
 - `sol::ODESolution`: The solution object to be converted
 - `equations::KdVEquation1D`: The KdV equations containing the still-water depth `D`
@@ -192,13 +216,15 @@ where `D` is the still-water depth from `equations`.
 # Notes
 This function is useful for converting solutions from DispersiveShallowWater.jl's
 dimensional KdV implementation to the standard non-dimensional form 
-`u_t + u u_x + u_{xxx} = 0` commonly found in literature, enabling direct 
-comparison with theoretical results and other implementations.
+commonly found in literature, enabling direct comparison with theoretical 
+results and other implementations.
 
 The original solution object is not modified.
 
 # Examples
 ```julia
+equations = KdVEquation1D(gravity = 4/27, D = 3.0)
+...
 sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7, saveat = saveat)
 sol_nondim = prim2nondim(sol, equations)  # sol_nondim contains non-dimensional u values
 ```
