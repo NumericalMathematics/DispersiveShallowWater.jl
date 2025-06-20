@@ -53,9 +53,11 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = CallbackSet(analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
 
-sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7,
+sol = solve(ode, Tsit5(), abstol = 1e-8, reltol = 1e-8,
             save_everystep = false, callback = callbacks, saveat = saveat)
-p1 = plot(semi => sol, plot_initial = true, plot_bathymetry = true)
+
+#= Plot the solution
+plot(semi => sol, plot_initial = true, plot_bathymetry = true)
 
 # Convert the solution to non-dimensional variables
 sol_nondim = prim2nondim(sol, equations)
@@ -65,7 +67,8 @@ sol_nondim = prim2nondim(sol, equations)
 # the initial condition of the non-dimensional KdV equation at the final time.
 semi = Semidiscretization(mesh, equations, initial_condition_non_dimensional, solver)
 
-p2 = plot(semi => sol_nondim, plot_initial = true, plot_bathymetry = true,
+plot(semi => sol_nondim, plot_initial = true, plot_bathymetry = true,
      title = "u",
      xlabel = "x", ylabel = "u",
      plot_title = "Non-dimensional KdV equation at t = $(round(sol.t[end], digits=5))")
+=#
