@@ -5,8 +5,6 @@ using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 ###############################################################################
 # Semidiscretization of the KdV equation 
 
-
-
 function initial_condition_non_dimensional(x, t, equations::KdVEquation1D, mesh)
     c = 1 / 3
     x_t = mod(x - c * t - xmin(mesh), xmax(mesh) - xmin(mesh)) + xmin(mesh)
@@ -20,6 +18,7 @@ function initial_condition_non_dimensional_converted(x, t, equations::KdVEquatio
     return SVector(eta)
 end
 
+# Parameters g = 4/27 and D = 3.0 are needed for conversion to non-dimensional variables
 equations = KdVEquation1D(gravity = 4 / 27, D = 3.0)
 initial_condition = initial_condition_non_dimensional_converted
 boundary_conditions = boundary_condition_periodic
@@ -43,7 +42,7 @@ solver = Solver(D1_upwind)
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
-tspan = (0.0, 12.0)
+tspan = (0.0, 30.0)
 ode = semidiscretize(semi, tspan)
 
 summary_callback = SummaryCallback()
@@ -56,16 +55,14 @@ saveat = range(tspan..., length = 100)
 
 sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks, saveat = saveat)
+sol_nondim = prim2nondim(sol, equations)
 
-plot(semi => sol)
+plot(semi => sol_nondim)
+
+
+
 grid = SummationByPartsOperators.grid(D1_upwind)
-eta_end = sol.u[end]
 
-plot(grid, eta_end)
-
-u_end = prim2nondim.(eta_end, equations)
-
-plot(grid, u_end)
 
 semi = Semidiscretization(mesh, equations, initial_condition_non_dimensional, solver,
                           boundary_conditions = boundary_conditions)
@@ -73,4 +70,39 @@ ode = semidiscretize(semi, (tspan[2], tspan[2] + 1e-12))
 u_analitical = ode.u0
 plot!(grid, u_analitical, label = "analytical solution")
 
+
+
+
 plot(ode.u0)
+
+sol.u[end] .= 2.0
+
+function prim2nondim!(sol::ODESolution{…}, equations::KdVEquation1D)
+    # Convert the solution from primitive variables to non-dimensional variables
+    # using the conversion defined in `nondim2prim`.
+    eta = sol.u[end]
+    u = prim2nondim(eta, equations)
+    return u
+end
+eachindex(sol.u)
+
+i = 1
+eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
+@btime sol.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
+
+for i in eachindex(sol.u)
+    eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
+    sol.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
+end
+
+
+prim2nondim.(eta, equations)
+
+function prim2nondim!(sol::ODESolution{}, equations::KdVEquation1D)
+    for i in eachindex(sol.u)
+        eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
+        sol.u[i].x[1] .= prim2nondim(eta, equations)  # Convert and update in-place
+    end
+    return nothing
+end
+

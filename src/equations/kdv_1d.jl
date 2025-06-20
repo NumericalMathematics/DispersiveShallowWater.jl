@@ -119,6 +119,101 @@ function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
     return SVector(s1)
 end
 
+"""
+    nondim2prim(u, equations::KdVEquation1D)
+
+Convert the non-dimensional variable `u` to the primitive/physical variable `eta`
+(total water height) for the [`KdVEquation1D`](@ref).
+
+The transformation is given by:
+```math
+\\eta = D(u - \\frac{2}{3})
+```
+where `D` is the still-water depth.
+
+This function allows converting solutions from the standard non-dimensional 
+KdV form `u_t + u u_x + u_{xxx} = 0` commonly found in literature to the 
+dimensional form implemented in DispersiveShallowWater.jl.
+
+See also [`prim2nondim`](@ref).
+"""
+function nondim2prim(u, equations::KdVEquation1D)
+    eta = @. equations.D * (u - 2 / 3)
+    return eta
+end
+
+"""
+    prim2nondim(eta, equations::KdVEquation1D)
+
+Convert the primitive/physical variable `eta` (total water height) to the 
+non-dimensional variable `u` for the [`KdVEquation1D`](@ref).
+
+The transformation is given by:
+```math
+u = \\frac{\\eta}{D} + \\frac{2}{3}
+```
+where `D` is the still-water depth.
+
+This function allows converting solutions from the dimensional form implemented 
+in DispersiveShallowWater.jl to the standard non-dimensional KdV form 
+`u_t + u u_x + u_{xxx} = 0` commonly found in literature, enabling comparison 
+with theoretical results and other implementations.
+
+See also [`nondim2prim`](@ref).
+"""
+function prim2nondim(eta, equations::KdVEquation1D)
+    u = @. eta / equations.D + 2 / 3
+    return u
+end
+
+"""
+    prim2nondim(sol::ODESolution, equations::KdVEquation1D)
+
+Convert all solution vectors in an ODE solution from dimensional (primitive) to 
+non-dimensional form, returning a new solution object.
+
+This function creates a copy of the solution object `sol` and converts the primitive 
+variable `eta` (total water height) to the non-dimensional variable `u` for all 
+saved time steps. The conversion uses the transformation:
+
+```math
+u = \\frac{\\eta}{D} + \\frac{2}{3}
+```
+
+where `D` is the still-water depth from `equations`.
+
+# Arguments
+- `sol::ODESolution`: The solution object to be converted
+- `equations::KdVEquation1D`: The KdV equations containing the still-water depth `D`
+
+# Returns
+- `ODESolution`: A new solution object with converted non-dimensional values
+
+# Notes
+This function is useful for converting solutions from DispersiveShallowWater.jl's
+dimensional KdV implementation to the standard non-dimensional form 
+`u_t + u u_x + u_{xxx} = 0` commonly found in literature, enabling direct 
+comparison with theoretical results and other implementations.
+
+The original solution object is not modified.
+
+# Examples
+```julia
+sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7, saveat = saveat)
+sol_nondim = prim2nondim(sol, equations)  # sol_nondim contains non-dimensional u values
+```
+
+See also [`prim2nondim`](@ref), [`nondim2prim`](@ref).
+"""
+function prim2nondim(sol::ODESolution, equations::KdVEquation1D)
+    sol = deepcopy(sol)  # Ensure we don't modify the original solution
+    for i in eachindex(sol.u)
+        eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
+        sol.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
+    end
+    return sol
+end
+
 function create_cache(mesh, equations::KdVEquation1D,
                       solver, initial_condition,
                       ::BoundaryConditionPeriodic,

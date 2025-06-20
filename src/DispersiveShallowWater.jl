@@ -75,6 +75,7 @@ export AbstractShallowWaterEquations,
 export LinearDispersionRelation, EulerEquations1D, wave_speed
 
 export prim2prim, prim2cons, cons2prim, prim2phys,
+       prim2nondim, nondim2prim,
        waterheight_total, waterheight,
        velocity, momentum, discharge,
        gravity,
