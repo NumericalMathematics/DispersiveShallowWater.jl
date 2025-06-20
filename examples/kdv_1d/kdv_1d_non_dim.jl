@@ -56,7 +56,8 @@ saveat = range(tspan..., length = 100)
 sol = solve(ode, Tsit5(), abstol = 1e-8, reltol = 1e-8,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
-#= How to plot the dimensional and non-dimensional solution:"
+#= 
+How to plot the dimensional and non-dimensional solution:"
 # Plot the dimensional solution
 plot(semi => sol, plot_initial = true, plot_bathymetry = true)
 
