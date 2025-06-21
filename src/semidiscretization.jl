@@ -66,7 +66,7 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
         isa(solver.D2, AbstractPeriodicDerivativeOperator) ||
         isa(solver.D3, AbstractPeriodicDerivativeOperator)) &&
        !isa(boundary_conditions, BoundaryConditionPeriodic)
-        @warn "Periodic derivative operators in `solver` may be incompatible with non-periodic boundary conditions."
+        throw(ArgumentError("Periodic derivative operators in `solver` are incompatible with non-periodic boundary conditions."))
     end
 
     cache = (;

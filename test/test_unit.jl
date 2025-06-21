@@ -76,15 +76,12 @@ end
     @test equations == equations
     @test solver == solver
 
-    # not working like this because the `Semidiscretization` throws an Error in the
-    # creation of the cache.
     boundary_conditions = boundary_condition_reflecting
-    @test_logs (:warn,
-                "Periodic derivative operators in `solver` may be incompatible with non-periodic boundary conditions.") Semidiscretization(mesh,
-                                                                                                                                           equations,
-                                                                                                                                           initial_condition,
-                                                                                                                                           solver,
-                                                                                                                                           boundary_conditions = boundary_conditions)
+    @test_throws ArgumentError("Periodic derivative operators in `solver` are incompatible with non-periodic boundary conditions.") Semidiscretization(mesh,
+                                                                                                                                                       equations,
+                                                                                                                                                       initial_condition,
+                                                                                                                                                       solver,
+                                                                                                                                                       boundary_conditions = boundary_conditions)
 
     equations_flat = BBMBBMEquations1D(bathymetry_type = bathymetry_flat,
                                        gravity = 9.81)
