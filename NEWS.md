@@ -10,6 +10,8 @@ for human readability.
 
 #### Added
 
+- Add conversion functions `prim2nondim` and `nondim2prim` for `KdVEquation1D` to convert between dimensional and non-dimensional variables, enabling comparison with the standard non-dimensional KdV form $u_t + u u_x + u_{xxx} = 0$ commonly found in literature ([#217]).
+- Add conversion functions `prim2nondim` and `nondim2prim` for non-dimensional variables for `KdVEquation1D` ([#217]).
 - Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (only flat bathymetry: [#205]).
 - Add `KdVEquation1D` ([#198]).
 
