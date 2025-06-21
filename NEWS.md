@@ -11,12 +11,9 @@ for human readability.
 #### Added
 
 - Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (only flat bathymetry: [#205]).
-
+- Add `KdVEquation1D` ([#198]).
 
 ## Changes when updating to v0.7 from v0.6.x
-
-#### Added
-- Add `KdVEquation1D` ([#198]).
 
 #### Changed
 

@@ -76,6 +76,13 @@ end
     @test equations == equations
     @test solver == solver
 
+    boundary_conditions = boundary_condition_reflecting
+    @test_throws ArgumentError("Periodic derivative operators in `solver` are incompatible with non-periodic boundary conditions.") Semidiscretization(mesh,
+                                                                                                                                                       equations,
+                                                                                                                                                       initial_condition,
+                                                                                                                                                       solver,
+                                                                                                                                                       boundary_conditions = boundary_conditions)
+
     equations_flat = BBMBBMEquations1D(bathymetry_type = bathymetry_flat,
                                        gravity = 9.81)
     initial_condition = initial_condition_dingemans
