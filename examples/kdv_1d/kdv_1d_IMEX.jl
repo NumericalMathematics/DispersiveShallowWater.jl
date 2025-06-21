@@ -1,6 +1,6 @@
-using OrdinaryDiffEqTsit5
+using OrdinaryDiffEqSDIRK
 using DispersiveShallowWater
-using SummationByPartsOperators: fourier_derivative_operator
+using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 
 ###############################################################################
 # Semidiscretization of the KdV equation 
@@ -15,17 +15,21 @@ coordinates_max = 50.0
 N = 512
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-# create solver with Fourier SBP operators
-D1 = fourier_derivative_operator(xmin(mesh), xmax(mesh), nnodes(mesh))
-D3 = D1^3
-
-solver = Solver(D1, nothing, D3)
+# Create solver with periodic SBP operators of accuracy order 3,
+# which results in a 4th order accurate semi discretizations.
+# We can set the accuracy order of the upwind operators to 3 since
+# we only use central versions/combinations of the upwind operators.
+D1_upwind = upwind_operators(periodic_derivative_operator;
+                             derivative_order = 1, accuracy_order = 3,
+                             xmin = xmin(mesh), xmax = xmax(mesh),
+                             N = nnodes(mesh))
+solver = Solver(D1_upwind)
 
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
 tspan = (0.0, 5.0)
-ode = semidiscretize(semi, tspan, split_ode = Val{false}()) # no IMEX for now
+ode = semidiscretize(semi, tspan)
 
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,
@@ -35,7 +39,6 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
 callbacks = CallbackSet(analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
 
-# Fourier SBP operators are not working with ForwardDiff.jl, so use an explicit method.
-alg = Tsit5()
+alg = KenCarp4() # use an IMEX method
 sol = solve(ode, alg, abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks, saveat = saveat)
