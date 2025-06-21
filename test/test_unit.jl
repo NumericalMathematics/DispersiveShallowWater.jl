@@ -116,8 +116,8 @@ end
 
     # Test non-dimensional conversion functions
     eta = 42.0
-    equations_nondim = KdVEquation1D(gravity = 4/27, D = 3.0)
-    u_expected = eta / 3.0 + 2/3
+    equations_nondim = KdVEquation1D(gravity = 4 / 27, D = 3.0)
+    u_expected = eta / 3.0 + 2 / 3
     @test @inferred(prim2nondim(eta, equations_nondim)) == u_expected
     @test @inferred(nondim2prim(u_expected, equations_nondim)) == eta
 end

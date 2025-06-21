@@ -232,12 +232,12 @@ sol_nondim = prim2nondim(sol, equations)  # sol_nondim contains non-dimensional 
 See also [`prim2nondim`](@ref), [`nondim2prim`](@ref).
 """
 function prim2nondim(sol::ODESolution, equations::KdVEquation1D)
-    sol = deepcopy(sol)  # Ensure we don't modify the original solution
-    for i in eachindex(sol.u)
-        eta = sol.u[i].x[1]  # Get the eta values (first and only variable for KdV)
-        sol.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
+    sol_nondim = deepcopy(sol)  # Ensure we don't modify the original solution
+    for i in eachindex(sol_nondim.u)
+        eta = sol_nondim.u[i].x[1]  # Get the eta values (first and only variable for KdV)
+        sol_nondim.u[i].x[1] .= prim2nondim.(eta, equations)  # Convert and update in-place
     end
-    return sol
+    return sol_nondim
 end
 
 """
