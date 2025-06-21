@@ -54,7 +54,7 @@ boundary_conditions = boundary_condition_periodic
 coordinates_min = -130.0
 coordinates_max = 20.0
 N = 512
-mesh = Mesh1D(coordinates_min, coordinates_max, N + 1)
+mesh = Mesh1D(coordinates_min, coordinates_max, N)
 ```
 
 The first line specifies that we want to solve the BBM-BBM equations with variable bathymetry using a gravitational acceleration ``g = 9.81``.
@@ -66,7 +66,7 @@ treated as a variable (with time derivative 0) for convenience, we need to provi
 
 Next, we choose periodic boundary conditions. DispersiveShallowWater.jl also supports reflecting boundary conditions for the [`BBMBBMEquations1D`](@ref),
 see [`boundary_condition_reflecting`](@ref). Lastly, we define the physical domain as the interval from -130 to
-20 and we choose 512 intermediate nodes. The mesh is homogeneous, i.e. the distance between each two nodes is constant. We choose the left boundary very
+20 and we choose 512 nodes. The mesh is homogeneous, i.e. the distance between each two nodes is constant. We choose the left boundary very
 far to the left in order to avoid an interaction of the left- and right-traveling waves.
 
 ## Define numerical solver
@@ -104,8 +104,8 @@ the BBM-BBM equations, i.e. they do not change over time. The total entropy
 
 is a nonlinear invariant and should be constant over time as well. During the simulation, the `AnalysisCallback` will print the results to the terminal.
 
-Finally, the `ode` can be `solve`d using the interface from [OrdinaryDiffEq.jl](https://github.com/SciML/OrdinaryDiffEq.jl). This means, we can specify a time-stepping
-scheme we want to use the tolerances for the adaptive time-stepping and the time values, where the solution values should be saved. In this case, we use the adaptive
+Finally, the `ode` can be `solve`d using the interface from [OrdinaryDiffEq.jl](https://github.com/SciML/OrdinaryDiffEq.jl). This means we can specify a time-stepping
+scheme we want to use, the tolerances for the adaptive time-stepping, and the time values, where the solution values should be saved. In this case, we use the adaptive
 explicit Runge-Kutta method `Tsit5` by Tsitouras of order 5(4), which is implemented in the subpackage OrdinaryDiffEqTsit5.jl. If you want to use other time-stepping
 schemes, you can install the respective subpackage or the whole package OrdinaryDiffEq.jl, which will install every available solver.
 Here, we save the solution at 100 equidistant points.
@@ -157,7 +157,7 @@ Plotting an animation over time can, e.g., be done by the following command, whi
 
 ```@example overview
 anim = @animate for step in 1:length(sol.u)
-    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlim = (-50, 20), ylims = (-0.8, 0.1))
+    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1))
 end
 gif(anim, "shoaling_solution.gif", fps = 25)
 nothing # hide
