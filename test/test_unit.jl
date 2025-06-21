@@ -100,7 +100,8 @@ end
     @test_nowarn display(equations)
     conversion_functions = [
         waterheight_total,
-        waterheight
+        waterheight,
+        prim2nondim
     ]
     for conversion in conversion_functions
         @test DispersiveShallowWater.varnames(conversion, equations) isa Tuple
@@ -112,6 +113,13 @@ end
     @test @inferred(waterheight(q, equations)) == 43.0
     @test @inferred(still_water_surface(q, equations)) == 0.0
     @test @inferred(prim2phys(q, equations)) == @inferred(prim2prim(q, equations))
+
+    # Test non-dimensional conversion functions
+    eta = 42.0
+    equations_nondim = KdVEquation1D(gravity = 4/27, D = 3.0)
+    u_expected = eta / 3.0 + 2/3
+    @test @inferred(prim2nondim(eta, equations_nondim)) == u_expected
+    @test @inferred(nondim2prim(u_expected, equations_nondim)) == eta
 end
 
 @testitem "BBMEquation1D" setup=[Setup] begin

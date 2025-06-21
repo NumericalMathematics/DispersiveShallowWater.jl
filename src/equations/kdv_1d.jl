@@ -241,20 +241,6 @@ function prim2nondim(sol::ODESolution, equations::KdVEquation1D)
 end
 
 """
-    prim2nondim(q::SVector, equations::KdVEquation1D)
-
-Conversion function for DispersiveShallowWater.jl plotting interface.
-Takes an SVector of primitive variables and returns SVector of non-dimensional variables.
-
-See [`prim2nondim`](@ref) for details on the conversion and parameter constraints.
-"""
-function prim2nondim(q::SVector, equations::KdVEquation1D)
-    eta = q[1]  # Extract eta from the SVector
-    u = eta / equations.D + 2 / 3
-    return SVector(u)
-end
-
-"""
     varnames(::typeof(prim2nondim), equations::KdVEquation1D)
 
 Return variable names `("u",)` for non-dimensional KdV variables when plotting
