@@ -9,13 +9,12 @@ function initial_condition_non_dimensional(x, t, equations::KdVEquation1D, mesh)
     c = 1 / 3
     x_t = mod(x - c * t - xmin(mesh), xmax(mesh) - xmin(mesh)) + xmin(mesh)
     u = 3 * c * sech(sqrt(9 * c) / 6 * x_t)^2
-    return u
+    return SVector(u)
 end
 
 function initial_condition_non_dimensional_converted(x, t, equations::KdVEquation1D, mesh)
     u = initial_condition_non_dimensional(x, t, equations, mesh)
-    eta = nondim2prim(u, equations)
-    return SVector(eta)
+    return nondim2prim(u, equations) # return eta
 end
 
 # Parameters g = 4/27 and D = 3.0 are needed for conversion to non-dimensional variables
