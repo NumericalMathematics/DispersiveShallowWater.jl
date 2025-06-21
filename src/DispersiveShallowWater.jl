@@ -39,6 +39,7 @@ using SparseArrays: sparse, issparse
 using SummationByPartsOperators: SummationByPartsOperators,
                                  AbstractDerivativeOperator,
                                  AbstractNonperiodicDerivativeOperator,
+                                 AbstractPeriodicDerivativeOperator,
                                  PeriodicDerivativeOperator, PeriodicUpwindOperators,
                                  UniformPeriodicCoupledOperator,
                                  DerivativeOperator, UpwindOperators,
