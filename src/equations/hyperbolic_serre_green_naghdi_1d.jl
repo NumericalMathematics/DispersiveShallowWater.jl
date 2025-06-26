@@ -143,7 +143,7 @@ function set_approximation_variables!(q, mesh,
     mul!(w, D1, v)
     @.. w = -H * w
     if !(equations.bathymetry_type isa BathymetryFlat)
-        b = bathymetry(q, equations)
+        @.. b = eta - H
         b_x = D1 * b
         @.. w += 1.5 * v * b_x
     end
