@@ -139,9 +139,14 @@ function set_approximation_variables!(q, mesh,
     # H ≈ h
     @.. H = eta + D - equations.eta0 # h = (h + b) + (eta0 - b) - eta0
 
-    # w ≈ -h v_x
+    # w ≈ -h v_x + 3/2 v b_x
     mul!(w, D1, v)
     @.. w = -H * w
+    if !(equations.bathymetry_type isa BathymetryFlat)
+        b = eta - H
+        b_x = D1 * b
+        @.. w += 1.5 * v * b_x
+    end
 
     return nothing
 end
@@ -175,7 +180,7 @@ function initial_condition_soliton(x, t, equations::HyperbolicSerreGreenNaghdiEq
 
     h = h1 + (h2 - h1) * sech(x_t / 2 * sqrt(3 * (h2 - h1) / (h1^2 * h2)))^2
     v = c * (1 - h1 / h)
-    # w = -h v_x
+    # w = -h v_x (b = 0)
     w = -h1 * sqrt(g * h2) * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) * (-h1 + h2) *
         (-h1 - (-h1 + h2) * sech(x_t * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) / 2)^2) *
         tanh(x_t * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) / 2) *
@@ -204,8 +209,8 @@ function initial_condition_manufactured(x, t,
     h = eta - b
     v = sinpi(2 * (x - t / 2))
     D = equations.eta0 - b
-    # w = -h v_x
-    w = -h * 2 * pi * cospi(2 * (x - t / 2))
+    # w = -h v_x + 3/2 v b_x
+    w = -h * 2 * pi * cospi(2 * (x - t / 2)) + 3 / 2 * v * (4 * pi * sinpi(2 * x))
     H = h
     return SVector(eta, v, D, w, H)
 end
@@ -233,11 +238,11 @@ function source_terms_manufactured(q, x, t,
     s1 = -4 * pi * a1 - a5 * a10 - 2 * pi * a6 * a9
     s2 = -2 * pi * a5 * a6 - pi * a6 + 4 * pi * a7 * g + g * a10
     s3 = zero(s1)
-    s4 = 8 * pi^2 * a1 * a6 -
-         a5 * (4 * pi^2 * a5 * a9 - 2 * pi * a6 * a10) -
-         2 * pi^2 * a5 * a9
-    s5 = -4 * pi * a1 - 6 * pi * a5 * a7 - a5 * a10 -
-         2 * pi * a6 * a9
+    s4 = 8 * pi^2 * a1 * a6 - 2 * pi^2 * a5 * a9 -
+         a5 * (-12.0 * pi^2 * a5 * a8 + 4 * pi^2 * a5 * a9 +
+          12.0 * pi^2 * a6 * a7 - 2 * pi * a6 * a10) -
+         6.0 * pi^2 * a6 * a7
+    s5 = -4 * pi * a1 - a5 * a10 - 2 * pi * a6 * a9
 
     return SVector(s1, s2, s3, s4, s5)
 end
