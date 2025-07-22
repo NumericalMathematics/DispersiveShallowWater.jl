@@ -75,12 +75,11 @@ e.g., `include(joinpath(examples_dir(), "svaerd_kalisch_1d", "svaerd_kalisch_1d_
 You can directly refer to DispersiveShallowWater.jl as
 
 ```bibtex
-@misc{lampert2023dispersive,
+@misc{lampert2025dispersive,
   title={{D}ispersive{S}hallow{W}ater.jl: {S}tructure-preserving numerical
          methods for dispersive shallow water models},
-  author={Lampert, Joshua and Ranocha, Hendrik},
-  year={2023},
-  month={10},
+  author={Lampert, Joshua and Wittenstein, Collin and Ranocha, Hendrik},
+  year={2025},
   howpublished={\url{https://github.com/NumericalMathematics/DispersiveShallowWater.jl}},
   doi={10.5281/zenodo.10034636}
 }
