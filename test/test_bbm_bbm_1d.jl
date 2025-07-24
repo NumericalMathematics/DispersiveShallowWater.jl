@@ -13,7 +13,7 @@ end
                         change_entropy=0.00023829378642403753,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 
     # test upwind operators
     D1 = upwind_operators(periodic_derivative_operator; derivative_order = 1,
@@ -33,7 +33,7 @@ end
                         change_entropy=0.0002383181188179151,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 
     # test PeriodicRationalDerivativeOperator
     D1 = periodic_derivative_operator(1, accuracy_order, xmin(mesh), xmax(mesh),
@@ -51,7 +51,7 @@ end
                         change_entropy=0.00023833941781958856,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_basic with bathymetry_variable" setup=[Setup, BBMBBMEquation1D] begin
@@ -66,7 +66,7 @@ end
                         change_entropy=0.0006197172569955001,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_dg" setup=[Setup, BBMBBMEquation1D] begin
@@ -79,7 +79,7 @@ end
                         change_velocity=-7.815970093361102e-14,
                         change_entropy=-0.001165974183408025)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_dg with bathymetry_variable" setup=[Setup, BBMBBMEquation1D] begin
@@ -93,7 +93,7 @@ end
                         change_velocity=-9.947598300641403e-14,
                         change_entropy=-0.000791230828923517)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_fourier" setup=[Setup, BBMBBMEquation1D] begin
@@ -108,7 +108,7 @@ end
                         atol=1e-11,
                         atol_ints=1e-9) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_fourier with bathymetry_variable" setup=[Setup, BBMBBMEquation1D] begin
@@ -124,7 +124,7 @@ end
                         atol=1e-11,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_relaxation" setup=[Setup, BBMBBMEquation1D] begin
@@ -137,7 +137,7 @@ end
                         change_velocity=2.842170943040401e-14,
                         change_entropy=-2.9558577807620168e-12)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_relaxation with bathymetry_variable" setup=[Setup, BBMBBMEquation1D] begin
@@ -151,7 +151,7 @@ end
                         change_velocity=-5.684341886080802e-14,
                         change_entropy=-2.2737367544323206e-13)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_upwind_relaxation" setup=[Setup, BBMBBMEquation1D] begin
@@ -164,7 +164,7 @@ end
                         change_velocity=3.979039320256561e-13,
                         change_entropy=6.821210263296962e-13)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_upwind_relaxation with bathymetry_variable" setup=[
@@ -181,7 +181,7 @@ end
                         change_velocity=4.547473508864641e-13,
                         change_entropy=-2.2737367544323206e-12)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_manufactured" setup=[Setup, BBMBBMEquation1D] begin
@@ -196,7 +196,7 @@ end
                         atol=1e-10,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_manufactured with bathymetry_flat" setup=[Setup, BBMBBMEquation1D] begin
@@ -212,7 +212,7 @@ end
                         atol=1e-11,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_basic_reflecting" setup=[Setup, BBMBBMEquation1D, AdditionalImports] begin
@@ -227,7 +227,7 @@ end
                         atol=1e-9,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=1_500)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_500)
 
     # test upwind operators
     D1 = upwind_operators(Mattsson2017; derivative_order = 1,
@@ -248,7 +248,7 @@ end
                         atol=1e-7,
                         atol_ints=1e-9) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=2_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=2_000)
 end
 
 @testitem "bbm_bbm_1d_basic_reflecting with bathymetry_flat" setup=[
@@ -268,7 +268,7 @@ end
                         atol=1e-10,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=1_500)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_500)
 
     # test upwind operators
     D1 = upwind_operators(Mattsson2017; derivative_order = 1,
@@ -290,7 +290,7 @@ end
                         atol=1e-8,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=2_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=2_000)
 end
 
 @testitem "bbm_bbm_1d_dingemans" setup=[Setup, BBMBBMEquation1D] begin
@@ -303,7 +303,7 @@ end
                         change_velocity=2.1141942363467336e-16,
                         change_entropy=3.4175334942543323e-7)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
 @testitem "bbm_bbm_1d_well_balanced" setup=[Setup, BBMBBMEquation1D] begin
@@ -316,5 +316,5 @@ end
                         change_velocity=-1.6076981933671723e-15,
                         change_entropy=-3.1086244689504383e-15)
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end

@@ -14,7 +14,7 @@ end
                         change_entropy=0.1868146724821993,
                         atol=1e-9) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=90_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=90_000)
 end
 
 @testitem "svaerd_kalisch_1d_basic_reflecting" setup=[
@@ -33,7 +33,7 @@ end
                         change_entropy_modified=459.90372362340514,
                         atol=1e-11) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=650_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=650_000)
 
     # test upwind operators
     D1 = upwind_operators(Mattsson2017; derivative_order = 1,
@@ -53,7 +53,7 @@ end
                         change_entropy_modified=459.9037221442321,
                         atol=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=650_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=650_000)
 end
 
 @testitem "svaerd_kalisch_1d_dingemans" setup=[
@@ -72,7 +72,7 @@ end
                         change_entropy=-0.00024362648639453255,
                         change_entropy_modified=-6.311893230304122e-9)
 
-    @test_allocations(semi, sol, allocs=350_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 
     # test PeriodicRationalDerivativeOperator
     D1 = periodic_derivative_operator(1, accuracy_order, xmin(mesh), xmax(mesh),
@@ -91,7 +91,7 @@ end
                         change_entropy=-0.00024270962080663594,
                         change_entropy_modified=-7.430799087160267e-9)
 
-    @test_allocations(semi, sol, allocs=350_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 end
 
 @testitem "svaerd_kalisch_1d_dingemans_cg" setup=[Setup, SvaerdKalischEquations1D] begin
@@ -105,7 +105,7 @@ end
                         change_entropy=-0.0002425303440531934,
                         change_entropy_modified=-2.6815314413397573e-9)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "svaerd_kalisch_1d_dingemans_fourier" setup=[Setup, SvaerdKalischEquations1D] begin
@@ -119,7 +119,7 @@ end
                         change_entropy=-0.0002424441479433881,
                         change_entropy_modified=-4.00007138523506e-9)
 
-    @test_allocations(semi, sol, allocs=13_000_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=13_000_000)
 end
 
 @testitem "svaerd_kalisch_1d_dingemans_upwind" setup=[Setup, SvaerdKalischEquations1D] begin
@@ -133,7 +133,7 @@ end
                         change_entropy=-0.00023645232727176335,
                         change_entropy_modified=-6.654090611846186e-9)
 
-    @test_allocations(semi, sol, allocs=350_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 end
 
 @testitem "svaerd_kalisch_1d_dingemans_relaxation" setup=[Setup, SvaerdKalischEquations1D] begin
@@ -148,7 +148,7 @@ end
                         change_entropy=-0.00024362054875837202,
                         change_entropy_modified=0.0)
 
-    @test_allocations(semi, sol, allocs=350_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 end
 
 @testitem "svaerd_kalisch_1d_well_balanced" setup=[Setup, SvaerdKalischEquations1D] begin
@@ -163,5 +163,5 @@ end
                         change_entropy=0.0,
                         lake_at_rest=0.0)
 
-    @test_allocations(semi, sol, allocs=150_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=150_000)
 end

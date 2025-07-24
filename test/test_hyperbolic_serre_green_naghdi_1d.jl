@@ -32,7 +32,7 @@ end
                         ],
                         change_entropy_modified=-2.3374946067633573e-7)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton.jl with bathymetry_mild_slope" setup=[
@@ -66,7 +66,7 @@ end
                         ],
                         change_entropy_modified=-2.3374946067633573e-7)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton_relaxation.jl" setup=[
@@ -100,7 +100,7 @@ end
                         change_entropy_modified=-5.684341886080802e-14,
                         atol=2.0e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton.jl Jacobian" setup=[
@@ -163,7 +163,7 @@ end
                         change_entropy_modified=-3.197442310920451e-14,
                         lake_at_rest=1.833689450281284e-14)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_manufactured.jl" setup=[
@@ -194,7 +194,7 @@ end
                             4.819814592771365e-6
                         ])
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_dingemans.jl" setup=[
@@ -226,7 +226,7 @@ end
                         change_entropy=-0.0013486980525385661,
                         change_entropy_modified=-2.7995769187327824e-6)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_conservation.jl" setup=[
@@ -258,5 +258,5 @@ end
                         change_entropy_modified=-0.09432092643828582,
                         atol=1e-8) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
