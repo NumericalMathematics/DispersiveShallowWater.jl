@@ -155,6 +155,12 @@ function initialize!(cb::DiscreteCallback{Condition, Affect!}, q, t,
     initial_state_integrals = integrate(q, semi)
 
     analysis_callback = cb.affect!
+
+    # Reset stored data from previous runs
+    empty!(analysis_callback.tstops)
+    empty!(analysis_callback.errors)
+    empty!(analysis_callback.integrals)
+
     analysis_callback.initial_state_integrals = initial_state_integrals
 
     # Record current time using a high-resolution clock

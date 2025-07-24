@@ -11,7 +11,7 @@ for human readability.
 #### Added
 
 - Add conversion functions `prim2nondim` and `nondim2prim` for non-dimensional variables for `KdVEquation1D` ([#217]).
-- Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (only flat bathymetry: [#205]).
+- Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (flat bathymetry: [#205], general: [#223]).
 - Add `KdVEquation1D` ([#198]).
 
 ## Changes when updating to v0.7 from v0.6.x

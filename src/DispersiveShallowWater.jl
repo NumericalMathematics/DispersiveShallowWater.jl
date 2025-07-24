@@ -38,8 +38,8 @@ using SimpleUnPack: @unpack
 using SparseArrays: sparse, issparse
 using SummationByPartsOperators: SummationByPartsOperators,
                                  AbstractDerivativeOperator,
-                                 AbstractNonperiodicDerivativeOperator,
                                  AbstractPeriodicDerivativeOperator,
+                                 AbstractNonperiodicDerivativeOperator,
                                  PeriodicDerivativeOperator, PeriodicUpwindOperators,
                                  UniformPeriodicCoupledOperator,
                                  DerivativeOperator, UpwindOperators,

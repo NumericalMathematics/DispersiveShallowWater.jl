@@ -94,7 +94,7 @@ function initial_condition_manufactured(x, t, equations::KdVEquation1D,
 end
 
 """
-    source_terms_manufactured(q, x, t, equations::KdVEquation1D, mesh)
+    source_terms_manufactured(q, x, t, equations::KdVEquation1D)
 
 A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
 
