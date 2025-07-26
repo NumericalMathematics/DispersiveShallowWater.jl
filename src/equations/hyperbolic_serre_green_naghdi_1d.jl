@@ -374,11 +374,6 @@ function rhs!(dq, q, t, mesh,
     (; lambda, bathymetry_type) = equations
     (; D1) = solver
 
-    # if boundary_conditions isa BoundaryConditionReflecting && !(bathymetry_type isa BathymetryFlat)
-    #    throw(ArgumentError("Energy Conversation for the hyperbolic Serre-Green-Naghdi equations with
-    #                        reflecting boundary conditions and non-flat bathymetry is not calculated yet."))
-    # end
-
     # `q` and `dq` are `ArrayPartition`s. They collect the individual
     # arrays for the total water height `eta = h + b`, the velocity `v`,
     # and the additional variables `w` and `H`.
@@ -497,6 +492,17 @@ function rhs!(dq, q, t, mesh,
                                                        solver)
 
     return nothing
+end
+
+@inline function prim2cons(q, equations::HyperbolicSerreGreenNaghdiEquations1D)
+    h = waterheight(q, equations)
+    v = velocity(q, equations)
+    b = bathymetry(q, equations)
+
+    hv = h * v
+    hw = h * q[4]
+    hH = h * q[5]
+    return SVector(h, hv, b, hw, hH)
 end
 
 @inline function cons2prim(u, equations::HyperbolicSerreGreenNaghdiEquations1D)
