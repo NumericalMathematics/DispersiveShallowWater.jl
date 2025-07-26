@@ -277,6 +277,9 @@ end
 
 A smooth manufactured solution in combination with
 [`initial_condition_manufactured_reflecting`](@ref).
+
+calculated as shown in:
+https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/228#issuecomment-3123350726
 """
 function source_terms_manufactured_reflecting(q, x, t,
                                               equations::HyperbolicSerreGreenNaghdiEquations1D)
@@ -318,43 +321,6 @@ function source_terms_manufactured_reflecting(q, x, t,
     return SVector(s1, s2, s3, s4, s5)
 end
 
-#= TODO: put in PR link
-# 1d manufactured solution for hyperbolic Serre-Green-Naghdi equations
-
-using Symbolics
-
-@variables x t
-Dt = Differential(t)
-Dx = Differential(x)
-
-@variables g pi λ
-
-h = 1 + (2 * t) * (cos(pi*(x)) + x + 2)
-vx = (-t * x) * sin(pi*(x))
-b = (2 * x) # or b = 0
-eta = h
-w = -h * Dx(vx) + 3//2 * vx * Dx(b)
-
-PI = λ // 3 * (eta / h) * (1 - eta / h)
-
-eq1 = Dt(h) + Dx(h * vx)
-eq2 = Dt(vx) + (g * h * Dx(h) + h * vx * Dx(vx) + Dx(h * PI) + (g * h + 3 // 2 * h / eta * PI) * Dx(b)) / h
-eq3 = Dt(w) + vx * Dx(w) - λ * (1 - eta / h) / h
-eq4 = Dt(eta) + Dx(eta) * vx + 3//2 * Dx(b) * vx - w
-
-s1 = simplify(expand_derivatives(eq1))
-s2 = simplify(expand_derivatives(eq2))
-s3 = 0
-s4 = simplify(expand_derivatives(eq3))
-s5 = simplify(expand_derivatives(eq4))
-
-println("s1 = $s1\n")
-println("s2 = $s2\n")
-println("s3 = zero(s1)\n")
-println("s4 = $s4\n")
-println("s5 = $s5\n")
-=#
-
 function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
                       solver, initial_condition,
                       boundary_conditions::Union{BoundaryConditionPeriodic,
@@ -382,14 +348,8 @@ function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
     hvw_x = DiffCache(zero(template), N)
     tmp = DiffCache(zero(template), N)
 
-    tr, tl = zero(template), zero(template)
-    tr[end] = 1
-    tl[1] = 1
-
-    BC_Ref_Matrix = DiffCache(sparse(tr * tr' - tl * tl'), N)
-
     cache = (; h, b, b_x, H_over_h, h_x, v_x, hv_x, v2_x, h_hpb_x, H_x, H2_h_x, w_x, hvw_x,
-             tmp, BC_Ref_Matrix)
+             tmp)
     return cache
 end
 
