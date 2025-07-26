@@ -12,7 +12,7 @@ end
                         change_entropy_modified=-8.852448858398532e-7,
                         change_hamiltonian=-4.366246803000351e-6)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 
     # test upwind operators
     D1 = upwind_operators(periodic_derivative_operator; derivative_order = 1,
@@ -31,7 +31,7 @@ end
                         change_entropy_modified=-0.005460856586602614,
                         change_hamiltonian=-0.0204980283782078)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 
     # test PeriodicRationalDerivativeOperator
     D1 = periodic_derivative_operator(1, accuracy_order, xmin(mesh), xmax(mesh),
@@ -48,7 +48,7 @@ end
                         change_entropy_modified=-8.68871272874383e-7,
                         change_hamiltonian=-3.697687313897191e-6)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "bbm_1d_basic with split_form = false" setup=[
@@ -66,7 +66,7 @@ end
                         change_entropy_modified=-5.764463673341158e-7,
                         change_hamiltonian=-3.3263833076890847e-6)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 
     # test upwind operators
     D1 = upwind_operators(periodic_derivative_operator; derivative_order = 1,
@@ -86,7 +86,7 @@ end
                         change_entropy_modified=-0.00545433375143814,
                         change_hamiltonian=-0.020473704519129887)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "bbm_1d_relaxation" setup=[Setup, BBMEquation1D] begin
@@ -99,7 +99,7 @@ end
                         change_entropy_modified=2.7755575615628914e-17,
                         change_hamiltonian=-1.039007974656947e-6)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "bbm_1d_hamiltonian_relaxation" setup=[Setup, BBMEquation1D] begin
@@ -112,7 +112,7 @@ end
                         change_entropy_modified=3.085709884831367e-7,
                         change_hamiltonian=4.440892098500626e-16)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "bbm_1d_fourier" setup=[Setup, BBMEquation1D] begin
@@ -125,7 +125,7 @@ end
                         change_entropy_modified=-8.734545181576792e-7,
                         change_hamiltonian=-3.282887288680314e-6)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "bbm_1d_manufactured" setup=[Setup, BBMEquation1D, AdditionalImports] begin
@@ -137,7 +137,7 @@ end
                         change_waterheight=2.60491292165127e-12,
                         atol=1e-11) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=5_100)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_100)
 
     # test upwind operators
     D1 = upwind_operators(periodic_derivative_operator; derivative_order = 1,
@@ -155,5 +155,5 @@ end
                         change_waterheight=-3.745851908818973e-12,
                         atol=1e-11) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=6_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=6_000)
 end

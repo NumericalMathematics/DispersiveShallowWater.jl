@@ -10,7 +10,7 @@ end
                         cons_error=[4.440892098500626e-16],
                         change_waterheight=-4.440892098500626e-16)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "kdv_1d_implicit" setup=[Setup, KdVEquation1D] begin
@@ -21,7 +21,7 @@ end
                         cons_error=[0.0],
                         change_waterheight=0.0)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "kdv_1d_fourier" setup=[Setup, KdVEquation1D] begin
@@ -33,7 +33,7 @@ end
                         change_waterheight=1.3322676295501878e-15,
                         atol=1e-8) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "kdv_1d_manufactured" setup=[Setup, KdVEquation1D] begin
@@ -46,7 +46,7 @@ end
                         atol=1e-9,
                         atol_ints=1e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "kdv_1d_narrow_stencil" setup=[Setup, KdVEquation1D] begin
@@ -57,7 +57,7 @@ end
                         cons_error=[8.881784197001252e-16],
                         change_waterheight=8.881784197001252e-16)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end
 
 @testitem "kdv_1d_non_dim" setup=[Setup, KdVEquation1D] begin
@@ -68,5 +68,5 @@ end
                         cons_error=[2.842170943040401e-14],
                         change_waterheight=2.842170943040401e-14)
 
-    @test_allocations(semi, sol, allocs=5_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end

@@ -582,7 +582,7 @@ function create_cache(mesh,
     (; D1, D2) = solver
 
     if D1 isa DerivativeOperator && D2 isa VarCoefDerivativeOperator
-        @warn "VarCoefDerivativeOperators are currently only supported for reflecting boundary conditions with flat bathymetry. DispersiveShallowWater.jl will ignore `solver.D2` and just use `solver.D1` in this case."
+        throw(ArgumentError("VarCoefDerivativeOperators are currently only supported for reflecting boundary conditions with flat bathymetry."))
     end
 
     # create temporary storage
@@ -765,7 +765,6 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     # one needs to set the boundary conditions here
     # because one can not change the Symmetric matrix
-
     system_matrix[1, :] .= 0
     system_matrix[end, :] .= 0
     system_matrix[:, 1] .= 0
