@@ -294,7 +294,6 @@ end
                         ],
                         atol=1e-9) # to make CI pass
 
-
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
