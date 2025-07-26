@@ -247,6 +247,105 @@ function source_terms_manufactured(q, x, t,
     return SVector(s1, s2, s3, s4, s5)
 end
 
+"""
+    initial_condition_manufactured_reflecting(x, t, equations::HyperbolicSerreGreenNaghdiEquations1D, mesh)
+
+A smooth manufactured solution for reflecting boundary conditions in combination
+with [`source_terms_manufactured_reflecting`](@ref).
+"""
+function initial_condition_manufactured_reflecting(x, t,
+                                                   equations::HyperbolicSerreGreenNaghdiEquations1D,
+                                                   mesh)
+    h = 1 + (2 * t) * (cospi(x) + x + 2)
+    v = (-t * x) * sinpi(x)
+    D = zero(h) # flat bathymetry (D = 0)
+    if equations.bathymetry_type isa BathymetryMildSlope
+        D = -(2 * x)
+    end
+    # w = -h v_x + 3/2 v b_x
+    w = (-t * sinpi(x) - pi * t * x * cospi(x)) * (-1 - 2 * t * (2 + x + cospi(x)))
+    H = h
+
+    b = equations.eta0 - D
+    eta = h + b
+
+    return SVector(eta, v, D, w, H)
+end
+
+"""
+    source_terms_manufactured_reflecting(q, x, t, equations::HyperbolicSerreGreenNaghdiEquations1D)
+
+A smooth manufactured solution in combination with
+[`initial_condition_manufactured_reflecting`](@ref).
+"""
+function source_terms_manufactured_reflecting(q, x, t,
+                                              equations::HyperbolicSerreGreenNaghdiEquations1D)
+    g = gravity(equations)
+
+    a1 = 2 + x + cospi(x)
+    a2 = pi * t * x * cospi(x)
+    t_2 = t^2
+    pi_2 = pi^2
+
+    s1 = 2 * a1 + t * (-1 - 2t * a1) * sinpi(x) +
+         pi * t * (-1 - 2t * a1) * x * cospi(x) -
+         2(1 - pi * sinpi(x)) * t_2 * x * sinpi(x)
+    s2 = 2 * g * t - x * sinpi(x) - 2 * g * pi * t * sinpi(x) +
+         t_2 * x * (sinpi(x)^2) + pi * t_2 * (x^2) * cospi(x) * sinpi(x)
+    s3 = zero(s1)
+    s4 = -2(-t * sinpi(x) - a2) * a1 +
+         (-sinpi(x) - pi * x * cospi(x)) * (-1 - 2t * a1) +
+         ((2pi * t * cospi(x) - pi_2 * t * x * sinpi(x)) *
+          (-1 - 2t * a1) +
+          2(-t * sinpi(x) - a2) * (1 - pi * sinpi(x)) * t) * t *
+         x * sinpi(x)
+    s5 = 2 * a1 +
+         (t * sinpi(x) + a2) * (-1 - 2t * a1) -
+         2(1 - pi * sinpi(x)) * t_2 * x * sinpi(x)
+    if equations.bathymetry_type isa BathymetryMildSlope
+        s2 += 2 * g
+        s4 -= 3x * sinpi(x) +
+              ((2pi * t * cospi(x) - pi_2 * t * x * sinpi(x)) *
+               (-1 - 2t * a1) +
+               2(-t * sinpi(x) - a2) * (1 - pi * sinpi(x)) * t) * t * x *
+              sinpi(x) +
+              (-3t * sinpi(x) - 3 * a2 +
+               (-2pi * t * cospi(x) + pi_2 * t * x * sinpi(x)) *
+               (-1 - 2t * a1) -
+               2(-t * sinpi(x) - a2) * (1 - pi * sinpi(x)) * t) * t * x *
+              sinpi(x)
+    end
+    return SVector(s1, s2, s3, s4, s5)
+end
+
+#= TODO: put in PR link
+# 1d manufactured solution with flat bottom for DSW.jl
+h = 1 + (2 * t) * (cos(pi*(x)) + x + 2)
+vx = (-t * x) * sin(pi*(x))
+b = (2 * x) # or b = 0
+eta = h
+w = -h * (Dx(vx) + Dy(vy)) + 1.5 * (vx * Dx(b) + vy * Dy(b))
+
+PI = λ // 3 * (eta / h) * (1 - eta / h)
+
+eq1_b = Dt(h) + Dx(h * vx)
+eq2_b = Dt(vx) + (g * h * Dx(h) + h * vx * Dx(vx) + Dx(h * PI) + (g * h + 3 // 2 * h / eta * PI) * Dx(b)) / h
+eq3_b = Dt(w) + vx * Dx(w) - λ * (1 - eta / h) / h
+eq4_b = Dt(eta) + Dx(eta) * vx + 3//2 * Dx(b) * vx - w
+
+s1 = simplify(expand_derivatives(eq1_b))
+s2 = simplify(expand_derivatives(eq2_b))
+s3 = 0
+s4 = simplify(expand_derivatives(eq3_b))
+s5 = simplify(expand_derivatives(eq4_b))
+
+println("s1 = $s1\n")
+println("s2 = $s2\n")
+println("s3 = zero(s1)\n")
+println("s4 = $s4\n")
+println("s5 = $s5\n")
+=#
+
 function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
                       solver, initial_condition,
                       boundary_conditions::Union{BoundaryConditionPeriodic,
@@ -293,6 +392,7 @@ end
 #   Structure-preserving approximations of the Serre-Green-Naghdi
 #   equations in standard and hyperbolic form
 #   [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+# for reflecting boundary conditions, calculation not published yet.
 function rhs!(dq, q, t, mesh,
               equations::HyperbolicSerreGreenNaghdiEquations1D,
               initial_condition,
@@ -384,7 +484,7 @@ function rhs!(dq, q, t, mesh,
         # h_t + h_x v + h v_x = 0
         @.. dh = -(h_x * v + h * v_x)
         if boundary_conditions isa BoundaryConditionReflecting
-            dh[1] -=  h[1] * v[1] / left_boundary_weight(D1)
+            dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
             dh[end] += h[end] * v[end] / right_boundary_weight(D1)
         end
 
@@ -429,7 +529,6 @@ function rhs!(dq, q, t, mesh,
 
     return nothing
 end
-
 
 @inline function cons2prim(u, equations::HyperbolicSerreGreenNaghdiEquations1D)
     h, hv, b, hw, hH = u
