@@ -319,25 +319,34 @@ function source_terms_manufactured_reflecting(q, x, t,
 end
 
 #= TODO: put in PR link
-# 1d manufactured solution with flat bottom for DSW.jl
+# 1d manufactured solution for hyperbolic Serre-Green-Naghdi equations
+
+using Symbolics
+
+@variables x t
+Dt = Differential(t)
+Dx = Differential(x)
+
+@variables g pi λ
+
 h = 1 + (2 * t) * (cos(pi*(x)) + x + 2)
 vx = (-t * x) * sin(pi*(x))
 b = (2 * x) # or b = 0
 eta = h
-w = -h * (Dx(vx) + Dy(vy)) + 1.5 * (vx * Dx(b) + vy * Dy(b))
+w = -h * Dx(vx) + 3//2 * vx * Dx(b)
 
 PI = λ // 3 * (eta / h) * (1 - eta / h)
 
-eq1_b = Dt(h) + Dx(h * vx)
-eq2_b = Dt(vx) + (g * h * Dx(h) + h * vx * Dx(vx) + Dx(h * PI) + (g * h + 3 // 2 * h / eta * PI) * Dx(b)) / h
-eq3_b = Dt(w) + vx * Dx(w) - λ * (1 - eta / h) / h
-eq4_b = Dt(eta) + Dx(eta) * vx + 3//2 * Dx(b) * vx - w
+eq1 = Dt(h) + Dx(h * vx)
+eq2 = Dt(vx) + (g * h * Dx(h) + h * vx * Dx(vx) + Dx(h * PI) + (g * h + 3 // 2 * h / eta * PI) * Dx(b)) / h
+eq3 = Dt(w) + vx * Dx(w) - λ * (1 - eta / h) / h
+eq4 = Dt(eta) + Dx(eta) * vx + 3//2 * Dx(b) * vx - w
 
-s1 = simplify(expand_derivatives(eq1_b))
-s2 = simplify(expand_derivatives(eq2_b))
+s1 = simplify(expand_derivatives(eq1))
+s2 = simplify(expand_derivatives(eq2))
 s3 = 0
-s4 = simplify(expand_derivatives(eq3_b))
-s5 = simplify(expand_derivatives(eq4_b))
+s4 = simplify(expand_derivatives(eq3))
+s5 = simplify(expand_derivatives(eq4))
 
 println("s1 = $s1\n")
 println("s2 = $s2\n")

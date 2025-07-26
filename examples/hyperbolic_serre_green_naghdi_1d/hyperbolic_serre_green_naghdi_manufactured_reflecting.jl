@@ -1,5 +1,6 @@
 using OrdinaryDiffEqTsit5
 using DispersiveShallowWater
+using SummationByPartsOperators: MattssonNordström2004, derivative_operator
 
 ###############################################################################
 # Semidiscretization of the hyperbolic Serre-Green-Naghdi equations
@@ -41,12 +42,13 @@ analysis_callback = AnalysisCallback(semi; interval = 1000,
                                                                  momentum, entropy))
 callbacks = CallbackSet(analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
-sol = solve(ode, Tsit5(), abstol = 1e-9, reltol = 1e-9,
+sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7,
             saveat = saveat, callback = callbacks)
-plot(semi => sol, plot_initial = true, legend = false)
-
 
 """
+test_results = convergence_test(joinpath(examples_dir(), "hyperbolic_serre_green_naghdi_1d", "hyperbolic_serre_green_naghdi_manufactured_reflecting.jl"), [32, 64, 128, 256, 512]);
+with bathymetry_mild_slope:
+
 accuracy_order = 2
 ####################################################################################################
 l2
