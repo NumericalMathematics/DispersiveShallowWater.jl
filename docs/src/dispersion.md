@@ -79,7 +79,7 @@ solve the problem with the Svärd-Kalisch equations.
 using OrdinaryDiffEqTsit5
 using Printf
 
-equations = kdv
+equations = sk
 wave_number() = 3.0
 frequency(k) = disp_rel(euler, k)
 
@@ -132,7 +132,7 @@ anim = @animate for step in eachindex(sol.u)
     plot!(semi => sol, plot_initial = true, plot_bathymetry = false,
           conversion = waterheight_total, step = step, legend = :topleft, linewidth = 2,
           plot_title = @sprintf("t = %.3f", t), yrange = (eta0 - 0.03, eta0 + 0.03),
-          linestyles = [:solid :dot], labels = ["Euler" "KdV"],
+          linestyles = [:solid :dot], labels = ["Euler" "Svärd-Kalisch"],
           color = [:blue :green])
 end
 gif(anim, "traveling_waves.gif", fps = 25)
