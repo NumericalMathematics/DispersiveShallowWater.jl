@@ -44,7 +44,7 @@ k = 0.01:0.01:5.0
 
 euler = EulerEquations1D(; gravity = g, eta0 = eta0)
 c_euler = wave_speed.(disp_rel, euler, k; normalize = true)
-plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :topright)
+plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :topright, yrange = (-0.1, 1.1))
 
 kdv = KdVEquation1D(; gravity = g, eta0 = eta0, D = h0)
 c_kdv = wave_speed.(disp_rel, kdv, k; normalize = true)
