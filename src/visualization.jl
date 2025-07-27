@@ -55,13 +55,15 @@ end
     plot_title --> "$(get_name(equations)) at t = $(round(t, digits=5))"
     layout --> nsubplots
 
-    for i in 1:nsubplots
+    subplot = 0
+    for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ["D", "b"] && continue
+        names[i] in ("D", "b") && continue
 
+        subplot += 1
         if plot_initial == true
             @series begin
-                subplot --> i
+                subplot --> subplot
                 linestyle := :solid
                 label --> "initial $(names[i])"
                 grid(semi), data_exact[i, :]
@@ -69,7 +71,7 @@ end
         end
 
         @series begin
-            subplot --> i
+            subplot --> subplot
             label --> names[i]
             xguide --> "x"
             yguide --> names[i]
