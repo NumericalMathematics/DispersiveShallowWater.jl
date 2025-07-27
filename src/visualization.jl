@@ -58,7 +58,7 @@ end
     subplot = 0
     for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ["D", "b"] && continue
+        names[i] in ("D", "b") && continue
 
         subplot += 1
         if plot_initial == true
