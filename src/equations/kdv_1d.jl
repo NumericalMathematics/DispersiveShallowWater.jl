@@ -238,12 +238,14 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
 
             # set D1 for hyperbolic terms
             D1 = solver.D1.central
-        else
+        elseif !isnothing(solver.D3)
             # eta_xxx = D3 * eta
             mul!(tmp_1, solver.D3, eta)
 
             # set D1 for hyperbolic terms
             D1 = solver.D1
+        else
+            throw(ArgumentError("The KdV equation requires a third-derivative operator. Either explicitly as `D3` or with `D1` being an upwind operator."))
         end
 
         # deta = 1 / 6 sqrt(g * D) D^2 eta_xxx
