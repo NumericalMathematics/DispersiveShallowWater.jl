@@ -9,11 +9,17 @@ Modules = [DispersiveShallowWater]
 Pages = ["DispersiveShallowWater.jl"]
 ```
 
-## Equations
+## Model specific equations
 
 ```@autodocs
 Modules = [DispersiveShallowWater]
 Pages = Main.EQUATIONS_FILES
+Filter = t -> !(t in [DispersiveShallowWater.KdVEquation1D,
+                     DispersiveShallowWater.BBMEquation1D,
+                     DispersiveShallowWater.BBMBBMEquations1D,
+                     DispersiveShallowWater.SvaerdKalischEquations1D,
+                     DispersiveShallowWater.SerreGreenNaghdiEquations1D,
+                     DispersiveShallowWater.HyperbolicSerreGreenNaghdiEquations1D])
 ```
 
 ## Linear dispersion relations
