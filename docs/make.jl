@@ -81,7 +81,14 @@ makedocs(;
                                   size_threshold_warn = 1000 * 1024),
          pages = ["Home" => "index.md",
              "Overview" => "overview.md",
+             "Basic Example" => "basic_example.md",
+             "Summation-by-Parts Operators" => "SBP_Operators.md",
              "Dispersion" => "dispersion.md",
+             "Using Different Solvers" => "solvers.md",
+             "Callbacks and Relaxation" => "callbacks.md",
+             "Plotting" => "plotting.md",
+             "Experimental Data" => "dingemans.md",
+            #  "Miscellaneous" => "miscellaneous.md",
              "Development" => "development.md",
              "Reference" => [
                  "TrixiBase" => "ref-trixibase.md",
@@ -92,7 +99,11 @@ makedocs(;
              "Code of Conduct" => "code_of_conduct.md",
              "License" => "license.md"])
 
+# deploydocs(;
+#            repo = "github.com/NumericalMathematics/DispersiveShallowWater.jl",
+#            devbranch = "main",
+#            push_preview = true)
 deploydocs(;
-           repo = "github.com/NumericalMathematics/DispersiveShallowWater.jl",
-           devbranch = "main",
+           repo = "github.com/cwittens/DispersiveShallowWater.jl", 
+           devbranch = "improved-documantation",
            push_preview = true)
