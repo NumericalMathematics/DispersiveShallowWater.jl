@@ -4,6 +4,8 @@ tags:
   - Julia
   - numerical analysis
   - differential equations
+  - dispersive wave equations
+  - summation-by-parts
 authors:
   - name: Joshua Lampert
     orcid: 0009-0007-0971-6709
