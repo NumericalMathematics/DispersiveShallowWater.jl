@@ -68,7 +68,7 @@ Furthermore, DispersiveShallowWater.jl includes routines for computing and analy
 
 # Related research and software
 
-Over the last century, several mathematical models describing the behavior of water waves have been proposed. As, e.g., outlined in @glimsdal2013dispersion, the ability to model dispersion effects is inevitable
+Over the last century, several mathematical models describing the behavior of water waves have been proposed. As, e.g., outlined in @glimsdal2013dispersion, the ability to model dispersion effects is essential
 for many applications in fluid dynamics, coastal engineering, and environmental science. Therefore, many equations have been developed to capture these effects, which makes them physically more accurate
 compared to, e.g., the well-known shallow water equations, but also numerically more challenging to solve. Hence, researchers have developed a wide range of numerical methods to solve these equations,
 including finite difference, finite volume, discontinuous Galerkin, and spectral methods. However, many of these methods do not preserve the underlying structure of the equations, which can lead to
@@ -76,7 +76,7 @@ numerical artifacts and inaccuracies in the simulations.
 
 This leads to the recent trend in numerical analysis to develop structure-preserving discretization methods that maintain the physical properties of the equations.
 For the dispersive wave equations mentioned above, several structure-preserving methods have been proposed and analyzed in the literature, including the use of summation-by-parts (SBP) operators,
-cf. @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which provides access
+cf. @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which offers access
 to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods. The work also compares the numerical
 solutions to data obtained from experiments showing good agreement.
 
