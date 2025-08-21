@@ -53,7 +53,7 @@ accelerates the development and assessment of new methods in the field.
 DispersiveShallowWater.jl is written in the Julia programming language [@bezanson2017julia] and leverages Julia's strengths in scientific computing, such as high performance, ease of use,
 and rich ecosystem of libraries and tools.
 
-To date, DispersiveShallowWater.jl has support for classical one-dimensional scalar dispersive wave equations like the Korteweg-de Vries (KdV) equation [@korteweg1895change] and the
+To date, DispersiveShallowWater.jl supports classical one-dimensional scalar dispersive wave equations like the Korteweg-de Vries (KdV) equation [@korteweg1895change] and the
 Benjamin-Bona-Mahony (BBM) equation [@benjamin1972model] as well as more sophisticated one-dimensional systems of equations like the BBM-BBM system [@bona1998boussinesq], the Serre-Green-Naghdi equations
 [@serre1953contribution; @green1976derivation], a hyperbolic approximation thereof [@favrie2017rapid], and the Svärd-Kalisch equations [@svard2025novel].
 
@@ -77,7 +77,7 @@ numerical artifacts and inaccuracies in the simulations.
 This leads to the recent trend in numerical analysis to develop structure-preserving discretization methods that maintain the physical properties of the equations.
 For the dispersive wave equations mentioned above, several structure-preserving methods have been proposed and analyzed in the literature, including the use of summation-by-parts (SBP) operators,
 cf. @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which provides access
-to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods and also compares the numerical
+to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods. The work also compares the numerical
 solutions to data obtained from experiments showing good agreement.
 
 Up to the authors' knowledge, no other software package provides the same level of functionality for simulating dispersive shallow water waves as DispersiveShallowWater.jl. Other open source software
