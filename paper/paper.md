@@ -53,8 +53,7 @@ and rich ecosystem of libraries and tools.
 
 To date, DispersiveShallowWater.jl has support for classical one-dimensional scalar dispersive wave equations like the Korteweg-de Vries (KdV) equation [@korteweg1895change] and the
 Benjamin-Bona-Mahony (BBM) equation [@benjamin1972model] as well as more sophisticated one-dimensional systems of equations like the BBM-BBM system [@bona1998boussinesq], the Serre-Green-Naghdi equations
-[@serre1953contribution; @green1976derivation], a hyperbolic approximation thereof [@favrie2017rapid], and the Svärd-Kalisch equations [@svard2025novel]. The numerical discretizations implemented in
-DispersiveShallowWater.jl are derived and analyzed especially in @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure.
+[@serre1953contribution; @green1976derivation], a hyperbolic approximation thereof [@favrie2017rapid], and the Svärd-Kalisch equations [@svard2025novel].
 
 The package integrates well into the existing ecosystem of Julia using SummationByPartsOperators.jl [@ranocha2021sbp] for the construction of SBP operators,
 OrdinaryDiffEq.jl [@rackauckas2017differentialequations] for solving the resulting ordinary differential equations, and Plots.jl [@christ2023plots] for visualization. This allows the library to use advanced techniques
@@ -67,9 +66,22 @@ Furthermore, DispersiveShallowWater.jl includes routines for computing and analy
 
 # Related research and software
 
-TODO
-@lampert2024structure uses DispersiveShallowWater.jl, compared to experimental data; basilisk?
+Over the last century, several mathematical models describing the behavior of water waves have been proposed. As, e.g., outlined in @glimsdal2013dispersion, the ability to model dispersion effects is inevitable
+for many applications in fluid dynamics, coastal engineering, and environmental science. Therefore, many equations have been developed to capture these effects, which makes them physically more accurate
+compared to, e.g., the well-known shallow water equations, but also numerically more challenging to solve. Hence, researchers have developed a wide range of numerical methods to solve these equations,
+including finite difference, finite volume, discontinuous Galerkin, and spectral methods. However, many of these methods do not preserve the underlying structure of the equations, which can lead to
+numerical artifacts and inaccuracies in the simulations.
 
+This leads to the recent trend in numerical analysis to develop structure-preserving discretization methods that maintain the physical properties of the equations.
+For the dispersive wave equations mentioned above, several structure-preserving methods have been proposed and analyzed in the literature, including the use of summation-by-parts (SBP) operators,
+cf. @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which provides access
+to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods and also compares the numerical
+solutions to data obtained from experiments showing good agreement.
+
+Up to the authors' knowledge, no other software package provides the same level of functionality for simulating dispersive shallow water waves as DispersiveShallowWater.jl. Other open source software
+packages, such as Basilisk (http://basilisk.fr/), offer similar capabilities for some of the relevant equations but may not include all the features and tools available in DispersiveShallowWater.jl
+and rely on different numerical methods and approaches. While some research papers offer supplementary code, these are typically limited to small scripts intended for reproducing specific results and are not
+developed as general-purpose software libraries.
 
 # Acknowledgements
 
