@@ -1,4 +1,5 @@
 [default.extend-words]
 ater = "ater" # Needed for {D}ispersive{S}hallow{W}ater.jl
-ois = "ois"
-onservation = "onservation"
+
+[files]
+extend-exclude = ["paper/paper.bib"]
