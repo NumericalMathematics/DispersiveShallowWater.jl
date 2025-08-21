@@ -34,7 +34,7 @@ summation-by-parts (SBP) operators. A central goal is the preservation of key st
 
 # Statement of need
 
-Dispersive wave equations are fundamental in modeling various physical phenomena including shallow water waves, tsunamis, inundations, and other geophysical flows. These phenomena are often modelled as
+Dispersive wave equations are fundamental in modeling various physical phenomena including shallow water waves, tsunamis, inundations, and other geophysical flows. These phenomena are often modeled as
 partial differential equations (PDEs) that exhibit dispersive behavior. The complexity and analytical intractability of most dispersive wave PDEs make the use of numerical methods inevitable for their practical solution.
 
 Accurate simulation of dispersive wave equations requires advanced numerical methods capable of capturing both nonlinear and dispersive effects. It is crucial that these methods preserve fundamental physical
