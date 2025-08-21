@@ -40,7 +40,7 @@ invariants, such as conservation laws and stability, to ensure that the resultin
 structure-preserving algorithms tailored for a wide range of dispersive wave models.
 Summation-by-parts (SBP) operators play a crucial role in the library by enabling the construction of numerical schemes that mimic the integration-by-parts property at the discrete level.
 This property is essential for ensuring provable conservation and stability in the numerical solution of dispersive wave equations, making SBP operators particularly well-suited for structure-preserving simulations.
-In recent years, SBP operators gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@ranocha2021broad; @ranocha2021rate; @linders2023resolving; @lampert2024structure; @ranocha2025structure].
+In recent years, SBP operators gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@ranocha2021broad; @ranocha2021rate; @linders2023resolving; @lampert2024structure; @biswas2024traveling; @ranocha2025structure].
 
 Despite the importance of structure-preserving methods for dispersive wave equations, such approaches are rarely available in existing open-source software packages. DispersiveShallowWater.jl fills this
 gap by providing a unified framework that enables users to easily compare different mathematical models, numerical discretizations, and physical setups. This facilitates reproducible research and
@@ -48,13 +48,27 @@ accelerates the development and assessment of new methods in the field.
 
 # Features
 
-TODO
+DispersiveShallowWater.jl is written in the Julia programming language [@bezanson2017julia] and leverages Julia's strengths in scientific computing, such as high performance, ease of use,
+and rich ecosystem of libraries and tools.
 
+To date, DispersiveShallowWater.jl has support for classical one-dimensional scalar dispersive wave equations like the Korteweg-de Vries (KdV) [@korteweg1895change] equation and the
+Benjamin-Bona-Mahony (BBM) [@benjamin1972model] equation as well as more sophisticated one-dimensional systems of equations like the BBM-BBM system [@bona1998boussinesq], the Serre-Green-Naghdhi equations
+[@serre1953contribution; @green1976derivation], a hyperbolic approximation thereof [@favrie2017rapid], and the Svärd-Kalisch equations [@svard2025novel]. The numerical discretizations implemented in
+DispersiveShallowWater.jl are derived and analyzed especially in @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure.
+
+The package integrates well into the existing ecosystem of Julia using SummationByPartsOperators.jl [@ranocha2021sbp] for the construction of SBP operators,
+OrdinaryDiffEq.jl [@rackauckas2017differentialequations] for solving the resulting ODEs, and Plots.jl [@christ2023plots] for visualization. This allows the library to use advanced techniques
+implemented in these packages and benefit from their extensive functionality. Moreover, the design concept behind DispersiveShallowWater.jl is largely inspired by the well-established numerical
+solution framework Trixi.jl [@ranocha2022adaptive; @schlottkelakemper2021purely; @schlottkelakemper2025trixi] making the interface familiar to users of Trixi.jl and easy to extend.
+
+In addition, users benefit from a suite of built-in analysis and postprocessing tools for investigation of numerical and physical properties, performance evaluation, and visualization. Entropy-conserving
+time integration schemes based on relaxation approaches, enabling stability also on the fully-discrete level, see @ketcheson2019relaxation, @ranocha2020relaxation.
+Furthermore, DispersiveShallowWater.jl includes routines for computing and analyzing linear dispersion relations, enabling theoretical investigation and comparison of different models.
 
 # Related research and software
 
 TODO
-@lampert2024structure
+@lampert2024structure uses DispersiveShallowWater.jl, compared to experimental data; basilisk?
 
 
 # Acknowledgements
