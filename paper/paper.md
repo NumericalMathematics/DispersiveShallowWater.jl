@@ -63,7 +63,7 @@ implemented in these packages and benefit from their extensive functionality. Mo
 solution framework Trixi.jl [@ranocha2022adaptive; @schlottkelakemper2021purely; @schlottkelakemper2025trixi] making the interface familiar to users of Trixi.jl and easy to extend.
 
 In addition, users benefit from a suite of built-in analysis and postprocessing tools for investigation of numerical and physical properties, performance evaluation, and visualization. Entropy-conserving
-time integration schemes based on relaxation approaches, enabling stability also on the fully-discrete level, see @ketcheson2019relaxation, @ranocha2020relaxation.
+time integration schemes based on relaxation approaches are implemented, enabling stability also on the fully-discrete level, see @ketcheson2019relaxation, @ranocha2020relaxation.
 Furthermore, DispersiveShallowWater.jl includes routines for computing and analyzing linear dispersion relations, enabling theoretical investigation and comparison of different models.
 
 # Related research and software
