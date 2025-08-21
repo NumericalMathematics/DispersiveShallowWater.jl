@@ -51,13 +51,13 @@ accelerates the development and assessment of new methods in the field.
 DispersiveShallowWater.jl is written in the Julia programming language [@bezanson2017julia] and leverages Julia's strengths in scientific computing, such as high performance, ease of use,
 and rich ecosystem of libraries and tools.
 
-To date, DispersiveShallowWater.jl has support for classical one-dimensional scalar dispersive wave equations like the Korteweg-de Vries (KdV) [@korteweg1895change] equation and the
-Benjamin-Bona-Mahony (BBM) [@benjamin1972model] equation as well as more sophisticated one-dimensional systems of equations like the BBM-BBM system [@bona1998boussinesq], the Serre-Green-Naghdhi equations
+To date, DispersiveShallowWater.jl has support for classical one-dimensional scalar dispersive wave equations like the Korteweg-de Vries (KdV) equation [@korteweg1895change] and the
+Benjamin-Bona-Mahony (BBM) equation [@benjamin1972model] as well as more sophisticated one-dimensional systems of equations like the BBM-BBM system [@bona1998boussinesq], the Serre-Green-Naghdi equations
 [@serre1953contribution; @green1976derivation], a hyperbolic approximation thereof [@favrie2017rapid], and the Svärd-Kalisch equations [@svard2025novel]. The numerical discretizations implemented in
 DispersiveShallowWater.jl are derived and analyzed especially in @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure.
 
 The package integrates well into the existing ecosystem of Julia using SummationByPartsOperators.jl [@ranocha2021sbp] for the construction of SBP operators,
-OrdinaryDiffEq.jl [@rackauckas2017differentialequations] for solving the resulting ODEs, and Plots.jl [@christ2023plots] for visualization. This allows the library to use advanced techniques
+OrdinaryDiffEq.jl [@rackauckas2017differentialequations] for solving the resulting ordinary differential equations, and Plots.jl [@christ2023plots] for visualization. This allows the library to use advanced techniques
 implemented in these packages and benefit from their extensive functionality. Moreover, the design concept behind DispersiveShallowWater.jl is largely inspired by the well-established numerical
 solution framework Trixi.jl [@ranocha2022adaptive; @schlottkelakemper2021purely; @schlottkelakemper2025trixi] making the interface familiar to users of Trixi.jl and easy to extend.
 
