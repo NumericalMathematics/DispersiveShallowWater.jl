@@ -42,7 +42,7 @@ invariants, such as conservation laws and stability, to ensure that the resultin
 structure-preserving algorithms tailored for a wide range of dispersive wave models.
 Summation-by-parts (SBP) operators play a crucial role in the library by enabling the construction of numerical schemes that mimic the integration-by-parts property at the discrete level.
 This property is essential for ensuring provable conservation and stability in the numerical solution of dispersive wave equations, making SBP operators particularly well-suited for structure-preserving simulations.
-In recent years, SBP operators gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@ranocha2021broad; @ranocha2021rate; @linders2023resolving; @lampert2024structure; @biswas2024traveling; @ranocha2025structure].
+In recent years, SBP operators have gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@ranocha2021broad; @ranocha2021rate; @linders2023resolving; @lampert2024structure; @biswas2024traveling; @ranocha2025structure].
 
 Despite the importance of structure-preserving methods for dispersive wave equations, such approaches are rarely available in existing open-source software packages. DispersiveShallowWater.jl fills this
 gap by providing a unified framework that enables users to easily compare different mathematical models, numerical discretizations, and physical setups. This facilitates reproducible research and
