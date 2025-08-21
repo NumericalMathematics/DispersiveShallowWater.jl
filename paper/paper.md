@@ -1,3 +1,4 @@
+---
 title: 'DispersiveShallowWater.jl: A Julia library of structure-preserving numerical methods for dispersive wave equations'
 tags:
   - Julia
