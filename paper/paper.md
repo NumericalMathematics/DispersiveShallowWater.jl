@@ -42,7 +42,7 @@ invariants, such as conservation laws and stability, to ensure that the resultin
 structure-preserving algorithms tailored for a wide range of dispersive wave models.
 Summation-by-parts (SBP) operators play a crucial role in the library by enabling the construction of numerical schemes that mimic the integration-by-parts property at the discrete level.
 This property is essential for ensuring provable conservation and stability in the numerical solution of dispersive wave equations, making SBP operators particularly well-suited for structure-preserving simulations.
-In recent years, SBP operators have gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@ranocha2021broad; @ranocha2021rate; @linders2023resolving; @lampert2024structure; @biswas2024traveling; @ranocha2025structure].
+In recent years, SBP operators have gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@mattsson2014diagonal; @almquist2014high; @mattsson2016high; @lindeberg2021high; @ranocha2021broad; @ranocha2021rate; @ rydin2021high; @linders2023resolving; @lampert2024structure; @biswas2025traveling; @kjelldahl2025numerical; @ranocha2025structure; @giesselmann2025convergence].
 
 Despite the importance of structure-preserving methods for dispersive wave equations, such approaches are rarely available in existing open-source software packages. DispersiveShallowWater.jl fills this
 gap by providing a unified framework that enables users to easily compare different mathematical models, numerical discretizations, and physical setups. This facilitates reproducible research and
@@ -68,7 +68,7 @@ Furthermore, DispersiveShallowWater.jl includes routines for computing and analy
 
 # Related research and software
 
-Over the last century, several mathematical models describing the behavior of water waves have been proposed. As, e.g., outlined in @glimsdal2013dispersion, the ability to model dispersion effects is essential
+Over the last century, several mathematical models describing the behavior of water waves have been proposed. As, e.g., outlined by @glimsdal2013dispersion, the ability to model dispersion effects is essential
 for many applications in fluid dynamics, coastal engineering, and environmental science. Therefore, many equations have been developed to capture these effects, which makes them physically more accurate
 compared to, e.g., the well-known shallow water equations, but also numerically more challenging to solve. Hence, researchers have developed a wide range of numerical methods to solve these equations,
 including finite difference, finite volume, discontinuous Galerkin, and spectral methods. However, many of these methods do not preserve the underlying structure of the equations, which can lead to
@@ -76,7 +76,7 @@ numerical artifacts and inaccuracies in the simulations.
 
 This leads to the recent trend in numerical analysis to develop structure-preserving discretization methods that maintain the physical properties of the equations.
 For the dispersive wave equations mentioned above, several structure-preserving methods have been proposed and analyzed in the literature, including the use of summation-by-parts (SBP) operators,
-cf. @biswas2024traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which offers access
+cf. @biswas2025traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which offers access
 to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods. The work also compares the numerical
 solutions to data obtained from experiments showing good agreement.
 
@@ -90,7 +90,7 @@ developed as general-purpose software libraries.
 JL acknowledges the support by the Deutsche Forschungsgemeinschaft (DFG)
 within the Research Training Group GRK 2583 "Modeling, Simulation and
 Optimization of Fluid Dynamic Applications".
-HR TODO
+HR additionally acknowledges support from the DFG through individual research grants 513301895 and 528753982, as well as within the DFG priority program SPP~2410 with project number 526031774.
 
 
 # References
