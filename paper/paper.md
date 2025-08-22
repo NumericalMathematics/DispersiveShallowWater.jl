@@ -59,7 +59,7 @@ Benjamin-Bona-Mahony (BBM) equation [@benjamin1972model] as well as more sophist
 [@serre1953contribution; @green1976derivation], a hyperbolic approximation thereof [@favrie2017rapid], and the Svärd-Kalisch equations [@svard2025novel].
 
 The package integrates well into the existing ecosystem of Julia using SummationByPartsOperators.jl [@ranocha2021sbp] for the construction of SBP operators,
-OrdinaryDiffEq.jl [@rackauckas2017differentialequations] for solving the resulting ordinary differential equations, and Plots.jl [@christ2023plots] for visualization. This allows the library to use advanced techniques
+OrdinaryDiffEq.jl [@rackauckas2017differentialequations] for solving the ordinary differential equations resulting from spatial discretization, and Plots.jl [@christ2023plots] for visualization. This allows the library to use advanced techniques
 implemented in these packages and benefit from their extensive functionality. Moreover, the design concept behind DispersiveShallowWater.jl is largely inspired by the well-established numerical
 solution framework Trixi.jl [@ranocha2022adaptive; @schlottkelakemper2021purely; @schlottkelakemper2025trixi] making the interface familiar to users of Trixi.jl and easy to extend.
 
