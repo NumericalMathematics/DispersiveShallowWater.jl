@@ -81,9 +81,15 @@ cf. @biswas2025traveling, @ranocha2021broad, @linders2023resolving, @lampert2024
 to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods. The work also compares the numerical
 solutions to data obtained from experiments showing good agreement.
 
-To the authors' knowledge, no other software package provides the same level of functionality for simulating dispersive shallow water waves as DispersiveShallowWater.jl. Other open source software
-packages, such as Basilisk ([http://basilisk.fr/](http://basilisk.fr/), accessed 2025-08-22), offer similar capabilities for some of the relevant equations but may not include all the features and tools available in DispersiveShallowWater.jl
-and rely on different numerical methods and approaches. While some research papers offer supplementary code, these are typically limited to small scripts intended for reproducing specific results and are not
+To the authors' knowledge, no other software package provides the same level of functionality for simulating dispersive shallow water waves as DispersiveShallowWater.jl.
+Other open source software packages, such as
+Basilisk ([http://basilisk.fr/](http://basilisk.fr/), accessed 2025-08-22),
+FUNWAVE-TVD ([https://fengyanshi.github.io](https://fengyanshi.github.io), accessed 2025-08-22),
+SWASH ([https://www.tudelft.nl/swash](https://www.tudelft.nl/swash), accessed 2025-08-22),
+and the HySEA family of codes ([https://edanya.uma.es/hysea/](https://edanya.uma.es/hysea/), accessed 2025-08-22)
+offer similar capabilities for some of the relevant equations but may not include all the features and tools available in DispersiveShallowWater.jl and rely on different numerical methods and approaches.
+These codes typically focus on applied problems while DispersiveShallowWater.jl is aimed at developing and comparing models and numerical methods.
+While some research papers offer supplementary code, these are typically limited to small scripts intended for reproducing specific results and are not
 developed as general-purpose software libraries.
 
 # Acknowledgments
