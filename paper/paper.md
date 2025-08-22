@@ -86,7 +86,7 @@ packages, such as Basilisk ([http://basilisk.fr/](http://basilisk.fr/)), offer s
 and rely on different numerical methods and approaches. While some research papers offer supplementary code, these are typically limited to small scripts intended for reproducing specific results and are not
 developed as general-purpose software libraries.
 
-# Acknowledgements
+# Acknowledgments
 
 JL acknowledges the support by the Deutsche Forschungsgemeinschaft (DFG)
 within the Research Training Group GRK 2583 "Modeling, Simulation and
