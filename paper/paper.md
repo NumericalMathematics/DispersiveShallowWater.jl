@@ -82,7 +82,7 @@ to the numerical discretizations developed in these works. In @lampert2024struct
 solutions to data obtained from experiments showing good agreement.
 
 To the authors' knowledge, no other software package provides the same level of functionality for simulating dispersive shallow water waves as DispersiveShallowWater.jl. Other open source software
-packages, such as Basilisk ([http://basilisk.fr/](http://basilisk.fr/)), offer similar capabilities for some of the relevant equations but may not include all the features and tools available in DispersiveShallowWater.jl
+packages, such as Basilisk ([http://basilisk.fr/](http://basilisk.fr/), accessed 2025-08-22), offer similar capabilities for some of the relevant equations but may not include all the features and tools available in DispersiveShallowWater.jl
 and rely on different numerical methods and approaches. While some research papers offer supplementary code, these are typically limited to small scripts intended for reproducing specific results and are not
 developed as general-purpose software libraries.
 
