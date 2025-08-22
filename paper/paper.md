@@ -90,7 +90,7 @@ developed as general-purpose software libraries.
 JL acknowledges the support by the Deutsche Forschungsgemeinschaft (DFG)
 within the Research Training Group GRK 2583 "Modeling, Simulation and
 Optimization of Fluid Dynamic Applications".
-HR additionally acknowledges support from the DFG through individual research grants 513301895 and 528753982, as well as within the DFG priority program SPP~2410 with project number 526031774.
+HR additionally acknowledges support from the DFG through individual research grants 513301895 and 528753982, as well as within the DFG priority program SPP 2410 with project number 526031774.
 
 
 # References
