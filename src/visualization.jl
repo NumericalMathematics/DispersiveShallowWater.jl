@@ -64,7 +64,7 @@ end
         if plot_initial == true
             @series begin
                 subplot --> subplot
-                linestyle := :solid
+                linestyle --> :solid
                 label --> "initial $(names[i])"
                 grid(semi), data_exact[i, :]
             end
@@ -84,12 +84,12 @@ end
     if plot_bathymetry == true
         @series begin
             subplot --> 1
-            linestyle := :solid
-            label := "bathymetry"
+            linestyle --> :solid
+            label --> "bathymetry"
             xguide --> "x"
             yguide --> names[1]
             title --> names[1]
-            color := :black
+            color --> :black
             grid(semi), bathy
         end
     end
@@ -191,7 +191,7 @@ end
             quantity = cb.affect!.analysis_integrals[i]
             @series begin
                 subplot --> subplot
-                label := pretty_form_utf(quantity) * " " * label_extension
+                label --> pretty_form_utf(quantity) * " " * label_extension
                 title --> "change of invariants"
                 xguide --> "t"
                 yguide --> "change of invariants"

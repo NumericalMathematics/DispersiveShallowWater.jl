@@ -25,7 +25,7 @@ Fully discrete entropy-conservative methods can be obtained by using the [relaxa
 ## Installation
 
 If you have not yet installed Julia, then you first need to [download Julia](https://julialang.org/downloads/). Please [follow the instructions for your operating system](https://julialang.org/downloads/platform/).
-DispersiveShallowWater.jl works with Julia v1.10 and newer. DispersiveShallowWater.jl is a registered Julia package. Therefore, you can install it by executing the following commands from the Julia REPL
+[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) works with Julia v1.10 and newer. [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) is a registered Julia package. Therefore, you can install it by executing the following commands from the Julia REPL
 
 ```julia
 julia> using Pkg
@@ -37,7 +37,7 @@ In addition, this installs the packages OrdinaryDiffEqTsit5.jl from [OrdinaryDif
 used for time-integration and [Plots.jl](https://github.com/JuliaPlots/Plots.jl) to visualize the results. If you want to use
 other time integration methods than `Tsit5`, you can install the respective subpackage or OrdinaryDiffEq.jl, which will install
 every available solver.
-If you want to use other SBP operators than the default operators that DispersiveShallowWater.jl uses, then you also need [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl),
+If you want to use other SBP operators than the default operators that [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) uses, then you also need [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl),
 which can be installed running
 
 ```julia
@@ -46,7 +46,7 @@ julia> Pkg.add("SummationByPartsOperators")
 
 ## Usage
 
-In the Julia REPL, first load the package DispersiveShallowWater.jl
+In the Julia REPL, first load the package [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl)
 
 ```julia
 julia> using DispersiveShallowWater
@@ -58,7 +58,7 @@ You can run a basic simulation that solves the BBM-BBM equations by executing
 julia> include(default_example());
 ```
 
-The result can be visualized by using the package Plots.jl
+The result can be visualized by using the package [Plots.jl](https://github.com/JuliaPlots/Plots.jl)
 
 ```julia
 julia> using Plots
@@ -72,7 +72,7 @@ e.g., `include(joinpath(examples_dir(), "svaerd_kalisch_1d", "svaerd_kalisch_1d_
 
 ## Referencing
 
-You can directly refer to DispersiveShallowWater.jl as
+You can directly refer to [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) as
 
 ```bibtex
 @misc{lampert2025dispersive,
@@ -97,4 +97,4 @@ The code structure is inspired by [Trixi.jl](https://github.com/trixi-framework/
 
 ## License and contributing
 
-DispersiveShallowWater.jl is published under the MIT license (see [License](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/blob/main/LICENSE)). We are pleased to accept contributions from everyone, preferably in the form of a PR.
+[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) is published under the MIT license (see [License](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/blob/main/LICENSE)). We are pleased to accept contributions from everyone, preferably in the form of a PR.
