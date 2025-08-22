@@ -1,7 +1,7 @@
 {
-    "description": "Structure-Preserving Numerical Methods for Dispersive Shallow Water Models",
+    "description": "A Julia library of structure-preserving numerical methods for dispersive wave equations",
     "license": "MIT",
-    "title": "DispersiveShallowWater.jl",
+    "title": "DispersiveShallowWater.jl: A Julia library of structure-preserving numerical methods for dispersive wave equations",
     "upload_type": "software",
     "creators": [
         {
