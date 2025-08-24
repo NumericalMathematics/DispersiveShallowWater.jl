@@ -38,6 +38,7 @@ using SimpleUnPack: @unpack
 using SparseArrays: sparse, issparse
 using SummationByPartsOperators: SummationByPartsOperators,
                                  AbstractDerivativeOperator,
+                                 AbstractPeriodicDerivativeOperator,
                                  AbstractNonperiodicDerivativeOperator,
                                  PeriodicDerivativeOperator, PeriodicUpwindOperators,
                                  UniformPeriodicCoupledOperator,
@@ -48,7 +49,8 @@ using SummationByPartsOperators: SummationByPartsOperators,
                                  periodic_derivative_operator,
                                  derivative_order, integrate, mass_matrix,
                                  scale_by_mass_matrix!,
-                                 scale_by_inverse_mass_matrix!
+                                 scale_by_inverse_mass_matrix!,
+                                 left_boundary_weight, right_boundary_weight
 import SummationByPartsOperators: grid, xmin, xmax, semidiscretize
 using TimerOutputs: TimerOutputs, print_timer, reset_timer!
 @reexport using TrixiBase: trixi_include
@@ -75,6 +77,7 @@ export AbstractShallowWaterEquations,
 export LinearDispersionRelation, EulerEquations1D, wave_speed
 
 export prim2prim, prim2cons, cons2prim, prim2phys,
+       prim2nondim, nondim2prim,
        waterheight_total, waterheight,
        velocity, momentum, discharge,
        gravity,

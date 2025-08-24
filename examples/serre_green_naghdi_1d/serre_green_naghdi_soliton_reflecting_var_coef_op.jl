@@ -1,11 +1,12 @@
 using OrdinaryDiffEqTsit5
 using DispersiveShallowWater
-using SummationByPartsOperators: MattssonNordström2004, derivative_operator
+using SummationByPartsOperators: Mattsson2012, derivative_operator,
+                                 var_coef_derivative_operator
 
 ###############################################################################
 # Semidiscretization of the Serre-Green-Naghdi equations
 
-equations = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
+equations = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_flat,
                                         gravity = 9.81)
 
 # initial_condition_convergence_test can only be used to get reasonable errors
@@ -22,11 +23,16 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
 # create solver with SBP operators of accuracy order 2
 accuracy_order = 2
-D1 = derivative_operator(MattssonNordström2004();
+D1 = derivative_operator(Mattsson2012();
                          derivative_order = 1, accuracy_order,
                          xmin = xmin(mesh), xmax = xmax(mesh), N = N)
-
-solver = Solver(D1)
+# we create a variable-coefficient second-derivative operator and
+# initialize the variable coefficient as `one` - the variable coefficients
+# will be set internally during a simulation
+D2 = var_coef_derivative_operator(Mattsson2012(),
+                                  2, accuracy_order,
+                                  xmin(mesh), xmax(mesh), N, one)
+solver = Solver(D1, D2)
 
 # semidiscretization holds all the necessary data structures for the spatial discretization
 semi = Semidiscretization(mesh, equations, initial_condition, solver,

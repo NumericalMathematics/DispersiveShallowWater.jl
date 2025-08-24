@@ -32,7 +32,7 @@ end
                         ],
                         change_entropy_modified=-2.3374946067633573e-7)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton.jl with bathymetry_mild_slope" setup=[
@@ -66,7 +66,7 @@ end
                         ],
                         change_entropy_modified=-2.3374946067633573e-7)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton_relaxation.jl" setup=[
@@ -100,7 +100,7 @@ end
                         change_entropy_modified=-5.684341886080802e-14,
                         atol=2.0e-10) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton.jl Jacobian" setup=[
@@ -130,6 +130,73 @@ end
     dq_plus_h = similar(q)
     DispersiveShallowWater.rhs!(dq_plus_h, q, semi, 0.0)
     @test maximum(abs, vec(dq) + J * vec(h) - vec(dq_plus_h)) < 1.0e-11
+end
+
+@testitem "hyperbolic_serre_green_naghdi_soliton_reflecting.jl" setup=[
+    Setup,
+    HyperbolicSerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_serre_green_naghdi_soliton_reflecting.jl"),
+                        l2=[
+                            0.060131215257107934,
+                            2.298340621897689,
+                            0.0,
+                            0.7453781251158317,
+                            0.05994684118460208
+                        ],
+                        linf=[
+                            0.02694706083045495,
+                            1.1249101579283711,
+                            0.0,
+                            0.3234791689092935,
+                            0.02684912262878769
+                        ],
+                        cons_error=[
+                            5.381650680646999e-11,
+                            6.870195197880939,
+                            0.0,
+                            0.002803316321279915,
+                            9.906302523177146e-6
+                        ],
+                        change_waterheight=-5.381650680646999e-11,
+                        change_entropy_modified=-7.304469784230605e-5)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
+end
+
+@testitem "hyperbolic_serre_green_naghdi_soliton_reflecting_relaxation.jl with bathymetry_mild_slope" setup=[
+    Setup,
+    HyperbolicSerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_serre_green_naghdi_soliton_reflecting_relaxation.jl"),
+                        bathymetry_type=bathymetry_mild_slope,
+                        l2=[
+                            0.060123240377457116,
+                            2.2983598045973,
+                            0.0,
+                            0.7454649703743562,
+                            0.05993756877756754
+                        ],
+                        linf=[
+                            0.02694677000403889,
+                            1.1249124192485027,
+                            0.0,
+                            0.323562217380842,
+                            0.026847036583736994
+                        ],
+                        cons_error=[
+                            5.397282620833721e-11,
+                            6.870200683471968,
+                            0.0,
+                            0.0028274466604412555,
+                            9.11803174119541e-6
+                        ],
+                        change_waterheight=-5.397282620833721e-11,
+                        change_entropy_modified=5.684341886080802e-14)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_well_balanced.jl" setup=[
@@ -163,7 +230,7 @@ end
                         change_entropy_modified=-3.197442310920451e-14,
                         lake_at_rest=1.833689450281284e-14)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_manufactured.jl" setup=[
@@ -174,27 +241,93 @@ end
                                  "hyperbolic_serre_green_naghdi_manufactured.jl"),
                         tspan=(0.0, 0.1),
                         l2=[
-                            0.00019628580608347483,
-                            3.9074713552924354e-5,
+                            0.0003106551093994142,
+                            5.369678232967609e-5,
                             0.0,
-                            0.003659648461678621,
-                            0.00020113904201635437
+                            0.005791457102000912,
+                            0.00031799455343148314
                         ],
                         linf=[
-                            0.00033469307712019614,
-                            8.167556996618863e-5,
+                            0.0005248180367165567,
+                            0.00011353070870012694,
                             0.0,
-                            0.006470346460325516,
-                            0.0003406400402869991
+                            0.010051964701901284,
+                            0.0005326971020860327
                         ],
-                        cons_error=[0.0,
-                            1.204145701494186e-5,
+                        cons_error=[4.440892098500626e-16,
+                            8.350198113236118e-6,
                             0.0,
-                            1.6023987782225921,
-                            4.456003127373265e-6],
-                        atol=1e-7) # to make CI pass
+                            1.141036530464996,
+                            4.819814592771365e-6
+                        ])
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
+end
+
+@testitem "hyperbolic_serre_green_naghdi_manufactured_reflecting.jl with bathymetry_mild_slope" setup=[
+    Setup,
+    HyperbolicSerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_mild_slope,
+                        l2=[
+                            0.0004804670128194017,
+                            9.780609099451367e-5,
+                            0.0,
+                            1.128004060442867,
+                            0.0004874625171967133
+                        ],
+                        linf=[
+                            0.007938551537243654,
+                            0.00015994533252292054,
+                            0.0,
+                            1.7376848592488843,
+                            0.008062275831221655
+                        ],
+                        cons_error=[
+                            4.999999985935993,
+                            0.31828162626441847,
+                            0.0,
+                            0.020761884510929786,
+                            5.000009387010711
+                        ],
+                        atol=1e-9) # to make CI pass
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
+end
+
+@testitem "hyperbolic_serre_green_naghdi_manufactured_reflecting.jl with bathymetry_flat" setup=[
+    Setup,
+    HyperbolicSerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_flat,
+                        l2=[
+                            0.000308924023550926,
+                            3.5906811918117744e-5,
+                            0.0,
+                            0.001453438157422651,
+                            0.00031356077105954764
+                        ],
+                        linf=[
+                            0.004819147897776155,
+                            7.19964755682076e-5,
+                            0.0,
+                            0.025612277450607124,
+                            0.0048963040276222
+                        ],
+                        cons_error=[
+                            4.9999999859359985,
+                            0.31829262810216014,
+                            0.0,
+                            0.9341006360094346,
+                            5.000006253428024
+                        ],
+                        atol=1e-9) # to make CI pass
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_dingemans.jl" setup=[
@@ -226,7 +359,7 @@ end
                         change_entropy=-0.0013486980525385661,
                         change_entropy_modified=-2.7995769187327824e-6)
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
 @testitem "hyperbolic_serre_green_naghdi_conservation.jl" setup=[
@@ -236,28 +369,27 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "hyperbolic_serre_green_naghdi_conservation.jl"),
                         l2=[
-                            1.3601939454962908,
-                            2.367812627978776,
+                            1.3601936429761978,
+                            2.3678119582029846,
                             3.565537895102537e-14,
-                            0.8095219703329345,
-                            1.3613680507825028
+                            0.8095117331716646,
+                            1.3613672882028665
                         ],
                         linf=[
-                            1.0010230791351136,
-                            0.7870081638593119,
+                            1.0010267421677255,
+                            0.7870064257071532,
                             9.325873406851315e-15,
-                            0.24169078965789928,
-                            1.0010090485188015
+                            0.24155794880613263,
+                            1.0010070893015126
                         ],
-                        cons_error=[6.230038707144558e-11,
-                            0.00029618251641450044,
-                            4.547473508864641e-13,
-                            0.00759853016721156,
-                            0.0014395235644997229],
-                        change_entropy=-0.20915006380346313,
-                        change_entropy_modified=-0.09431070096138683,
-                        atol=1e-11, # to make CI pass
-                        atol_ints=4e-9) # to make CI pass
+                        cons_error=[6.161826604511589e-11,
+                            0.0003412183411564129,
+                            2.2737367544323206e-13,
+                            0.007621698018910728,
+                            0.0014365872115718048],
+                        change_entropy=-0.20915660108039447,
+                        change_entropy_modified=-0.09432092643828582,
+                        atol=1e-8) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=1_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end

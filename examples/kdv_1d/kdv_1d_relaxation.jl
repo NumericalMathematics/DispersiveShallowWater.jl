@@ -36,7 +36,9 @@ analysis_callback = AnalysisCallback(semi; interval = 100,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  waterheight, entropy))
-callbacks = CallbackSet(analysis_callback, summary_callback)
+relaxation_callback = RelaxationCallback(invariant = entropy_modified)
+# Always put relaxation_callback before analysis_callback to guarantee conservation of the invariant
+callbacks = CallbackSet(relaxation_callback, analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
 
 sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7,

@@ -84,7 +84,7 @@ function initial_condition_manufactured(x, t,
 end
 
 """
-    source_terms_manufactured(q, x, t, equations::SvaerdKalischEquations1D, mesh)
+    source_terms_manufactured(q, x, t, equations::SvaerdKalischEquations1D)
 
 A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
 """
@@ -163,7 +163,7 @@ function initial_condition_manufactured_reflecting(x, t,
 end
 
 """
-    source_terms_manufactured_reflecting(q, x, t, equations::SvaerdKalischEquations1D, mesh)
+    source_terms_manufactured_reflecting(q, x, t, equations::SvaerdKalischEquations1D)
 
 A smooth manufactured solution for reflecting boundary conditions in combination
 with [`initial_condition_manufactured_reflecting`](@ref).

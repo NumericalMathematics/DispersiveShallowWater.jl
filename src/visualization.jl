@@ -55,21 +55,23 @@ end
     plot_title --> "$(get_name(equations)) at t = $(round(t, digits=5))"
     layout --> nsubplots
 
-    for i in 1:nsubplots
+    subplot = 0
+    for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ["D", "b"] && continue
+        names[i] in ("D", "b") && continue
 
+        subplot += 1
         if plot_initial == true
             @series begin
-                subplot --> i
-                linestyle := :solid
+                subplot --> subplot
+                linestyle --> :solid
                 label --> "initial $(names[i])"
                 grid(semi), data_exact[i, :]
             end
         end
 
         @series begin
-            subplot --> i
+            subplot --> subplot
             label --> names[i]
             xguide --> "x"
             yguide --> names[i]
@@ -82,12 +84,12 @@ end
     if plot_bathymetry == true
         @series begin
             subplot --> 1
-            linestyle := :solid
-            label := "bathymetry"
+            linestyle --> :solid
+            label --> "bathymetry"
             xguide --> "x"
             yguide --> names[1]
             title --> names[1]
-            color := :black
+            color --> :black
             grid(semi), bathy
         end
     end
@@ -189,7 +191,7 @@ end
             quantity = cb.affect!.analysis_integrals[i]
             @series begin
                 subplot --> subplot
-                label := pretty_form_utf(quantity) * " " * label_extension
+                label --> pretty_form_utf(quantity) * " " * label_extension
                 title --> "change of invariants"
                 xguide --> "t"
                 yguide --> "change of invariants"

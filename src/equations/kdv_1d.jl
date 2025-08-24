@@ -94,7 +94,7 @@ function initial_condition_manufactured(x, t, equations::KdVEquation1D,
 end
 
 """
-    source_terms_manufactured(q, x, t, equations::KdVEquation1D, mesh)
+    source_terms_manufactured(q, x, t, equations::KdVEquation1D)
 
 A smooth manufactured solution in combination with [`initial_condition_manufactured`](@ref).
 
@@ -117,6 +117,81 @@ function source_terms_manufactured(q, x, t, equations::KdVEquation1D)
          (4 / 3) * D^2 * pi^3 * a2 * c0 * b1
 
     return SVector(s1)
+end
+
+"""
+    nondim2prim(u, equations::KdVEquation1D)
+
+Convert the non-dimensional variable `u` to the primitive/physical variable `eta`
+(total water height) for the [`KdVEquation1D`](@ref).
+
+The transformation is given by:
+```math
+\\eta = D(u - \\frac{2}{3})
+```
+where `D` is the still-water depth.
+
+!!! warning "Parameter constraints"
+    This conversion is only valid for equations with specific parameter values:
+    - `gravity = 4/27` 
+    - `D = 3.0` 
+    
+    These values ensure the dimensional KdV equation matches the standard 
+    non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
+
+This function allows converting solutions from the standard non-dimensional 
+KdV form commonly found in literature to the dimensional form implemented 
+in DispersiveShallowWater.jl.
+
+See also [`prim2nondim`](@ref).
+"""
+function nondim2prim(u, equations::KdVEquation1D)
+    eta = @. equations.D * (u - 2 / 3)
+    return eta
+end
+
+"""
+    prim2nondim(eta, equations::KdVEquation1D)
+
+Convert the primitive/physical variable `eta` (total water height) to the 
+non-dimensional variable `u` for the [`KdVEquation1D`](@ref).
+
+The transformation is given by:
+```math
+u = \\frac{\\eta}{D} + \\frac{2}{3}
+```
+where `D` is the still-water depth.
+
+!!! warning "Parameter constraints"
+    This conversion is only valid for equations with specific parameter values:
+    - `gravity = 4/27` 
+    - `D = 3.0`
+    
+    These values ensure the dimensional KdV equation matches the standard 
+    non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
+
+This function allows converting solutions from the dimensional form implemented 
+in DispersiveShallowWater.jl to the standard non-dimensional KdV form 
+commonly found in literature, enabling comparison with theoretical results 
+and other implementations.
+
+See also [`nondim2prim`](@ref).
+"""
+function prim2nondim(eta, equations::KdVEquation1D)
+    u = @. eta / equations.D + 2 / 3
+    return u
+end
+
+"""
+    varnames(::typeof(prim2nondim), equations::KdVEquation1D)
+
+Return variable names `("u",)` for non-dimensional KdV variables when plotting
+with `conversion = prim2nondim`.
+
+See [`prim2nondim`](@ref), [`varnames`](@ref).
+"""
+function varnames(::typeof(prim2nondim), equations::KdVEquation1D)
+    return ("u",)
 end
 
 function create_cache(mesh, equations::KdVEquation1D,
@@ -192,4 +267,37 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
                                                        solver)
 
     return nothing
+end
+
+"""
+    energy_total(q, equations::KdVEquation1D)
+
+Return the total energy of the primitive variables `q` for the
+[`KdVEquation1D`](@ref). For the KdV equation, the total energy consists
+only of the potential energy, given by
+```math
+\\frac{1}{2} g \\eta^2
+```
+where ``\\eta`` is the [`waterheight_total`](@ref) and ``g`` is the
+[`gravity`](@ref).
+
+`q` is a vector of the primitive variables at a single node, i.e., a vector
+of length 1 in this case.
+"""
+@inline function energy_total(q, equations::KdVEquation1D)
+    eta = waterheight_total(q, equations)
+    return 0.5f0 * gravity(equations) * eta^2
+end
+
+"""
+    entropy(q, equations::KdVEquation1D)
+
+Return the entropy of the primitive variables `q` for the [`KdVEquation1D`](@ref).
+For the KdV equation, the `entropy` is the same as the [`energy_total`](@ref).
+
+`q` is a vector of the primitive variables at a single node, i.e., a vector
+of length 1 in this case.
+"""
+function entropy(q, equations::KdVEquation1D)
+    return energy_total(q, equations)
 end

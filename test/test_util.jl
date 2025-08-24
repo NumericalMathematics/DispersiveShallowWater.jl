@@ -1,29 +1,10 @@
 using Test: @test
-using TrixiTest: @trixi_test_nowarn
+using TrixiTest: @trixi_test_nowarn, @test_allocations, get_kwarg, append_to_kwargs
 
 # Use a macro to avoid world age issues when defining new initial conditions etc.
 # inside an example.
-"""
-    @test_trixi_include(example; l2=nothing, linf=nothing, cons_error=nothing
-                                change_waterheight=nothing,
-                                change_velocity=nothing,
-                                change_entropy=nothing,
-                                change_entropy_modified=nothing,
-                                change_hamiltonian=nothing,
-                                lake_at_rest=nothing,
-                                atol=1e-12, rtol=sqrt(eps()),
-                                atol_ints=1e-11, rtol_ints=sqrt(eps()))
-
-Test by calling `trixi_include(example; parameters...)`.
-By default, only the absence of error output is checked.
-If `l2`, `linf` or `cons_error` are specified, in addition the resulting L2/Linf/conservation
-errors are compared approximately against these reference values, using `atol, rtol`
-as absolute/relative tolerance.
-If `change_waterheight`, `change_velocity`, `change_momemtum`, `change_entropy`, `change_entropy_modified`,
-`change_hamiltonian`, or `lake_at_rest` are specified, in addition the resulting changes of the different errors are
-compared approximately against these reference values, using `atol_ints`, `rtol_ints` as absolute/relative tolerance.
-"""
-macro test_trixi_include(example, args...)
+macro test_trixi_include_base(example, args...)
+    local additional_ignore_content = get_kwarg(args, :additional_ignore_content, Any[])
     local l2 = get_kwarg(args, :l2, nothing)
     local linf = get_kwarg(args, :linf, nothing)
     local cons_error = get_kwarg(args, :cons_error, nothing)
@@ -42,7 +23,8 @@ macro test_trixi_include(example, args...)
     local kwargs = Pair{Symbol, Any}[]
     for arg in args
         if (arg.head == :(=) &&
-            !(arg.args[1] in (:l2, :linf, :cons_error, :change_waterheight,
+            !(arg.args[1] in (:additional_ignore_content,
+                              :l2, :linf, :cons_error, :change_waterheight,
                               :change_velocity, :change_momentum, :change_entropy,
                               :change_entropy_modified, :change_hamiltonian,
                               :lake_at_rest,
@@ -56,7 +38,7 @@ macro test_trixi_include(example, args...)
         println($example)
 
         # evaluate examples in the scope of the module they're called from
-        @test_nowarn_mod trixi_include(@__MODULE__, $example; $kwargs...)
+        @trixi_test_nowarn trixi_include(@__MODULE__, $example; $kwargs...) $additional_ignore_content
 
         # if present, compare l2, linf and conservation errors against reference values
         if !isnothing($l2) || !isnothing($linf) || !isnothing($cons_error)
@@ -148,40 +130,33 @@ macro test_trixi_include(example, args...)
     end
 end
 
-# Get the first value assigned to `keyword` in `args` and return `default_value`
-# if there are no assignments to `keyword` in `args`.
-function get_kwarg(args, keyword, default_value)
-    val = default_value
-    for arg in args
-        if arg.head == :(=) && arg.args[1] == keyword
-            val = arg.args[2]
-            break
-        end
-    end
-    return val
-end
-
 """
-    @test_allocations(semi, sol, allocs)
+    @test_trixi_include(example; l2=nothing, linf=nothing, cons_error=nothing
+                                change_waterheight=nothing,
+                                change_velocity=nothing,
+                                change_entropy=nothing,
+                                change_entropy_modified=nothing,
+                                change_hamiltonian=nothing,
+                                lake_at_rest=nothing,
+                                atol=1e-12, rtol=sqrt(eps()),
+                                atol_ints=1e-11, rtol_ints=sqrt(eps()))
 
-Test that the memory allocations of `DispersiveShallowWater.rhs!` are below `allocs`
-(e.g., from type instabilities).
+Test by calling `trixi_include(example; parameters...)`.
+By default, only the absence of error output is checked.
+If `l2`, `linf` or `cons_error` are specified, in addition the resulting L2/Linf/conservation
+errors are compared approximately against these reference values, using `atol, rtol`
+as absolute/relative tolerance.
+If `change_waterheight`, `change_velocity`, `change_momemtum`, `change_entropy`, `change_entropy_modified`,
+`change_hamiltonian`, or `lake_at_rest` are specified, in addition the resulting changes of the different errors are
+compared approximately against these reference values, using `atol_ints`, `rtol_ints` as absolute/relative tolerance.
 """
-macro test_allocations(semi, sol, allocs)
+macro test_trixi_include(expr, args...)
+    local add_to_additional_ignore_content = [
+        r"┌ Warning: The still-water surface needs to be 0 for the BBM-BBM equations\n└ @ DispersiveShallowWater .*\n"
+    ]
+    args = append_to_kwargs(args, :additional_ignore_content,
+                            add_to_additional_ignore_content)
     quote
-        t = $sol.t[end]
-        q = $sol.u[end]
-        dq = similar(q)
-        @test (@allocated DispersiveShallowWater.rhs!(dq, q, $semi, t)) < $allocs
-    end
-end
-
-macro test_nowarn_mod(expr, additional_ignore_content = [])
-    quote
-        add_to_additional_ignore_content = [
-            r"┌ Warning: The still-water surface needs to be 0 for the BBM-BBM equations\n└ @ DispersiveShallowWater .*\n"
-        ]
-        append!($additional_ignore_content, add_to_additional_ignore_content)
-        @trixi_test_nowarn $(esc(expr)) $additional_ignore_content
+        @test_trixi_include_base($(esc(expr)), $(args...))
     end
 end

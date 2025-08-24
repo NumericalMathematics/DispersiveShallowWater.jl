@@ -12,7 +12,7 @@ end
                         change_waterheight=0.0,
                         change_entropy_modified=-3.1093350116861984e-11)
 
-    @test_allocations(semi, sol, allocs=650_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=650_000)
 end
 
 @testitem "serre_green_naghdi_soliton.jl with bathymetry_mild_slope" setup=[
@@ -30,7 +30,7 @@ end
                         change_waterheight=0.0,
                         change_entropy_modified=-3.1093350116861984e-11)
 
-    @test_allocations(semi, sol, allocs=800_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=800_000)
 end
 
 @testitem "serre_green_naghdi_soliton.jl with bathymetry_variable" setup=[
@@ -48,7 +48,7 @@ end
                         change_waterheight=0.0,
                         change_entropy_modified=-3.1093350116861984e-11)
 
-    @test_allocations(semi, sol, allocs=800_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=800_000)
 end
 
 @testitem "serre_green_naghdi_soliton_fourier.jl" setup=[Setup, SerreGreenNaghdiEquations1D] begin
@@ -61,7 +61,7 @@ end
                         change_waterheight=2.842170943040401e-14,
                         change_entropy_modified=-3.097966327914037e-11)
 
-    @test_allocations(semi, sol, allocs=450_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=450_000)
 end
 
 @testitem "serre_green_naghdi_soliton_fourier.jl with bathymetry_mild_slope" setup=[
@@ -79,7 +79,7 @@ end
                         change_waterheight=2.842170943040401e-14,
                         change_entropy_modified=-3.097966327914037e-11)
 
-    @test_allocations(semi, sol, allocs=850_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=850_000)
 end
 
 @testitem "serre_green_naghdi_soliton_fourier.jl with bathymetry_variable" setup=[
@@ -97,7 +97,7 @@ end
                         change_waterheight=2.842170943040401e-14,
                         change_entropy_modified=-3.097966327914037e-11)
 
-    @test_allocations(semi, sol, allocs=850_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=850_000)
 end
 
 @testitem "serre_green_naghdi_soliton_upwind.jl" setup=[Setup, SerreGreenNaghdiEquations1D] begin
@@ -110,7 +110,7 @@ end
                         change_waterheight=4.263256414560601e-14,
                         change_entropy_modified=-3.1036506698001176e-11)
 
-    @test_allocations(semi, sol, allocs=600_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=600_000)
 end
 
 @testitem "serre_green_naghdi_soliton_upwind.jl with bathymetry_mild_slope" setup=[
@@ -128,7 +128,7 @@ end
                         change_waterheight=4.263256414560601e-14,
                         change_entropy_modified=-3.1036506698001176e-11)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "serre_green_naghdi_soliton_upwind.jl with bathymetry_variable" setup=[
@@ -146,7 +146,7 @@ end
                         change_waterheight=4.263256414560601e-14,
                         change_entropy_modified=-3.1036506698001176e-11)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "serre_green_naghdi_soliton_relaxation.jl" setup=[
@@ -162,7 +162,7 @@ end
                         change_waterheight=2.842170943040401e-14,
                         change_entropy_modified=0.0)
 
-    @test_allocations(semi, sol, allocs=450_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=450_000)
 end
 
 @testitem "serre_green_naghdi_soliton_relaxation.jl with bathymetry_mild_slope" setup=[
@@ -180,7 +180,7 @@ end
                         change_waterheight=2.842170943040401e-14,
                         change_entropy_modified=0.0)
 
-    @test_allocations(semi, sol, allocs=850_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=850_000)
 end
 
 @testitem "serre_green_naghdi_soliton_relaxation.jl with bathymetry_variable" setup=[
@@ -198,7 +198,7 @@ end
                         change_waterheight=2.842170943040401e-14,
                         change_entropy_modified=0.0)
 
-    @test_allocations(semi, sol, allocs=850_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=850_000)
 end
 
 @testitem "serre_green_naghdi_well_balanced.jl" setup=[Setup, SerreGreenNaghdiEquations1D] begin
@@ -213,7 +213,7 @@ end
                         change_entropy_modified=0.0,
                         lake_at_rest=0.0)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "serre_green_naghdi_well_balanced.jl with bathymetry_mild_slope" setup=[
@@ -232,7 +232,7 @@ end
                         change_entropy_modified=0.0,
                         lake_at_rest=0.0)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "serre_green_naghdi_dingemans.jl" setup=[Setup, SerreGreenNaghdiEquations1D] begin
@@ -246,7 +246,7 @@ end
                         change_entropy=2.282635693973134e-5,
                         change_entropy_modified=-9.135646905633621e-9)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "serre_green_naghdi_dingemans.jl with bathymetry_mild_slope" setup=[
@@ -264,7 +264,7 @@ end
                         change_entropy=2.282635693973134e-5,
                         change_entropy_modified=-9.135646905633621e-9)
 
-    @test_allocations(semi, sol, allocs=750_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
 
 @testitem "serre_green_naghdi_conservation.jl" setup=[Setup, SerreGreenNaghdiEquations1D] begin
@@ -278,7 +278,7 @@ end
                         atol_ints=2e-8, # to make CI pass
                         atol=2e-8) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=900_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=900_000)
 end
 
 @testitem "serre_green_naghdi_conservation.jl with bathymetry_mild_slope" setup=[
@@ -295,7 +295,7 @@ end
                         change_entropy_modified=0.05927340849780194,
                         atol_ints=2e-8) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=900_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=900_000)
 end
 
 @testitem "serre_green_naghdi_manufactured.jl with bathymetry_flat" setup=[
@@ -311,7 +311,7 @@ end
                         change_entropy_modified=-22.793274391960267,
                         atol=1e-9) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=300_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=300_000)
 end
 
 @testitem "serre_green_naghdi_manufactured.jl with bathymetry_mild_slope" setup=[
@@ -327,7 +327,7 @@ end
                         change_entropy_modified=135.16210732695845,
                         atol=1e-9) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=410_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=410_000)
 end
 
 @testitem "serre_green_naghdi_manufactured.jl with bathymetry_variable" setup=[
@@ -343,7 +343,7 @@ end
                         change_entropy_modified=130.79560136094597,
                         atol=1e-11) # to make CI pass
 
-    @test_allocations(semi, sol, allocs=410_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=410_000)
 end
 
 @testitem "serre_green_naghdi_manufactured_reflecting.jl with bathymetry_flat" setup=[
@@ -353,22 +353,113 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "serre_green_naghdi_manufactured_reflecting.jl"),
                         bathymetry_type=bathymetry_flat,
+                        l2=[0.027195981356871006, 0.0003750952088972156, 0.0],
+                        linf=[0.2907059851398657, 0.0007619654145489541, 0.0],
+                        change_waterheight=15.970779079947338,
+                        change_entropy_modified=2415.6322361337952)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=35_000)
+end
+
+@testitem "serre_green_naghdi_manufactured_reflecting.jl with bathymetry_variable" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_variable,
+                        l2=[0.008682031284538465, 0.0016019788677570093, 0.0],
+                        linf=[0.07998918729370352, 0.0034380472896646253, 0.0],
+                        change_waterheight=5.000659665129857,
+                        change_entropy_modified=275.22930126732166)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=120_000)
+end
+
+@testitem "serre_green_naghdi_manufactured_reflecting_upwind.jl with bathymetry_flat" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting_upwind.jl"),
+                        bathymetry_type=bathymetry_flat,
+                        l2=[0.039321533516191214, 0.0003059380760440109, 0.0],
+                        linf=[0.3259202369703047, 0.0005643244796372793, 0.0],
+                        change_waterheight=15.976311354158419,
+                        change_entropy_modified=2416.856672789222)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=50_000)
+end
+
+@testitem "serre_green_naghdi_manufactured_reflecting_upwind.jl with bathymetry_mild_slope" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_mild_slope,
+                        l2=[0.008756092883075014, 0.0016195432021351244, 0.0],
+                        linf=[0.0804388379348362, 0.0034558532136001463, 0.0],
+                        change_waterheight=5.000659665129858,
+                        change_entropy_modified=274.83428431803526)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=120_000)
+end
+
+@testitem "serre_green_naghdi_manufactured_reflecting_var_coef_op.jl with bathymetry_flat" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting_var_coef_op.jl"),
+                        bathymetry_type=bathymetry_flat,
                         l2=[0.047962081783820484, 0.0002741366926583432, 0.0],
                         linf=[0.37478770827387464, 0.0004746167686701802, 0.0])
 
-    @test_allocations(semi, sol, allocs=10_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
 
-@testitem "serre_green_naghdi_soliton_reflecting.jl" setup=[
+@testitem "serre_green_naghdi_soliton_reflecting.jl with bathymetry_flat" setup=[
     Setup,
     SerreGreenNaghdiEquations1D
 ] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "serre_green_naghdi_soliton_reflecting.jl"),
+                        bathymetry_type=bathymetry_flat,
+                        l2=[0.10292128993725594, 0.2889327496936634, 0.0],
+                        linf=[0.04452445088946688, 0.12376294777800739, 0.0],
+                        change_waterheight=1.4210854715202004e-14,
+                        change_entropy_modified=-1.7991674781114853e-6)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=260_000)
+end
+
+@testitem "serre_green_naghdi_soliton_reflecting.jl with bathymetry_mild_slope" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_soliton_reflecting.jl"),
+                        bathymetry_type=bathymetry_mild_slope,
+                        l2=[0.10292128993725498, 0.2889327496936603, 0.0],
+                        linf=[0.044524450889467326, 0.12376294777800284, 0.0],
+                        change_waterheight=1.4210854715202004e-14,
+                        change_entropy_modified=-1.7991674781114853e-6)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=400_000)
+end
+
+@testitem "serre_green_naghdi_soliton_reflecting_var_coef_op.jl with bathymetry_flat" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_soliton_reflecting_var_coef_op.jl"),
+                        bathymetry_type=bathymetry_flat,
                         l2=[0.10552684163688769, 0.29652604909005625, 0.0],
                         linf=[0.04598348365474836, 0.12697474293455474, 0.0],
                         change_waterheight=4.263256414560601e-14,
                         change_entropy_modified=-1.8172034401686687e-6,)
 
-    @test_allocations(semi, sol, allocs=60_000)
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=60_000)
 end

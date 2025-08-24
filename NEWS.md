@@ -10,13 +10,14 @@ for human readability.
 
 #### Added
 
-- Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (only flat bathymetry: [#205]).
-
+- Improved documentation ([#233]).
+- Add linear dispersion relation for the `KdVEquation1D` ([#230]).
+- Support reflecting boundary conditions for `HyperbolicSerreGreenNaghdiEquations1D` ([#228]).
+- Add conversion functions `prim2nondim` and `nondim2prim` for non-dimensional variables for `KdVEquation1D` ([#217]).
+- Support reflecting boundary conditions for `SerreGreenNaghdiEquations1D` (flat bathymetry: [#205], general: [#223]).
+- Add `KdVEquation1D` ([#198]).
 
 ## Changes when updating to v0.7 from v0.6.x
-
-#### Added
-- Add `KdVEquation1D` ([#198]).
 
 #### Changed
 

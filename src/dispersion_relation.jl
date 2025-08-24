@@ -70,6 +70,13 @@ function (disp_rel::LinearDispersionRelation)(equations::EulerEquations1D, k)
     return sqrt(g * k * tanh(h0 * k))
 end
 
+function (disp_rel::LinearDispersionRelation)(equations::KdVEquation1D, k)
+    eta0 = equations.eta0
+    h0 = disp_rel.ref_height
+    g = gravity(equations)
+    return sqrt(g * h0) * (k * (1 + 1.5 * eta0 / h0) - 1 / 6 * h0^2 * k^3)
+end
+
 function (disp_rel::LinearDispersionRelation)(equations::BBMEquation1D, k)
     eta0 = equations.eta0
     h0 = disp_rel.ref_height

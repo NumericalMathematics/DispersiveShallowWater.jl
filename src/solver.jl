@@ -55,6 +55,11 @@ end
 
 Create a solver, where the three summation-by-parts (SBP) first-, second-, and third-derivative operators
 are of accuracy order `accuracy_order` and associated to the `mesh`.
+
+!!! warning "Periodic operators only"
+    This constructor creates periodic derivative operators that are only compatible with periodic 
+    boundary conditions. For non-periodic boundary conditions, use the `Solver(D1, D2, D3)` 
+    constructor with appropriate non-periodic operators (or `nothing`).
 """
 function Solver(mesh, accuracy_order)
     if isodd(accuracy_order)

@@ -76,6 +76,13 @@ end
     @test equations == equations
     @test solver == solver
 
+    boundary_conditions = boundary_condition_reflecting
+    @test_throws ArgumentError("Periodic derivative operators in `solver` are incompatible with non-periodic boundary conditions.") Semidiscretization(mesh,
+                                                                                                                                                       equations,
+                                                                                                                                                       initial_condition,
+                                                                                                                                                       solver,
+                                                                                                                                                       boundary_conditions = boundary_conditions)
+
     equations_flat = BBMBBMEquations1D(bathymetry_type = bathymetry_flat,
                                        gravity = 9.81)
     initial_condition = initial_condition_dingemans
@@ -100,7 +107,13 @@ end
     @test_nowarn display(equations)
     conversion_functions = [
         waterheight_total,
-        waterheight
+        waterheight,
+        entropy,
+        energy_total,
+        prim2nondim,
+        prim2cons,
+        prim2prim,
+        prim2phys
     ]
     for conversion in conversion_functions
         @test DispersiveShallowWater.varnames(conversion, equations) isa Tuple
@@ -112,6 +125,32 @@ end
     @test @inferred(waterheight(q, equations)) == 43.0
     @test @inferred(still_water_surface(q, equations)) == 0.0
     @test @inferred(prim2phys(q, equations)) == @inferred(prim2prim(q, equations))
+
+    # Test non-dimensional conversion functions
+    equations_nondim = KdVEquation1D(gravity = 4 / 27, D = 3.0)
+    u_expected = q ./ 3.0 .+ 2 / 3
+    @test @inferred(prim2nondim(q, equations_nondim)) == u_expected
+    @test @inferred(nondim2prim(u_expected, equations_nondim)) == q
+    @test @inferred(energy_total(q, equations)) == @inferred(entropy(q, equations))
+    @testset "energy_total" begin
+        initial_condition = initial_condition_manufactured
+        boundary_conditions = boundary_condition_periodic
+        mesh = @inferred Mesh1D(-1.0, 1.0, 10)
+        solver = Solver(mesh, 4)
+        semi = @inferred Semidiscretization(mesh, equations, initial_condition,
+                                            solver; boundary_conditions)
+        q = @inferred DispersiveShallowWater.compute_coefficients(initial_condition,
+                                                                  0.0, semi)
+        _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
+        e = @inferred energy_total_modified(q, equations, cache)
+        e_total = @inferred DispersiveShallowWater.integrate(e, semi)
+        @test isapprox(e_total, 1.5)
+        @test isapprox(DispersiveShallowWater.integrate_quantity(energy_total, q, semi),
+                       1.5)
+        U = @inferred entropy_modified(q, equations, cache)
+        U_total = @inferred DispersiveShallowWater.integrate(U, semi)
+        @test isapprox(U_total, e_total)
+    end
 end
 
 @testitem "BBMEquation1D" setup=[Setup] begin
@@ -434,6 +473,7 @@ end
     k = 2 * pi
     frequencies = [
         7.850990247314777,
+        -1984.4012605086898,
         0.5660455316649682,
         0.5660455316649682,
         7.700912310929906,
@@ -441,6 +481,7 @@ end
     ]
     wave_speeds = [
         1.2495239060264087,
+        -315.8272696877459,
         0.09008894437955965,
         0.09008894437955965,
         1.2256382606017253,
@@ -448,6 +489,7 @@ end
     ]
 
     for (i, equations) in enumerate((EulerEquations1D(gravity = g),
+                                     KdVEquation1D(gravity = g),
                                      BBMEquation1D(gravity = g),
                                      BBMBBMEquations1D(gravity = g),
                                      SvaerdKalischEquations1D(gravity = g,

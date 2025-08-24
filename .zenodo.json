@@ -1,13 +1,18 @@
 {
-    "description": "Structure-Preserving Numerical Methods for Dispersive Shallow Water Models",
+    "description": "A Julia library of structure-preserving numerical methods for dispersive wave equations",
     "license": "MIT",
-    "title": "DispersiveShallowWater.jl",
+    "title": "DispersiveShallowWater.jl: A Julia library of structure-preserving numerical methods for dispersive wave equations",
     "upload_type": "software",
     "creators": [
         {
             "affiliation": "Applied Mathematics, University of Hamburg, Germany",
             "name": "Lampert, Joshua",
             "orcid": "0009-0007-0971-6709"
+        },
+        {
+            "affiliation": "Numerical Mathematics, Johannes Gutenberg University Mainz, Germany",
+            "name": "Wittenstein, Collin",
+            "orcid": "0009-0006-8591-278X"
         },
         {
             "affiliation": "Numerical Mathematics, Johannes Gutenberg University Mainz, Germany",
