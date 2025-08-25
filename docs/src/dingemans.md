@@ -33,9 +33,9 @@ Next, we set up the different equation systems we want to compare:
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
                            gravity = 9.81, eta0 = 0.0)
 
-# Svärd-Kalisch equations with specific parameter set
-sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0,
-                              beta = 0.27946992481203003, gamma = 0.0521077694235589)
+# Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
+sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
+                                     beta = 0.49292929292929294, gamma = 0.15707070707070708)
 
 # Serre-Green-Naghdi equations with variable bathymetry
 sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
@@ -201,9 +201,9 @@ using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
                            gravity = 9.81, eta0 = 0.0)
 
-# Svärd-Kalisch equations with specific parameter set
-sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0,
-                              beta = 0.27946992481203003, gamma = 0.0521077694235589)
+# Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
+sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
+                                     beta = 0.49292929292929294, gamma = 0.15707070707070708)
 
 # Serre-Green-Naghdi equations with variable bathymetry
 sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
