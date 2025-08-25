@@ -35,15 +35,15 @@ bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
 
 # Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
 sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
-                                     beta = 0.49292929292929294, gamma = 0.15707070707070708)
+                              beta = 0.49292929292929294, gamma = 0.15707070707070708)
 
 # Serre-Green-Naghdi equations with variable bathymetry
 sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
-                                  eta0 = 0.8, gravity = 9.81)
+                                  gravity = 9.81, eta0 = 0.8)
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              eta0 = 0.8, lambda = 100.0, gravity = 9.81)
+                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -188,7 +188,6 @@ nothing # hide
 ![Dingemans comparison](dingemans_comparison.png)
 
 The results show how different dispersive wave models capture the wave evolution over the trapezoidal bathymetry.
-
 
 ## [Plain program](@id overview-plain-program-dingemans)
 
