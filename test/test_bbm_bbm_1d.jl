@@ -298,9 +298,10 @@ end
                         tspan=(0.0, 1.0),
                         l2=[0.2609190317968624, 0.8783366794535071, 0.0],
                         linf=[0.035812250010499695, 0.12036148158978635, 0.0],
+                        cons_error=[3.0948889826777626e-17, 2.233388712684359e-16, 0.0],
                         change_waterheight=3.0948889826777626e-17,
                         change_velocity=2.233388712684359e-16,
-                        change_entropy=2.1764056595818815e-7)
+                        change_entropy=2.1764056595818815e-77)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
