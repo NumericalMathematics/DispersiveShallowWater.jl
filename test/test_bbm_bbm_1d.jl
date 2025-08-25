@@ -301,7 +301,7 @@ end
                         cons_error=[3.0948889826777626e-17, 2.233388712684359e-16, 0.0],
                         change_waterheight=3.0948889826777626e-17,
                         change_velocity=2.233388712684359e-16,
-                        change_entropy=2.1764056595818815e-77)
+                        change_entropy=2.1764056595818815e-7)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=10_000)
 end
