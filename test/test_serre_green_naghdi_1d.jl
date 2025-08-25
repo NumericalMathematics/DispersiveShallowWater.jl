@@ -243,7 +243,7 @@ end
                         linf=[0.036376471205494365, 0.11852616155632931, 0.0],
                         cons_error=[5.684341886080802e-14, 3.9150390196156476e-5, 0.0],
                         change_waterheight=-5.684341886080802e-14,
-                        change_velocity=3.502228457819001e-5,
+                        change_entropy=3.502228457819001e-5,
                         change_entropy_modified=-1.165130925073754e-8)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
@@ -261,7 +261,7 @@ end
                         linf=[0.036376471205494365, 0.11852616155632931, 0.0],
                         cons_error=[5.684341886080802e-14, 3.915039019538843e-5, 0.0],
                         change_waterheight=-5.684341886080802e-14,
-                        change_velocity=3.502228457819001e-5,
+                        change_entropy=3.502228457819001e-5,
                         change_entropy_modified=-1.165130925073754e-8)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
