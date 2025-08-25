@@ -321,6 +321,8 @@ function source_terms_manufactured_reflecting(q, x, t,
     return SVector(s1, s2, s3, s4, s5)
 end
 
+dingemans_calibration(equations::HyperbolicSerreGreenNaghdiEquations1D) = 2.4
+
 function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
                       solver, initial_condition,
                       boundary_conditions::Union{BoundaryConditionPeriodic,

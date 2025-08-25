@@ -239,12 +239,12 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "serre_green_naghdi_dingemans.jl"),
                         tspan=(0.0, 1.0),
-                        l2=[0.22632930215585131, 0.7400070292134782, 0.0],
-                        linf=[0.036351214376643126, 0.11899056101300992, 0.0],
-                        cons_error=[1.4210854715202004e-13, 3.194346928167053e-5, 0.0],
-                        change_waterheight=-1.4210854715202004e-13,
-                        change_entropy=2.282635693973134e-5,
-                        change_entropy_modified=-9.135646905633621e-9)
+                        l2=[0.26494495802569085, 0.8661032949835936, 0.0],
+                        linf=[0.036376471205494365, 0.11852616155632931, 0.0],
+                        cons_error=[5.684341886080802e-14, 3.9150390196156476e-5, 0.0],
+                        change_waterheight=-5.684341886080802e-14,
+                        change_entropy=3.502228457819001e-5,
+                        change_entropy_modified=-1.165130925073754e-8)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
@@ -257,12 +257,12 @@ end
                                  "serre_green_naghdi_dingemans.jl"),
                         tspan=(0.0, 1.0),
                         bathymetry_type=bathymetry_mild_slope,
-                        l2=[0.22632930215585131, 0.7400070292134782, 0.0],
-                        linf=[0.036351214376643126, 0.11899056101300992, 0.0],
-                        cons_error=[1.4210854715202004e-13, 3.194346928167053e-5, 0.0],
-                        change_waterheight=-1.4210854715202004e-13,
-                        change_entropy=2.282635693973134e-5,
-                        change_entropy_modified=-9.135646905633621e-9)
+                        l2=[0.26494495802569085, 0.8661032949835936, 0.0],
+                        linf=[0.036376471205494365, 0.11852616155632931, 0.0],
+                        cons_error=[5.684341886080802e-14, 3.915039019538843e-5, 0.0],
+                        change_waterheight=-5.684341886080802e-14,
+                        change_entropy=3.502228457819001e-5,
+                        change_entropy_modified=-1.165130925073754e-8)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end

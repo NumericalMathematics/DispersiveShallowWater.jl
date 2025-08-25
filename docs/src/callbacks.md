@@ -1,7 +1,7 @@
 # Callbacks
 
 Callbacks provide additional functionality during simulations, such as monitoring solution properties, analyzing errors, or ensuring conservation of physical quantities.
-[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl implements three main callback types that can be used individually or in combination to enhance simulation analysis and performance monitoring.
+[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) implements three main callback types that can be used individually or in combination to enhance simulation analysis and performance monitoring.
 
 When using multiple callbacks simultaneously, combine them using a `CallbackSet`:
 
@@ -9,6 +9,7 @@ When using multiple callbacks simultaneously, combine them using a `CallbackSet`
 callbacks = CallbackSet(analysis_callback, summary_callback)
 sol = solve(ode, Tsit5(), callback = callbacks)
 ```
+
 More information on the usage of callbacks within the SciML framework can be found [in the documentation](https://docs.sciml.ai/DiffEqDocs/stable/features/callback_functions/).
 
 ## Summary Callback
@@ -28,7 +29,7 @@ sol = solve(ode, Tsit5(), callback = summary_callback)
 
 At the end of the simulation, the callback will display output similar to:
 
-```
+```julia
 ───────────────────────────────────────────────────────────────────────────────────────────
               DispersiveSWE                       Time                    Allocations
                                          ───────────────────────   ────────────────────────
@@ -45,7 +46,6 @@ rhs!                              1.62k    420ms   97.0%   258μs    866MiB  100
 analyze solution                      3   13.2ms    3.0%  4.39ms    147KiB    0.0%  49.1KiB
 ───────────────────────────────────────────────────────────────────────────────────────────
 ```
-
 
 ## Analysis Callback
 
