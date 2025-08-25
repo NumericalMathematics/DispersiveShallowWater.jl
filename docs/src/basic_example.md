@@ -72,11 +72,11 @@ Lastly, we define the physical domain as the interval from -130 to 20 and we cho
 
 ## Define numerical solver
 
-In the next step, we build a [`Semidiscretization`](@ref) that bundles all ingredients for the spatial discretization of the model. Especially, we need to define a [`Solver`](@ref). 
+In the next step, we build a [`Semidiscretization`](@ref) that bundles all ingredients for the spatial discretization of the model. Especially, we need to define a [`Solver`](@ref).
 
 The simplest way to define a solver when working with [`boundary_condition_periodic`](@ref) is to call the constructor by providing the mesh and a desired order of accuracy.
 
-In the following example, we use an accuracy order of 4. The default constructor simply creates periodic first-, second-, and third-derivative central finite difference summation-by-parts (SBP) operators of the provided order of accuracy. 
+In the following example, we use an accuracy order of 4. The default constructor simply creates periodic first-, second-, and third-derivative central finite difference summation-by-parts (SBP) operators of the provided order of accuracy.
 
 How to use other summation-by-parts operators, is described in the section on [how to customize the solver](@ref customize_solver). Note that for non-periodic boundary conditions, the solver also needs to be created with non-periodic
 operators, see, e.g. [examples/bbm\_bbm\_1d/bbm\_bbm\_1d\_basic\_reflecting.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/blob/main/examples/bbm_bbm_1d/bbm_bbm_1d_basic_reflecting.jl).
@@ -127,10 +127,9 @@ nothing # hide
 
 ![shoaling solution](shoaling_solution.png)
 
-By default, this will plot the bathymetry, but not the initial (analytical) solution. 
+By default, this will plot the bathymetry, but not the initial (analytical) solution.
 
 You can adjust this by passing the boolean values `plot_bathymetry` (if `true`, always plot bathymetry in the first subplot) and `plot_initial`. Note that `plot_initial = true` will evaluate and plot the initial condition function at the same time `t` as the numerical solution being displayed (the final time by default). This means if your initial condition function represents an analytical solution, setting `plot_initial = true` will plot the analytical solution at that specific time for comparison.
-
 
 Plotting an animation over time can, e.g., be done by the following command, which uses `step` to plot the solution at a specific time step. Here `conversion = waterheight_total` makes it so that we only look at the waterheight ``\eta`` and not also the velocity ``v``. More on tutorials for plotting can be found in the chapter [Plotting Simulation Results](@ref plotting).
 
@@ -149,7 +148,6 @@ It is also possible to plot the solution variables at a fixed spatial point over
 ## More examples
 
 More examples sorted by the simulated equations can be found in the [examples/](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/tree/main/examples) subdirectory.
-
 
 ## [Plain program](@id overview-plain-program)
 

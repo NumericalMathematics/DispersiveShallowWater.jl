@@ -64,13 +64,12 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "svaerd_kalisch_1d_dingemans.jl"),
                         tspan=(0.0, 1.0),
-                        N=512,
-                        l2=[0.22796106962338855 0.7519327063662515 0.0],
-                        linf=[0.036708347831218346 0.12141172207472928 0.0],
-                        cons_error=[3.979039320256561e-13 4.937137540373564e-5 0.0],
-                        change_waterheight=-3.979039320256561e-13,
-                        change_entropy=-0.00024362648639453255,
-                        change_entropy_modified=-6.311893230304122e-9)
+                        l2=[0.26685829773477077, 0.8800952098489548, 0.0],
+                        linf=[0.03665249779728463, 0.12048532901685113, 0.0],
+                        cons_error=[8.526512829121202e-14, 6.496724002244977e-5, 0.0],
+                        change_waterheight=-8.526512829121202e-14,
+                        change_entropy=-0.0003347684281607144,
+                        change_entropy_modified=-8.815959517960437e-9)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 
@@ -82,14 +81,13 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "svaerd_kalisch_1d_dingemans.jl"),
                         tspan=(0.0, 1.0),
-                        N=512,
                         solver=solver,
-                        l2=[0.22796180766836865 0.7519296292874257 0.0],
-                        linf=[0.036709492542750466 0.12104908724733915 0.0],
-                        cons_error=[2.842170943040401e-14 4.9341465183441843e-5 0.0],
-                        change_waterheight=-2.842170943040401e-14,
-                        change_entropy=-0.00024270962080663594,
-                        change_entropy_modified=-7.430799087160267e-9)
+                        l2=[0.2668587324501861, 0.8800918552821204, 0.0],
+                        linf=[0.03665281298157985, 0.12092636417680247, 0.0],
+                        cons_error=[1.1368683772161603e-13, 6.498269475070908e-5, 0.0],
+                        change_waterheight=-1.1368683772161603e-13,
+                        change_entropy=-0.00033396742981040006,
+                        change_entropy_modified=-9.819814295042306e-9)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 end
@@ -98,12 +96,12 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "svaerd_kalisch_1d_dingemans_cg.jl"),
                         tspan=(0.0, 1.0),
-                        l2=[0.22798490823942433 0.7520004851600044 0.0],
-                        linf=[0.03673010870720128 0.12074632168110239 0.0],
-                        cons_error=[1.4210854715202004e-13 4.953054817174909e-5 0.0],
-                        change_waterheight=-1.4210854715202004e-13,
-                        change_entropy=-0.0002425303440531934,
-                        change_entropy_modified=-2.6815314413397573e-9)
+                        l2=[0.2669280328828958, 0.8803010025365813, 0.0],
+                        linf=[0.03678993282064258, 0.12097067363770743, 0.0],
+                        cons_error=[1.7053025658242404e-13, 6.420678045948553e-5, 0.0],
+                        change_waterheight=-1.7053025658242404e-13,
+                        change_entropy=-0.0003283147891579574,
+                        change_entropy_modified=-1.8083028408000246e-9)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=750_000)
 end
@@ -112,12 +110,12 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "svaerd_kalisch_1d_dingemans_fourier.jl"),
                         tspan=(0.0, 1.0),
-                        l2=[0.22799246923254327 0.7520172891302948 0.0],
-                        linf=[0.03671494177483947 0.12129171577180138 0.0],
-                        cons_error=[8.526512829121202e-14 5.3078570574495334e-5 0.0],
-                        change_waterheight=-8.526512829121202e-14,
-                        change_entropy=-0.0002424441479433881,
-                        change_entropy_modified=-4.00007138523506e-9)
+                        l2=[0.2668948282001354, 0.8801953155243658, 0.0],
+                        linf=[0.03665936863729946, 0.12083125907877076, 0.0],
+                        cons_error=[1.1368683772161603e-13, 6.61417489483421e-5, 0.0],
+                        change_waterheight=-1.1368683772161603e-13,
+                        change_entropy=-0.00033368459492066904,
+                        change_entropy_modified=-7.291419024113566e-9)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=13_000_000)
 end
@@ -126,12 +124,12 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "svaerd_kalisch_1d_dingemans_upwind.jl"),
                         tspan=(0.0, 1.0),
-                        l2=[0.2280370308166863 0.7521344942401095 0.0],
-                        linf=[0.03673101553812019 0.12116306036094074 0.0],
-                        cons_error=[1.1368683772161603e-13 4.871598417571836e-5 0.0],
-                        change_waterheight=-1.1368683772161603e-13,
-                        change_entropy=-0.00023645232727176335,
-                        change_entropy_modified=-6.654090611846186e-9)
+                        l2=[0.26694765330284975, 0.8803371688530466, 0.0],
+                        linf=[0.036669553278771194, 0.1212379289727636, 0.0],
+                        cons_error=[5.684341886080802e-14, 6.444827576975179e-5, 0.0],
+                        change_waterheight=-5.684341886080802e-14,
+                        change_entropy=-0.00032897021856115316,
+                        change_entropy_modified=-9.04344688024139e-9)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)
 end
@@ -140,12 +138,11 @@ end
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "svaerd_kalisch_1d_dingemans_relaxation.jl"),
                         tspan=(0.0, 1.0),
-                        N=512,
-                        l2=[0.22796107242561717 0.7519327155905444 0.0],
-                        linf=[0.03670834831604197 0.12141172368792873 0.0],
-                        cons_error=[3.979039320256561e-13 4.937137655207271e-5 0.0],
-                        change_waterheight=-3.979039320256561e-13,
-                        change_entropy=-0.00024362054875837202,
+                        l2=[0.2668583011029348, 0.8800952209358568, 0.0],
+                        linf=[0.03665249830112549, 0.12048533060761354, 0.0],
+                        cons_error=[8.526512829121202e-14, 6.4967241631659e-5, 0.0],
+                        change_waterheight=-8.526512829121202e-14,
+                        change_entropy=-0.000334760128112066,
                         change_entropy_modified=0.0)
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=350_000)

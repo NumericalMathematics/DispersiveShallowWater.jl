@@ -42,7 +42,8 @@ solver = Solver(D1, D2, D3)
 ```
 
 where:
-- `D1` is always required and must be an `AbstractDerivativeOperator` 
+
+- `D1` is always required and must be an `AbstractDerivativeOperator`
 - `D2` and `D3` are optional and can be either `AbstractDerivativeOperator`s, `AbstractMatrix`es, or `nothing`
 
 ## Reflecting Boundary Conditions
@@ -68,6 +69,7 @@ Other possible choices for sources can be found in the [documentation of Summati
 For equations that benefit from upwind discretizations (such as the Serre-Green-Naghdi equations), you can use [upwind SBP Operators](@ref upwind_sbp):
 
 **For periodic boundary conditions:**
+
 ```julia
 using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 
@@ -81,6 +83,7 @@ solver = Solver(D1)
 ```
 
 **For reflecting boundary conditions:**
+
 ```julia
 using SummationByPartsOperators: Mattsson2017, upwind_operators
 
@@ -197,6 +200,7 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
 ```
 
 The solver you choose should be compatible with your boundary conditions:
+
 - Periodic operators (created with `periodic_derivative_operator` or `fourier_derivative_operator`) require `boundary_condition_periodic`
 - Non-periodic operators (created with `MattssonNordström2004`, etc.) are needed for `boundary_condition_reflecting`
 
@@ -205,6 +209,7 @@ The solver you choose should be compatible with your boundary conditions:
 ### Mismatched Operators and Boundary Conditions
 
 **Problem**: Using periodic operators with reflecting boundary conditions or vice versa.
+
 ```julia
 # ❌ This will fail
 D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
@@ -214,9 +219,10 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
 ```
 
 **Solution**: Match operator type to boundary conditions:
+
 ```julia
 # ✅ Correct approach
-D1 = derivative_operator(MattssonNordström2004(), derivative_order = 1, 
+D1 = derivative_operator(MattssonNordström2004(), derivative_order = 1,
                          accuracy_order = 4, xmin = mesh.xmin, xmax = mesh.xmax, N = mesh.N)
 solver = Solver(D1)
 semi = Semidiscretization(mesh, equations, initial_condition, solver,
@@ -226,6 +232,7 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
 ### Incorrect Grid Size for DG Methods
 
 **Problem**: Grid size not divisible by polynomial degree + 1 for DG methods.
+
 ```julia
 # ❌ N = 101, p = 3, but 101 is not divisible by (3+1) = 4
 N = 101
@@ -234,6 +241,7 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)  # Error in DG setup!
 ```
 
 **Solution**: Ensure `N` is divisible by `p + 1`:
+
 ```julia
 # ✅ Adjust N to be divisible by p + 1
 p = 3

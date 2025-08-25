@@ -41,7 +41,7 @@ nothing # hide
 
 # [Plotting Simulation Results](@id plotting)
 
-[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) provides flexible plotting capabilities through [Plots.jl](https://github.com/JuliaPlots/Plots.jl) recipes. The plotting system supports various conversion functions, visualization options, and analysis tools. 
+[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) provides flexible plotting capabilities through [Plots.jl](https://github.com/JuliaPlots/Plots.jl) recipes. The plotting system supports various conversion functions, visualization options, and analysis tools.
 
 [Makie.jl](https://docs.makie.org/stable/) is not supported yet. [Contributions are welcome](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/issues/220).
 
@@ -59,7 +59,7 @@ using Plots
 
 t = 13.37 # plot solution at (roughly) t = 13.37s
 step_idx = argmin(abs.(saveat .- t)) # get the closest point to 13.37
-p1 = plot(semi => sol, conversion = prim2prim, plot_bathymetry = false, 
+p1 = plot(semi => sol, conversion = prim2prim, plot_bathymetry = false,
           suptitle = "Primitive Variables", step = step_idx)
 p2 = plot(semi => sol, conversion = prim2cons, plot_bathymetry = false,
           suptitle = "Conservative Variables", step = step_idx)

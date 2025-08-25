@@ -88,9 +88,9 @@ function initial_condition_traveling_wave(x, t, equations, mesh)
     omega = frequency(k)
     h0 = reference_height()
     A = 0.02
-    h = A * cos(k * x - omega * t)
-    v = sqrt(equations.gravity / k * tanh(k * h0)) * h / h0
-    eta = h + equations.eta0
+    eta_prime = A * cos(k * x - omega * t)
+    v = sqrt(equations.gravity / k * tanh(k * h0)) * eta_prime / h0
+    eta = eta_prime + equations.eta0
     D = h0
     return SVector(eta, v, D)
 end

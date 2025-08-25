@@ -197,6 +197,8 @@ function source_terms_manufactured_reflecting(q, x, t, equations::SvaerdKalischE
     return SVector(s1, s2, zero(s1))
 end
 
+dingemans_calibration(equations::SvaerdKalischEquations1D) = 2.2
+
 # For periodic boundary conditions
 function assemble_system_matrix!(cache, h,
                                  ::SvaerdKalischEquations1D,

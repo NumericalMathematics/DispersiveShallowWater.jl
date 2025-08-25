@@ -10,7 +10,7 @@ The bathymetry profile consists of:
 
 - A flat section from the wave maker to x = 11.01
 - A linearly increasing slope from x = 11.01 to x = 23.04 (maximum height of 0.6)
-- A flat plateau from x = 23.04 to x = 27.04  
+- A flat plateau from x = 23.04 to x = 27.04
 - A linearly decreasing slope from x = 27.04 to x = 33.07
 - A flat section beyond x = 33.07
 
@@ -33,17 +33,17 @@ Next, we set up the different equation systems we want to compare:
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
                            gravity = 9.81, eta0 = 0.0)
 
-# Svärd-Kalisch equations with specific parameter set
-sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0,
-                              beta = 0.27946992481203003, gamma = 0.0521077694235589)
+# Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
+sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
+                              beta = 0.49292929292929294, gamma = 0.15707070707070708)
 
-# Serre-Green-Naghdi equations with variable bathymetry  
+# Serre-Green-Naghdi equations with variable bathymetry
 sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
-                                  gravity = 9.81)
+                                  gravity = 9.81, eta0 = 0.8)
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              lambda = 100.0, gravity = 9.81)
+                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -134,8 +134,7 @@ y_limits = (-0.03, 0.87)
 # Model configurations: (semidiscretization, solution, label, conversion_function, linestyle)
 models = [
     (semi_bbmbbm, sol_bbmbbm, "BBM-BBM", shifted_waterheight, :solid),
-    # Svärd-Kalisch has a phase shift which need to be adjusted for in the initial condition
-    # (semi_sk, sol_sk, "Svärd-Kalisch", waterheight_total, :dashdotdot), 
+    (semi_sk, sol_sk, "Svärd-Kalisch", waterheight_total, :dashdotdot),
     (semi_sgn, sol_sgn, "Serre-Green-Naghdi", waterheight_total, :dot),
     (semi_hysgn, sol_hysgn, "Hyperbolic Serre-Green-Naghdi", waterheight_total, :dashdot)
 ]
@@ -164,7 +163,7 @@ for time_val in times
     push!(snapshot_plots, p)
 end
 
-# Create legend plot 
+# Create legend plot
 legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
 
 for (i, (_, _, label, _, linestyle)) in enumerate(models)
@@ -190,7 +189,6 @@ nothing # hide
 
 The results show how different dispersive wave models capture the wave evolution over the trapezoidal bathymetry.
 
-
 ## [Plain program](@id overview-plain-program-dingemans)
 
 Here follows a version of the program without any comments.
@@ -202,17 +200,17 @@ using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
                            gravity = 9.81, eta0 = 0.0)
 
-# Svärd-Kalisch equations with specific parameter set
-sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0,
-                              beta = 0.27946992481203003, gamma = 0.0521077694235589)
+# Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
+sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
+                              beta = 0.49292929292929294, gamma = 0.15707070707070708)
 
-# Serre-Green-Naghdi equations with variable bathymetry  
+# Serre-Green-Naghdi equations with variable bathymetry
 sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
-                                  gravity = 9.81)
+                                  gravity = 9.81, eta0 = 0.8)
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              lambda = 100.0, gravity = 9.81)
+                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -262,8 +260,7 @@ y_limits = (-0.03, 0.87)
 # Model configurations: (semidiscretization, solution, label, conversion_function, linestyle)
 models = [
     (semi_bbmbbm, sol_bbmbbm, "BBM-BBM", shifted_waterheight, :solid),
-    # Svärd-Kalisch has a phase shift which need to be adjusted for in the initial condition
-    # (semi_sk, sol_sk, "Svärd-Kalisch", waterheight_total, :dashdotdot), 
+    (semi_sk, sol_sk, "Svärd-Kalisch", waterheight_total, :dashdotdot),
     (semi_sgn, sol_sgn, "Serre-Green-Naghdi", waterheight_total, :dot),
     (semi_hysgn, sol_hysgn, "Hyperbolic Serre-Green-Naghdi", waterheight_total, :dashdot)
 ]
@@ -292,7 +289,7 @@ for time_val in times
     push!(snapshot_plots, p)
 end
 
-# Create legend plot 
+# Create legend plot
 legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
 
 for (i, (_, _, label, _, linestyle)) in enumerate(models)

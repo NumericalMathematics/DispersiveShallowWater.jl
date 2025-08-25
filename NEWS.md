@@ -5,6 +5,12 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+## Changes when updating to v0.8 from v0.7.x
+
+#### Changed
+
+- The initial condition `initial_condition_dingemans` uses equation-specific offsets to account for phase shifts
+  compared to the experimental data and a slightly different range for the initial wave train ([#237]).
 
 ## Changes in the v0.7 lifecycle
 
