@@ -414,7 +414,7 @@ function source_terms_manufactured_reflecting(q, x, t,
     cos3_pix = cospi(x)^3
     cos4_pix = cospi(x)^4
 
-    # Compute s1 
+    # Compute s1
     s1 = 2(2 + cospix + x) + (-1 - 2(2 + cospix + x) * t) * sinpix * t -
          2(1 - pi * sinpix) * sinpix * t2 * x +
          cospix * (-1 - 2(2 + cospix + x) * t) * pi * t * x
@@ -495,6 +495,8 @@ function source_terms_manufactured_reflecting(q, x, t,
 
     return SVector(s1, s2, zero(s1))
 end
+
+dingemans_calibration(equations::SerreGreenNaghdiEquations1D) = 2.4
 
 # flat bathymetry with periodic or reflecting boundary conditions
 function create_cache(mesh,

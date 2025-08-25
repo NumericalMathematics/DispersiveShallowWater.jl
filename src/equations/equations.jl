@@ -614,6 +614,10 @@ function solve_system_matrix!(dv, system_matrix, ::Union{BBMEquation1D, BBMBBMEq
     ldiv!(system_matrix, dv)
 end
 
+# To match the experimental data from Dingemans, the initial condition needs to be shifted
+# to account for the phase shift to the experimental data.
+dingemans_calibration(equations) = 0
+
 """
     initial_condition_dingemans(x, t, equations::AbstractShallowWaterEquations, mesh)
 
@@ -635,10 +639,11 @@ function initial_condition_dingemans(x, t, equations::AbstractShallowWaterEquati
     A = 0.02
     # omega = 2*pi/(2.02*sqrt(2))
     k = 0.8406220896381442 # precomputed result of find_zero(k -> omega^2 - g * k * tanh(k * h0), 1.0) using Roots.jl
-    if x < -30.5 * pi / k || x > -8.5 * pi / k
+    offset = dingemans_calibration(equations)
+    if x - offset < -34.5 * pi / k || x - offset > -4.5 * pi / k
         h = 0.0
     else
-        h = A * cos(k * x)
+        h = A * cos(k * (x - offset))
     end
     v = sqrt(g / k * tanh(k * h0)) * h / h0
     if 11.01 <= x && x < 23.04
