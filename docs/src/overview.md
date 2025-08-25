@@ -22,11 +22,10 @@ The following table provides an overview of all available equation systems and t
 ![water height and bathymetry](bathymetry.png)
 
 - ``\eta``: Total water height
-- ``v``: Velocity in horizontal direction  
+- ``v``: Velocity in horizontal direction
 - ``D``: Still-water depth
 - ``w``: Auxiliary variable in hyperbolic approximation (``\approx -h v_x``)
 - ``H``: Auxiliary variable in hyperbolic approximation (``\approx h``)
-
 
 ## Abstract Shallow Water Equations Interface
 
