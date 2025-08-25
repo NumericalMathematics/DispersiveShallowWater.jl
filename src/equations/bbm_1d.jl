@@ -53,6 +53,12 @@ function BBMEquation1D(; gravity, D = 1.0, eta0 = 0.0, split_form = true)
     BBMEquation1D(gravity, D, eta0, split_form)
 end
 
+function check_solver(::BBMEquation1D, solver, boundary_conditions)
+    if isnothing(solver.D2)
+        throw(ArgumentError("The BBM equation requires a second-derivative operator. Explicitly set `D2`."))
+    end
+end
+
 """
     initial_condition_convergence_test(x, t, equations::BBMEquation1D, mesh)
 

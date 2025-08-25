@@ -92,6 +92,29 @@ end
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
 end
 
+@testitem "Solver consistency" setup=[Setup, AdditionalImports] begin
+    mesh = Mesh1D(-1.0, 1.0, 10)
+    initial_condition = initial_condition_convergence_test
+    D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
+    solver = Solver(D1)
+
+    equations = KdVEquation1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+
+    equations = BBMEquation1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+
+    equations = BBMBBMEquations1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+
+    equations = SvaerdKalischEquations1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+end
+
 @testitem "Boundary conditions" setup=[Setup] begin
     boundary_conditions = boundary_condition_periodic
     @test_nowarn print(boundary_conditions)

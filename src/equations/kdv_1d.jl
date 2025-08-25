@@ -53,6 +53,13 @@ function KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
     KdVEquation1D(gravity, D, eta0)
 end
 
+function check_solver(::KdVEquation1D, solver, boundary_conditions)
+    if !(solver.D1 isa PeriodicUpwindOperators && isnothing(solver.D3)) &&
+       isnothing(solver.D3)
+        throw(ArgumentError("The KdV equation requires a third-derivative operator. Either explicitly set `D3` or set `D1` as an upwind operator."))
+    end
+end
+
 """
     initial_condition_soliton(x, t, equations::KdVEquation1D, mesh)
 
@@ -133,14 +140,14 @@ where `D` is the still-water depth.
 
 !!! warning "Parameter constraints"
     This conversion is only valid for equations with specific parameter values:
-    - `gravity = 4/27` 
-    - `D = 3.0` 
-    
-    These values ensure the dimensional KdV equation matches the standard 
+    - `gravity = 4/27`
+    - `D = 3.0`
+
+    These values ensure the dimensional KdV equation matches the standard
     non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
 
-This function allows converting solutions from the standard non-dimensional 
-KdV form commonly found in literature to the dimensional form implemented 
+This function allows converting solutions from the standard non-dimensional
+KdV form commonly found in literature to the dimensional form implemented
 in DispersiveShallowWater.jl.
 
 See also [`prim2nondim`](@ref).
@@ -153,7 +160,7 @@ end
 """
     prim2nondim(eta, equations::KdVEquation1D)
 
-Convert the primitive/physical variable `eta` (total water height) to the 
+Convert the primitive/physical variable `eta` (total water height) to the
 non-dimensional variable `u` for the [`KdVEquation1D`](@ref).
 
 The transformation is given by:
@@ -164,15 +171,15 @@ where `D` is the still-water depth.
 
 !!! warning "Parameter constraints"
     This conversion is only valid for equations with specific parameter values:
-    - `gravity = 4/27` 
+    - `gravity = 4/27`
     - `D = 3.0`
-    
-    These values ensure the dimensional KdV equation matches the standard 
+
+    These values ensure the dimensional KdV equation matches the standard
     non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
 
-This function allows converting solutions from the dimensional form implemented 
-in DispersiveShallowWater.jl to the standard non-dimensional KdV form 
-commonly found in literature, enabling comparison with theoretical results 
+This function allows converting solutions from the dimensional form implemented
+in DispersiveShallowWater.jl to the standard non-dimensional KdV form
+commonly found in literature, enabling comparison with theoretical results
 and other implementations.
 
 See also [`nondim2prim`](@ref).
