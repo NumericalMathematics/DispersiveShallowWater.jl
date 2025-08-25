@@ -5,8 +5,7 @@ using DispersiveShallowWater
 # Semidiscretization of the hyperbolic Serre-Green-Naghdi equations
 
 equations = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                                  lambda = 500.0,
-                                                  gravity = 9.81)
+                                                  eta0 = 0.8, lambda = 500.0, gravity = 9.81)
 
 initial_condition = initial_condition_dingemans
 boundary_conditions = boundary_condition_periodic
