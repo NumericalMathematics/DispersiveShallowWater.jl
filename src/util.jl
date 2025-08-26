@@ -1,7 +1,7 @@
 """
     examples_dir()
 
-Return the directory where the example files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater is
+Return the directory where the example files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater.jl is
 installed as a regular package (with `]add DispersiveShallowWater`), these files are read-only and should *not* be
 modified. To find out which files are available, use, e.g., `readdir`.
 
@@ -50,7 +50,7 @@ end
 """
     data_dir()
 
-Return the directory where the data files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater is
+Return the directory where the data files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater.jl is
 installed as a regular package (with `]add DispersiveShallowWater`), these files are read-only and should *not* be
 modified. To find out which files are available, use, e.g., `readdir`.
 
