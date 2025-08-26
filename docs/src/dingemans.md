@@ -68,7 +68,7 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 nothing # hide
 ```
 
-For the spatial discretization, we use fourth-order accurate [summation-by-parts operators](@ref sbp_operators):
+For the spatial discretization, we use sixth-order accurate [summation-by-parts operators](@ref sbp_operators):
 
 ```@example dingemans
 accuracy_order = 6
