@@ -76,6 +76,7 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
         throw(ArgumentError("Non-periodic derivative operators in `solver` are incompatible with periodic boundary conditions."))
     end
 
+    check_solver(equations, solver, boundary_conditions)
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
                           RealT, uEltype)...,
@@ -87,6 +88,19 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                                                       boundary_conditions, source_terms,
                                                       solver, cache)
 end
+
+"""
+    check_solver(equations, solver, boundary_conditions)
+
+Check that the `solver` is compatible with the given `equations` and 
+`boundary_conditions`. The default implementation performs no checks.
+Specific equation types can override this method to validate that 
+required derivative operators are present (e.g., some equations 
+require `D2` or `D3` to be non-`nothing`).
+
+Throws an `ArgumentError` if the solver is incompatible.
+"""
+check_solver(equations, solver, boundary_conditions) = nothing
 
 function Base.show(io::IO, semi::Semidiscretization)
     @nospecialize semi # reduce precompilation time
