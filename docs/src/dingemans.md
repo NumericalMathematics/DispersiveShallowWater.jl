@@ -251,7 +251,7 @@ In this setup, the numerical results from the Svärd-Kalisch equations can captu
 Here follows a version of the program without any comments.
 
 ```julia
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
+using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots, DelimitedFiles
 
 # BBM-BBM equations with variable bathymetry
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
