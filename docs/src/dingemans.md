@@ -235,7 +235,7 @@ end
 legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
 
 all_plots2 = [snapshot_plots_time..., legend_plot_data]
-plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.16h}]),
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.18h}]),
      size=(900, 900), suptitle="")
 
 savefig("dingemans_experimental.png") # hide
@@ -404,7 +404,7 @@ end
 legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
 
 all_plots2 = [snapshot_plots_time..., legend_plot_data]
-plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.14h}]),
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.18h}]),
      size=(900, 900), suptitle="")
 ```
 
