@@ -23,7 +23,7 @@ Let's implement the Dingemans experiment and compare the performance of differen
 First, we load the necessary packages:
 
 ```@example dingemans
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots, DelimitedFiles
+using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
 ```
 
 Next, we set up the different equation systems we want to compare:
@@ -195,16 +195,13 @@ During the experiment of Dingemans, the wave evolution was recorded at six gauge
 We compare the numerical results with the experimental data at the corresponding gauge locations.
 
 ```@example dingemans
-path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
+t_values, x_values, experimental_data = data_dingemans()
 
-experimental_data, header = readdlm(path_dingemans, ','; header=true)
-
-x_values = (3.04, 9.44, 20.04, 26.04, 30.44, 37.04)
 tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
 
 snapshot_plots_time = []
 for (j, x_val) in enumerate(x_values)
-    p = plot(experimental_data[:, 1], experimental_data[:, 1 + j],
+    p = plot(t_values, experimental_data[:, j],
              xlims=tlims[j],
              ylims=(0.765, 0.865),
              label="experimental data",
@@ -251,7 +248,7 @@ In this setup, the numerical results from the Svärd-Kalisch equations can captu
 Here follows a version of the program without any comments.
 
 ```julia
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots, DelimitedFiles
+using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
 
 # BBM-BBM equations with variable bathymetry
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
@@ -364,16 +361,13 @@ plot(all_plots...,
      layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
 
-path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
+t_values, x_values, experimental_data = data_dingemans()
 
-experimental_data, header = readdlm(path_dingemans, ','; header=true)
-
-x_values = (3.04, 9.44, 20.04, 26.04, 30.44, 37.04)
 tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
 
 snapshot_plots_time = []
 for (j, x_val) in enumerate(x_values)
-    p = plot(experimental_data[:, 1], experimental_data[:, 1 + j],
+    p = plot(t_values, experimental_data[:, j],
              xlims=tlims[j],
              ylims=(0.765, 0.865),
              label="experimental data",

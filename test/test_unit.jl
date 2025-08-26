@@ -532,7 +532,11 @@ end
 end
 
 @testitem "util" setup=[Setup] begin
+    @test_nowarn examples_dir()
     @test_nowarn get_examples()
+    @test_nowarn data_dir()
+    t, x, experimental_data = data_dingemans()
+    @test size(experimental_data) == (length(t), length(x))
 
     accuracy_orders = [2, 4, 6]
     for accuracy_order in accuracy_orders
