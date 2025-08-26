@@ -64,6 +64,12 @@ function BBMBBMEquations1D(; bathymetry_type = bathymetry_variable,
     BBMBBMEquations1D(bathymetry_type, gravity, eta0)
 end
 
+function check_solver(::BBMBBMEquations1D, solver, boundary_conditions)
+    if isnothing(solver.D2)
+        throw(ArgumentError("The BBM-BBM equations require a second-derivative operator. Explicitly set `D2`."))
+    end
+end
+
 """
     initial_condition_convergence_test(x, t, equations::BBMBBMEquations1D, mesh)
 
