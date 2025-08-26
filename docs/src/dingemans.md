@@ -23,7 +23,7 @@ Let's implement the Dingemans experiment and compare the performance of differen
 First, we load the necessary packages:
 
 ```@example dingemans
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
+using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots, DelimitedFiles
 ```
 
 Next, we set up the different equation systems we want to compare:
@@ -43,7 +43,7 @@ sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
+                                              lambda = 200.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -63,7 +63,7 @@ We create a computational domain that is large enough to contain the entire expe
 ```@example dingemans
 coordinates_min = -138.0
 coordinates_max = 46.0
-N = 512
+N = 1024
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 nothing # hide
 ```
@@ -71,7 +71,7 @@ nothing # hide
 For the spatial discretization, we use fourth-order accurate [summation-by-parts operators](@ref sbp_operators):
 
 ```@example dingemans
-accuracy_order = 4
+accuracy_order = 6
 solver = Solver(mesh, accuracy_order)
 nothing # hide
 ```
@@ -114,7 +114,7 @@ sol_hysgn = solve(ode_hysgn, Tsit5(); options...)
 nothing # hide
 ```
 
-## Visualization and Comparison
+## Visualization of Temporal Evolution
 
 For proper comparison, we need to account for the fact that the BBM-BBM equations use a different reference level (``\eta_0 = 0``) compared to the other equations. We create a custom conversion function which allows us to easily shift the BBM-BBM results:
 
@@ -181,13 +181,65 @@ plot(all_plots...,
     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
 
-savefig("dingemans_comparison.png") # hide
+savefig("dingemans_temporal.png") # hide
 nothing # hide
 ```
 
-![Dingemans comparison](dingemans_comparison.png)
+![Dingemans temporal](dingemans_temporal.png)
 
 The results show how different dispersive wave models capture the wave evolution over the trapezoidal bathymetry.
+
+## Comparison with Experimental Data
+
+```@example dingemans
+path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
+
+experimental_data, header = readdlm(path_dingemans, ','; header=true)
+
+x_values = (3.04, 9.44, 20.04, 26.04, 30.44, 37.04)
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 45), (50, 60)]
+
+snapshot_plots_time = []
+for (j, x_val) in enumerate(x_values)
+    p = plot(experimental_data[:, 1], experimental_data[:, 1 + j],
+             xlims=tlims[j],
+             ylims=(0.765, 0.865),
+             label="experimental data",
+             linestyle=:dash,
+             color=:gray,
+             markershape=:circle,
+             markercolor=:gray,
+             markersize=1
+        )
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi => sol, x_val,
+              conversion=conversion,
+              label=label,
+              linestyle=linestyle,
+              color=i,
+              suptitle="",
+              legend=false,
+              title="Gauge at x = $(x_val)",
+              linewidth=2
+        )
+
+    end
+
+    push!(snapshot_plots_time, p)
+
+end
+
+legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
+
+all_plots2 = [snapshot_plots_time..., legend_plot_data]
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.14h}]),
+     size=(900, 900), suptitle="")
+
+savefig("dingemans_experimental.png") # hide
+nothing # hide
+```
+
+![Dingemans experimental](dingemans_experimental.png)
 
 ## [Plain program](@id overview-plain-program-dingemans)
 
@@ -210,7 +262,7 @@ sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
+                                              lambda = 200.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -220,10 +272,10 @@ boundary_conditions = boundary_condition_periodic
 
 coordinates_min = -138.0
 coordinates_max = 46.0
-N = 512
+N = 1024
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-accuracy_order = 4
+accuracy_order = 6
 solver = Solver(mesh, accuracy_order)
 
 tspan = (0.0, 70.0)
@@ -306,6 +358,49 @@ plot(all_plots...,
     size=(900, 1100),
     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
+
+path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
+
+experimental_data, header = readdlm(path_dingemans, ','; header=true)
+
+x_values = (3.04, 9.44, 20.04, 26.04, 30.44, 37.04)
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 45), (50, 60)]
+
+snapshot_plots_time = []
+for (j, x_val) in enumerate(x_values)
+    p = plot(experimental_data[:, 1], experimental_data[:, 1 + j],
+             xlims=tlims[j],
+             ylims=(0.765, 0.865),
+             label="experimental data",
+             linestyle=:dash,
+             color=:gray,
+             markershape=:circle,
+             markercolor=:gray,
+             markersize=1
+        )
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi => sol, x_val,
+              conversion=conversion,
+              label=label,
+              linestyle=linestyle,
+              color=i,
+              suptitle="",
+              legend=false,
+              title="Gauge at x = $(x_val)",
+              linewidth=2
+        )
+
+    end
+
+    push!(snapshot_plots_time, p)
+
+end
+
+legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
+
+all_plots2 = [snapshot_plots_time..., legend_plot_data]
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.14h}]),
+     size=(900, 900), suptitle="")
 ```
 
 ### References
