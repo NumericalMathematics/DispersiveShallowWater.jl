@@ -66,6 +66,13 @@ Pages = Main.CALLBACKS_STEP_FILES
 
 ## Utilities
 
+### Experimental data
+
+```@autodocs
+Modules = [DispersiveShallowWater]
+Pages = ["experimental_data.jl"]
+```
+
 ### Utilities from DispersiveShallowWater.jl
 
 ```@autodocs
