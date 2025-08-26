@@ -147,16 +147,16 @@ for time_val in times
 
     for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
         plot!(p, semi => sol,
-            step=step_idx,
-            label=label,
-            conversion=conversion,
-            plot_bathymetry=true,
-            legend=false,
-            title="Dingemans at t = $(time_val)",
-            suptitle="",
-            linewidth=[2 1], # 1 for the bathymetry
-            linestyles=[linestyle :solid], # :solid for the bathymetry
-            color=[i :black], # black for the bathymetry
+              step=step_idx,
+              label=label,
+              conversion=conversion,
+              plot_bathymetry=true,
+              legend=false,
+              title="Dingemans at t = $(time_val)",
+              suptitle="",
+              linewidth=[2 1], # 1 for the bathymetry
+              linestyles=[linestyle :solid], # :solid for the bathymetry
+              color=[i :black], # black for the bathymetry
         )
     end
 
@@ -177,8 +177,8 @@ snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75,
 # Combine all plots
 all_plots = [snapshot_plots..., legend_plot, snapshot_plots_zoom...]
 plot(all_plots...,
-    size=(900, 1100),
-    layout=@layout([a b; c d; e{0.14h}; f g; h i]),
+     size=(900, 1100),
+     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
 
 savefig("dingemans_temporal.png") # hide
@@ -190,6 +190,9 @@ nothing # hide
 The results show how different dispersive wave models capture the wave evolution over the trapezoidal bathymetry.
 
 ## Comparison with Experimental Data
+
+During the experiment of Dingemans, the wave evolution was recorded at six gauges along the flume. These measurements provide a reference for validating the numerical models.
+We compare the numerical results with the experimental data at the corresponding gauge locations.
 
 ```@example dingemans
 path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
@@ -232,7 +235,7 @@ end
 legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
 
 all_plots2 = [snapshot_plots_time..., legend_plot_data]
-plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.14h}]),
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.16h}]),
      size=(900, 900), suptitle="")
 
 savefig("dingemans_experimental.png") # hide
@@ -240,6 +243,8 @@ nothing # hide
 ```
 
 ![Dingemans experimental](dingemans_experimental.png)
+
+In this setup, the numerical results from the Svärd-Kalisch equations can capture the wave evolution more accurately compared to the other models.
 
 ## [Plain program](@id overview-plain-program-dingemans)
 
@@ -325,16 +330,16 @@ for time_val in times
 
     for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
         plot!(p, semi => sol,
-            step=step_idx,
-            label=label,
-            conversion=conversion,
-            plot_bathymetry=true,
-            legend=false,
-            title="Dingemans at t = $(time_val)",
-            suptitle="",
-            linewidth=[2 1], # 1 for the bathymetry
-            linestyles=[linestyle :solid], # :solid for the bathymetry
-            color=[i :black], # black for the bathymetry
+              step=step_idx,
+              label=label,
+              conversion=conversion,
+              plot_bathymetry=true,
+              legend=false,
+              title="Dingemans at t = $(time_val)",
+              suptitle="",
+              linewidth=[2 1], # 1 for the bathymetry
+              linestyles=[linestyle :solid], # :solid for the bathymetry
+              color=[i :black], # black for the bathymetry
         )
     end
 
@@ -355,8 +360,8 @@ snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75,
 # Combine all plots
 all_plots = [snapshot_plots..., legend_plot, snapshot_plots_zoom...]
 plot(all_plots...,
-    size=(900, 1100),
-    layout=@layout([a b; c d; e{0.14h}; f g; h i]),
+     size=(900, 1100),
+     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
 
 path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
