@@ -169,13 +169,13 @@ legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
 for (i, (_, _, label, _, linestyle)) in enumerate(models)
     plot!(legend_plot, [], [], label=label, linestyles=linestyle, linewidth=2, color=i)
 end
-plot!(legend_plot, [], [], label="Bathymetry", color=:black,)
+legend_plot_bathymetry = plot(legend_plot, [], [], label="Bathymetry", color=:black,)
 
 xlims_zoom = [(-25, 15), (0, 40), (5, 45), (-100, -60)]
 snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75, 0.85), title="Zoomed in at t = $(times[i])") for i in 1:4]
 
 # Combine all plots
-all_plots = [snapshot_plots..., legend_plot, snapshot_plots_zoom...]
+all_plots = [snapshot_plots..., legend_plot_bathymetry, snapshot_plots_zoom...]
 plot(all_plots...,
      size=(900, 1100),
      layout=@layout([a b; c d; e{0.14h}; f g; h i]),
@@ -352,13 +352,13 @@ legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
 for (i, (_, _, label, _, linestyle)) in enumerate(models)
     plot!(legend_plot, [], [], label=label, linestyles=linestyle, linewidth=2, color=i)
 end
-plot!(legend_plot, [], [], label="Bathymetry", color=:black,)
+legend_plot_bathymetry = plot(legend_plot, [], [], label="Bathymetry", color=:black,)
 
 xlims_zoom = [(-25, 15), (0, 40), (5, 45), (-100, -60)]
 snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75, 0.85), title="Zoomed in at t = $(times[i])") for i in 1:4]
 
 # Combine all plots
-all_plots = [snapshot_plots..., legend_plot, snapshot_plots_zoom...]
+all_plots = [snapshot_plots..., legend_plot_bathymetry, snapshot_plots_zoom...]
 plot(all_plots...,
      size=(900, 1100),
      layout=@layout([a b; c d; e{0.14h}; f g; h i]),
