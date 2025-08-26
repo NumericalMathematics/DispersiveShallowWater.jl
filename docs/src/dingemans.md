@@ -200,7 +200,7 @@ path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
 experimental_data, header = readdlm(path_dingemans, ','; header=true)
 
 x_values = (3.04, 9.44, 20.04, 26.04, 30.44, 37.04)
-tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 45), (50, 60)]
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
 
 snapshot_plots_time = []
 for (j, x_val) in enumerate(x_values)
@@ -369,7 +369,7 @@ path_dingemans = joinpath(@__DIR__, "data", "Dingemans", "Dingemans.csv")
 experimental_data, header = readdlm(path_dingemans, ','; header=true)
 
 x_values = (3.04, 9.44, 20.04, 26.04, 30.44, 37.04)
-tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 45), (50, 60)]
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
 
 snapshot_plots_time = []
 for (j, x_val) in enumerate(x_values)
