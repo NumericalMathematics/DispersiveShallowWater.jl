@@ -23,7 +23,7 @@ Let's implement the Dingemans experiment and compare the performance of differen
 First, we load the necessary packages:
 
 ```@example dingemans
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
+using DispersiveShallowWater, SummationByPartsOperators, SparseArrays, OrdinaryDiffEqTsit5, Plots
 ```
 
 Next, we set up the different equation systems we want to compare:
@@ -72,7 +72,15 @@ For the spatial discretization, we use sixth-order accurate [summation-by-parts 
 
 ```@example dingemans
 accuracy_order = 6
-solver = Solver(mesh, accuracy_order)
+solver_central = Solver(mesh, accuracy_order)
+
+D1 = upwind_operators(periodic_derivative_operator;
+                      derivative_order=1,
+                      accuracy_order=accuracy_order,
+                      xmin=xmin(mesh), xmax=xmax(mesh),
+                      N=nnodes(mesh))
+D2 = sparse(D1.plus) * sparse(D1.minus)
+solver_upwind = Solver(D1, D2)
 nothing # hide
 ```
 
@@ -87,13 +95,13 @@ nothing # hide
 Now we create semidiscretizations for each equation system. Each semidiscretization bundles the mesh, equations, initial condition, solver, and boundary conditions:
 
 ```@example dingemans
-semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver,
+semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
                                  boundary_conditions = boundary_conditions)
-semi_sk = Semidiscretization(mesh, sk, initial_condition, solver,
+semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
                              boundary_conditions = boundary_conditions)
-semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver,
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_central,
                               boundary_conditions = boundary_conditions)
-semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver,
+semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
 nothing # hide
 ```
