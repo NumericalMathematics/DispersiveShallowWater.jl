@@ -68,7 +68,10 @@ mesh = Mesh1D(coordinates_min, coordinates_max, N)
 nothing # hide
 ```
 
-For the spatial discretization, we use sixth-order accurate [summation-by-parts operators](@ref sbp_operators):
+For the spatial discretization, we use sixth-order accurate [summation-by-parts operators](@ref sbp_operators). Specifically, [upwind SBP operators](@ref upwind_sbp) are utilized for all equation systems
+except the hyperbolic Serre-Green-Naghdi equations. The hyperbolic Serre-Green-Naghdi equations involve only first derivatives, making central discretization appropriate, whereas the other models include
+higher-order derivatives that benefit from the upwind approach. It is important to note that when upwind operators are applied symmetrically to construct a central second-derivative operator, the resulting
+operator achieves one order higher accuracy.
 
 ```@example dingemans
 accuracy_order = 6
