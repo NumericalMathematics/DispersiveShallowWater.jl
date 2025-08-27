@@ -76,7 +76,7 @@ solver_central = Solver(mesh, accuracy_order)
 
 D1 = upwind_operators(periodic_derivative_operator;
                       derivative_order=1,
-                      accuracy_order=accuracy_order,
+                      accuracy_order=accuracy_order - 1,
                       xmin=xmin(mesh), xmax=xmax(mesh),
                       N=nnodes(mesh))
 D2 = sparse(D1.plus) * sparse(D1.minus)
@@ -99,7 +99,7 @@ semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
                                  boundary_conditions = boundary_conditions)
 semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
                              boundary_conditions = boundary_conditions)
-semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_central,
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
                               boundary_conditions = boundary_conditions)
 semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
@@ -256,7 +256,7 @@ In this setup, the numerical results from the Svärd-Kalisch equations can captu
 Here follows a version of the program without any comments.
 
 ```julia
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
+using DispersiveShallowWater, SummationByPartsOperators, SparseArrays, OrdinaryDiffEqTsit5, Plots
 
 # BBM-BBM equations with variable bathymetry
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
@@ -286,18 +286,26 @@ N = 1024
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
 accuracy_order = 6
-solver = Solver(mesh, accuracy_order)
+solver_central = Solver(mesh, accuracy_order)
+
+D1 = upwind_operators(periodic_derivative_operator;
+                      derivative_order=1,
+                      accuracy_order=accuracy_order - 1,
+                      xmin=xmin(mesh), xmax=xmax(mesh),
+                      N=nnodes(mesh))
+D2 = sparse(D1.plus) * sparse(D1.minus)
+solver_upwind = Solver(D1, D2)
 
 tspan = (0.0, 70.0)
 saveat = range(tspan..., length = 500)
 
-semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver,
+semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
                                  boundary_conditions = boundary_conditions)
-semi_sk = Semidiscretization(mesh, sk, initial_condition, solver,
+semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
                              boundary_conditions = boundary_conditions)
-semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver,
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
                               boundary_conditions = boundary_conditions)
-semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver,
+semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
 
 ode_bbmbbm = semidiscretize(semi_bbmbbm, tspan)
