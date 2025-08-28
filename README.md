@@ -9,6 +9,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/635090135.svg)](https://zenodo.org/doi/10.5281/zenodo.10034636)
 
+<p align="center">
+  <img width="300px" alt="logo" src="docs/src/assets/logo_text.png">
+</p>
+
 **DispersiveShallowWater.jl** is a [Julia](https://julialang.org/) package that implements structure-preserving numerical methods for dispersive shallow water models.
 To date, it provides provably conservative, entropy-conserving and well-balanced numerical schemes for some dispersive shallow water models:
 
