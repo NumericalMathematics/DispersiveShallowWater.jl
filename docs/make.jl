@@ -75,7 +75,8 @@ makedocs(;
                                   prettyurls = get(ENV, "CI", "false") == "true",
                                   canonical = "https://NumericalMathematics.github.io/DispersiveShallowWater.jl/stable",
                                   edit_link = "main",
-                                  assets = String[],
+                                  # Explicitly add favicon as asset
+                                  assets = ["assets/favicon.ico"],
                                   size_threshold = 1200 * 1024, # the generated .gif files can be too large
                                   size_threshold_warn = 1000 * 1024),
          pages = ["Home" => "index.md",
