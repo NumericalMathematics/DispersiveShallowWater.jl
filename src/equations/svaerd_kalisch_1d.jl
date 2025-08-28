@@ -68,6 +68,12 @@ function SvaerdKalischEquations1D(; bathymetry_type = bathymetry_variable, gravi
     SvaerdKalischEquations1D(bathymetry_type, gravity, eta0, alpha, beta, gamma)
 end
 
+function check_solver(::SvaerdKalischEquations1D, solver, ::BoundaryConditionPeriodic)
+    if isnothing(solver.D2)
+        throw(ArgumentError("The Svärd-Kalisch equations with periodic boundary conditions require a second-derivative operator. Explicitly set `D2`."))
+    end
+end
+
 """
     initial_condition_manufactured(x, t, equations::SvaerdKalischEquations1D, mesh)
 
@@ -196,6 +202,8 @@ function source_terms_manufactured_reflecting(q, x, t, equations::SvaerdKalischE
 
     return SVector(s1, s2, zero(s1))
 end
+
+dingemans_calibration(equations::SvaerdKalischEquations1D) = 2.2
 
 # For periodic boundary conditions
 function assemble_system_matrix!(cache, h,
