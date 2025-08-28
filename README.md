@@ -10,7 +10,7 @@
 [![DOI](https://zenodo.org/badge/635090135.svg)](https://zenodo.org/doi/10.5281/zenodo.10034636)
 
 <p align="center">
-  <img width="300px" alt="logo" src="https://private-user-images.githubusercontent.com/51029046/483073703-d2bccfbd-19c9-4448-a5d9-6ac927c32cc5.png">
+  <img width="300px" alt="logo" src="https://github.com/user-attachments/assets/d2bccfbd-19c9-4448-a5d9-6ac927c32cc5">
 </p>
 
 **DispersiveShallowWater.jl** is a [Julia](https://julialang.org/) package that implements structure-preserving numerical methods for dispersive shallow water models.
