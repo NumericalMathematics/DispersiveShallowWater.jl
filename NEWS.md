@@ -5,6 +5,13 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+## Changes in the v0.8 lifecycle
+
+#### Added
+
+- Add function `data_dingemans` to load experimental data for the Dingemans experiment and expand the documentation
+  about the experiment ([#238]).
+
 ## Changes when updating to v0.8 from v0.7.x
 
 #### Changed
