@@ -11,7 +11,7 @@
 
 ```@raw html
 <p align="center">
-  <img width="300px" alt="logo" src="https://github.com/user-attachments/assets/d2bccfbd-19c9-4448-a5d9-6ac927c32cc5">
+  <img height="200px" alt="logo" src="https://github.com/user-attachments/assets/d2bccfbd-19c9-4448-a5d9-6ac927c32cc5">
 </p>
 ```
 
