@@ -11,7 +11,7 @@ and experimental data, which is a matrix of wave heights at each gauge location 
   Water Wave Propagation Over Uneven Bottoms (In 2 Parts).
   [DOI: 10.1142/1241](https://doi.org/10.1142/1241)
 
-See also: [Dingemans Experiment](https://numericalmathemat.ics.github.io/DispersiveShallowWater.jl/stable/dingemans/) 
+See also: [Dingemans Experiment](https://numericalmathematics.github.io/DispersiveShallowWater.jl/stable/dingemans/) 
 in the documentation for more details about this experiment and its use in validation.
 """
 function data_dingemans()
