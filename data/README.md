@@ -1,4 +1,7 @@
+This directory collects some experimental data used in common benchmark problems in dispersive wave modeling. Each set of data has a corresponding function, which returns the data as Julia objects.
+
 # Dingemans.csv
+
 
 The data are taken from the experiments of Maarten Dingemans:
 
@@ -22,4 +25,4 @@ The data are taken from the experiments of Maarten Dingemans:
 }
 ```
 
-The postions x1 to x6 are (3.04, 9.44, 20.04, 26.04, 30.44, 37.04) respectively.
+The positions x1 to x6 are (3.04, 9.44, 20.04, 26.04, 30.44, 37.04) respectively. See `data_dingemans`.
