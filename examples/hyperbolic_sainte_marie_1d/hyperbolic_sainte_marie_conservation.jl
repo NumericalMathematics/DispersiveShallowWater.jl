@@ -9,6 +9,22 @@
 using OrdinaryDiffEqLowStorageRK
 using DispersiveShallowWater
 
+#=
+FIXME: Test this using
+julia> using Revise; using DispersiveShallowWater, Plots, OrdinaryDiffEqVerner
+
+julia> trixi_include("examples/hyperbolic_sainte_marie_1d/hyperbolic_sainte_marie_conservation.jl", tol = 1.0e-12, alg = Vern9());
+
+julia> integrals(analysis_callback).waterheight_total |> x -> (x[end] - x[1]) / x[1]
+0.0
+
+julia> integrals(analysis_callback).momentum |> x -> (x[end] - x[1]) / x[1]
+2.9432057444810533e-15
+
+julia> integrals(analysis_callback).entropy_modified |> x -> (x[end] - x[1]) / x[1]
+-1.064590038909088e-15
+=#
+
 ###############################################################################
 # Semidiscretization of the hyperbolic Sainte-Marie equations
 
@@ -58,7 +74,7 @@ ode = semidiscretize(semi, tspan)
 # terminal.
 io = stdout
 summary_callback = SummaryCallback(io)
-analysis_callback = AnalysisCallback(semi; interval = 10, io,
+analysis_callback = AnalysisCallback(semi; interval = 50, io,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  momentum,
