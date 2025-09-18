@@ -559,6 +559,12 @@ abstract type AbstractSerreGreenNaghdiEquations{NDIMS, NVARS} <:
 include("serre_green_naghdi_1d.jl")
 include("hyperbolic_serre_green_naghdi_1d.jl")
 
+# Sainte-Marie equations
+abstract type AbstractSainteMarieEquations{NDIMS, NVARS} <:
+              AbstractShallowWaterEquations{NDIMS, NVARS} end
+include("sainte_marie_1d.jl")
+include("hyperbolic_sainte_marie_1d.jl")
+
 # KdV equation
 abstract type AbstractKdVEquation{NDIMS, NVARS} <:
               AbstractEquations{NDIMS, NVARS} end
