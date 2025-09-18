@@ -1,12 +1,12 @@
 # TODO: Only useful as reference for the hyperbolic approximation!
-struct SainteMarieEquations1D{Bathymetry <: BathymetryFlat, RealT <: Real} <:
-       AbstractSainteMarieEquations{1, 3}
+struct SainteMarieEquations1D{Bathymetry <: Union{BathymetryFlat, BathymetryMildSlope},
+                              RealT <: Real} <: AbstractSainteMarieEquations{1, 3}
     bathymetry_type::Bathymetry # type of bathymetry
     gravity::RealT # gravitational acceleration
     eta0::RealT # constant still-water surface
 end
 
-function SainteMarieEquations1D(; bathymetry_type = bathymetry_flat,
+function SainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
                                   gravity,
                                   eta0 = 0.0)
     SainteMarieEquations1D(bathymetry_type, gravity, eta0)

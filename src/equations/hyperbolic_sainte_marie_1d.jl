@@ -1,6 +1,5 @@
-struct HyperbolicSainteMarieEquations1D{Bathymetry <: BathymetryFlat,
-                                        RealT <: Real} <:
-       AbstractSainteMarieEquations{1, 5}
+struct HyperbolicSainteMarieEquations1D{Bathymetry <: Union{BathymetryFlat, BathymetryMildSlope},
+                                        RealT <: Real} <: AbstractSainteMarieEquations{1, 5}
     bathymetry_type::Bathymetry # type of bathymetry
     gravity::RealT # gravitational acceleration
     eta0::RealT # constant still-water surface
@@ -8,10 +7,10 @@ struct HyperbolicSainteMarieEquations1D{Bathymetry <: BathymetryFlat,
     c_squared::RealT # c^2 = alpha^2 * g * eta0
 end
 
-function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_flat,
-                                           gravity,
-                                           eta0,
-                                           alpha)
+function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
+                                            gravity,
+                                            eta0,
+                                            alpha)
     c_squared = alpha^2 * gravity * eta0
     HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha, c_squared)
 end
@@ -57,12 +56,14 @@ function set_approximation_variables!(q, mesh,
     # at least one experiment of Escalante, Dumbser, Castro (2019).
     @.. p = 0
 
-    # w ≈ -(1/2) h v_x
+    # w ≈ -(1/2) h v_x + v b_x
     # with h = (h + b) + (eta0 - b) - eta0
     mul!(w, D1, v)
     @.. w = -0.5 * (eta + D - equations.eta0) * w
     if !(equations.bathymetry_type isa BathymetryFlat)
-        error("Non-flat bathymetry is not supported")
+        b = equations.eta0 .- D
+        b_x = D1 * b
+        @.. w += 1.5 * v * b_x
     end
 
     return nothing
@@ -195,6 +196,7 @@ function rhs!(dq, q, t, mesh,
         if boundary_conditions isa BoundaryConditionReflecting
             # dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
             # dh[end] += h[end] * v[end] / right_boundary_weight(D1)
+            # FIXME
             error()
         end
 
@@ -204,17 +206,12 @@ function rhs!(dq, q, t, mesh,
         # Split form for energy conservation:
         # h v_t + g (h (h + b))_x - g (h + b) h_x
         #       + 1/2 h (v^2)_x - 1/2 v^2 h_x  + 1/2 v (h v)_x - 1/2 h v v_x
-        #       + (h p)_x = 0
+        #       + (h p)_x + 2 p b_x = 0
         # TODO: non-hydrostatic terms for variable bathymetry
         @.. dv = -(g * h_hpb_x - g * eta * h_x
                    + 0.5 * (h * v2_x - v^2 * h_x)
                    + 0.5 * v * (hv_x - h * v_x)
-                   + hp_x) / h
-        if !(bathymetry_type isa BathymetryFlat)
-            # lambda_2 = lambda / 2
-            # @.. dv -= lambda_2 * (1 - H_over_h) * b_x / h
-            error()
-        end
+                   + hp_x + 2 * p * b_x) / h
 
         # Plain: h w_t + h v w_x = 2 p
         #
@@ -228,14 +225,11 @@ function rhs!(dq, q, t, mesh,
         # Split form for energy conservation:
         # h p_t + 1/2 (h v p)_x + 1/2 h v p_x
         #       - 1/2 h_x v p - 1/2 h v_x p
-        #       + c^2 h v_x + 2 c^2 w = 0
-        # TODO: non-hydrostatic terms for variable bathymetry
+        #       + c^2 h v_x + 2 c^2 w
+        #       - 2 c^2 v b_x = 0
         @.. dp = (-0.5 * (hvp_x + h * v * p_x + dh * p)
-                  - c_squared * h * v_x - 2 * c_squared * w) / h
-        if !(bathymetry_type isa BathymetryFlat)
-            # @.. dH -= 1.5 * v * b_x
-            error()
-        end
+                  - c_squared * h * v_x - 2 * c_squared * w
+                  + 2 * c_squared * v * b_x) / h
     end
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
