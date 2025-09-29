@@ -23,7 +23,7 @@ Let's implement the Dingemans experiment and compare the performance of differen
 First, we load the necessary packages:
 
 ```@example dingemans
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
+using DispersiveShallowWater, SummationByPartsOperators, SparseArrays, OrdinaryDiffEqTsit5, Plots
 ```
 
 Next, we set up the different equation systems we want to compare:
@@ -43,7 +43,7 @@ sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
+                                              lambda = 200.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -63,16 +63,27 @@ We create a computational domain that is large enough to contain the entire expe
 ```@example dingemans
 coordinates_min = -138.0
 coordinates_max = 46.0
-N = 512
+N = 1024
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 nothing # hide
 ```
 
-For the spatial discretization, we use fourth-order accurate [summation-by-parts operators](@ref sbp_operators):
+For the spatial discretization, we use sixth-order accurate [summation-by-parts operators](@ref sbp_operators). Specifically, [upwind SBP operators](@ref upwind_sbp) are utilized for all equation systems
+except the hyperbolic Serre-Green-Naghdi equations. The hyperbolic Serre-Green-Naghdi equations involve only first derivatives, making central discretization appropriate, whereas the other models include
+higher-order derivatives that benefit from the upwind approach. It is important to note that when odd-order upwind operators are applied symmetrically to construct a central second-derivative operator,
+the resulting operator achieves one order higher accuracy (since it is even).
 
 ```@example dingemans
-accuracy_order = 4
-solver = Solver(mesh, accuracy_order)
+accuracy_order = 6
+solver_central = Solver(mesh, accuracy_order)
+
+D1 = upwind_operators(periodic_derivative_operator;
+                      derivative_order=1,
+                      accuracy_order=accuracy_order - 1,
+                      xmin=xmin(mesh), xmax=xmax(mesh),
+                      N=nnodes(mesh))
+D2 = sparse(D1.plus) * sparse(D1.minus)
+solver_upwind = Solver(D1, D2)
 nothing # hide
 ```
 
@@ -87,13 +98,13 @@ nothing # hide
 Now we create semidiscretizations for each equation system. Each semidiscretization bundles the mesh, equations, initial condition, solver, and boundary conditions:
 
 ```@example dingemans
-semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver,
+semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
                                  boundary_conditions = boundary_conditions)
-semi_sk = Semidiscretization(mesh, sk, initial_condition, solver,
+semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
                              boundary_conditions = boundary_conditions)
-semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver,
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
                               boundary_conditions = boundary_conditions)
-semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver,
+semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
 nothing # hide
 ```
@@ -114,7 +125,7 @@ sol_hysgn = solve(ode_hysgn, Tsit5(); options...)
 nothing # hide
 ```
 
-## Visualization and Comparison
+## Visualization of Temporal Evolution
 
 For proper comparison, we need to account for the fact that the BBM-BBM equations use a different reference level (``\eta_0 = 0``) compared to the other equations. We create a custom conversion function which allows us to easily shift the BBM-BBM results:
 
@@ -147,16 +158,16 @@ for time_val in times
 
     for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
         plot!(p, semi => sol,
-            step=step_idx,
-            label=label,
-            conversion=conversion,
-            plot_bathymetry=true,
-            legend=false,
-            title="Dingemans at t = $(time_val)",
-            suptitle="",
-            linewidth=[2 1], # 1 for the bathymetry
-            linestyles=[linestyle :solid], # :solid for the bathymetry
-            color=[i :black], # black for the bathymetry
+              step=step_idx,
+              label=label,
+              conversion=conversion,
+              plot_bathymetry=true,
+              legend=false,
+              title="Dingemans at t = $(time_val)",
+              suptitle="",
+              linewidth=[2 1], # 1 for the bathymetry
+              linestyles=[linestyle :solid], # :solid for the bathymetry
+              color=[i :black], # black for the bathymetry
         )
     end
 
@@ -169,32 +180,86 @@ legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
 for (i, (_, _, label, _, linestyle)) in enumerate(models)
     plot!(legend_plot, [], [], label=label, linestyles=linestyle, linewidth=2, color=i)
 end
-plot!(legend_plot, [], [], label="Bathymetry", color=:black,)
+legend_plot_bathymetry = plot(legend_plot, [], [], label="Bathymetry", color=:black,)
 
 xlims_zoom = [(-25, 15), (0, 40), (5, 45), (-100, -60)]
 snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75, 0.85), title="Zoomed in at t = $(times[i])") for i in 1:4]
 
 # Combine all plots
-all_plots = [snapshot_plots..., legend_plot, snapshot_plots_zoom...]
+all_plots = [snapshot_plots..., legend_plot_bathymetry, snapshot_plots_zoom...]
 plot(all_plots...,
-    size=(900, 1100),
-    layout=@layout([a b; c d; e{0.14h}; f g; h i]),
+     size=(900, 1100),
+     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
 
-savefig("dingemans_comparison.png") # hide
+savefig("dingemans_temporal.png") # hide
 nothing # hide
 ```
 
-![Dingemans comparison](dingemans_comparison.png)
+![Dingemans temporal](dingemans_temporal.png)
 
 The results show how different dispersive wave models capture the wave evolution over the trapezoidal bathymetry.
+
+## Comparison with Experimental Data
+
+During the experiment of Dingemans, the wave evolution was recorded at six gauges along the flume. These measurements provide a reference for validating the numerical models.
+We compare the numerical results with the experimental data at the corresponding gauge locations.
+
+```@example dingemans
+t_values, x_values, experimental_data = data_dingemans()
+
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
+
+snapshot_plots_time = []
+for (j, x_val) in enumerate(x_values)
+    p = plot(t_values, experimental_data[:, j],
+             xlims=tlims[j],
+             ylims=(0.765, 0.865),
+             label="experimental data",
+             linestyle=:dash,
+             color=:gray,
+             markershape=:circle,
+             markercolor=:gray,
+             markersize=1
+        )
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi => sol, x_val,
+              conversion=conversion,
+              label=label,
+              linestyle=linestyle,
+              color=i,
+              suptitle="",
+              legend=false,
+              title="Gauge at x = $(x_val)",
+              linewidth=2
+        )
+
+    end
+
+    push!(snapshot_plots_time, p)
+
+end
+
+legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
+
+all_plots2 = [snapshot_plots_time..., legend_plot_data]
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.16h}]),
+     size=(900, 900), suptitle="")
+
+savefig("dingemans_experimental.png") # hide
+nothing # hide
+```
+
+![Dingemans experimental](dingemans_experimental.png)
+
+In this setup, the numerical results from the Svärd-Kalisch equations can capture the wave evolution more accurately compared to the other models.
 
 ## [Plain program](@id overview-plain-program-dingemans)
 
 Here follows a version of the program without any comments.
 
 ```julia
-using DispersiveShallowWater, OrdinaryDiffEqTsit5, Plots
+using DispersiveShallowWater, SummationByPartsOperators, SparseArrays, OrdinaryDiffEqTsit5, Plots
 
 # BBM-BBM equations with variable bathymetry
 bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
@@ -210,7 +275,7 @@ sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
 
 # Hyperbolic approximation of Serre-Green-Naghdi equations
 hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                              lambda = 100.0, gravity = 9.81, eta0 = 0.8)
+                                              lambda = 200.0, gravity = 9.81, eta0 = 0.8)
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
@@ -220,22 +285,30 @@ boundary_conditions = boundary_condition_periodic
 
 coordinates_min = -138.0
 coordinates_max = 46.0
-N = 512
+N = 1024
 mesh = Mesh1D(coordinates_min, coordinates_max, N)
 
-accuracy_order = 4
-solver = Solver(mesh, accuracy_order)
+accuracy_order = 6
+solver_central = Solver(mesh, accuracy_order)
+
+D1 = upwind_operators(periodic_derivative_operator;
+                      derivative_order=1,
+                      accuracy_order=accuracy_order - 1,
+                      xmin=xmin(mesh), xmax=xmax(mesh),
+                      N=nnodes(mesh))
+D2 = sparse(D1.plus) * sparse(D1.minus)
+solver_upwind = Solver(D1, D2)
 
 tspan = (0.0, 70.0)
 saveat = range(tspan..., length = 500)
 
-semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver,
+semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
                                  boundary_conditions = boundary_conditions)
-semi_sk = Semidiscretization(mesh, sk, initial_condition, solver,
+semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
                              boundary_conditions = boundary_conditions)
-semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver,
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
                               boundary_conditions = boundary_conditions)
-semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver,
+semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
 
 ode_bbmbbm = semidiscretize(semi_bbmbbm, tspan)
@@ -273,16 +346,16 @@ for time_val in times
 
     for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
         plot!(p, semi => sol,
-            step=step_idx,
-            label=label,
-            conversion=conversion,
-            plot_bathymetry=true,
-            legend=false,
-            title="Dingemans at t = $(time_val)",
-            suptitle="",
-            linewidth=[2 1], # 1 for the bathymetry
-            linestyles=[linestyle :solid], # :solid for the bathymetry
-            color=[i :black], # black for the bathymetry
+              step=step_idx,
+              label=label,
+              conversion=conversion,
+              plot_bathymetry=true,
+              legend=false,
+              title="Dingemans at t = $(time_val)",
+              suptitle="",
+              linewidth=[2 1], # 1 for the bathymetry
+              linestyles=[linestyle :solid], # :solid for the bathymetry
+              color=[i :black], # black for the bathymetry
         )
     end
 
@@ -295,17 +368,57 @@ legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
 for (i, (_, _, label, _, linestyle)) in enumerate(models)
     plot!(legend_plot, [], [], label=label, linestyles=linestyle, linewidth=2, color=i)
 end
-plot!(legend_plot, [], [], label="Bathymetry", color=:black,)
+legend_plot_bathymetry = plot(legend_plot, [], [], label="Bathymetry", color=:black,)
 
 xlims_zoom = [(-25, 15), (0, 40), (5, 45), (-100, -60)]
 snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75, 0.85), title="Zoomed in at t = $(times[i])") for i in 1:4]
 
 # Combine all plots
-all_plots = [snapshot_plots..., legend_plot, snapshot_plots_zoom...]
+all_plots = [snapshot_plots..., legend_plot_bathymetry, snapshot_plots_zoom...]
 plot(all_plots...,
-    size=(900, 1100),
-    layout=@layout([a b; c d; e{0.14h}; f g; h i]),
+     size=(900, 1100),
+     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
 )
+
+t_values, x_values, experimental_data = data_dingemans()
+
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
+
+snapshot_plots_time = []
+for (j, x_val) in enumerate(x_values)
+    p = plot(t_values, experimental_data[:, j],
+             xlims=tlims[j],
+             ylims=(0.765, 0.865),
+             label="experimental data",
+             linestyle=:dash,
+             color=:gray,
+             markershape=:circle,
+             markercolor=:gray,
+             markersize=1
+        )
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi => sol, x_val,
+              conversion=conversion,
+              label=label,
+              linestyle=linestyle,
+              color=i,
+              suptitle="",
+              legend=false,
+              title="Gauge at x = $(x_val)",
+              linewidth=2
+        )
+
+    end
+
+    push!(snapshot_plots_time, p)
+
+end
+
+legend_plot_data = plot(legend_plot, [], [], label="experimental data", linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
+
+all_plots2 = [snapshot_plots_time..., legend_plot_data]
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.16h}]),
+     size=(900, 900), suptitle="")
 ```
 
 ### References
