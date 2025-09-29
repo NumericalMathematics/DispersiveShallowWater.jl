@@ -1,7 +1,6 @@
 @testitem "Aqua.jl" setup=[Setup] begin
     using Aqua
     using ExplicitImports: check_no_implicit_imports, check_no_stale_explicit_imports
-    using JET
 
     # Aqua.jl
     Aqua.test_all(DispersiveShallowWater,
