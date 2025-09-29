@@ -154,7 +154,8 @@ end
 # approximations, but below it is called for `equations` for which the compiler
 # doesn't know from type annotations that these are hyperbolic approximations.
 # Therefore, JET.jl fails. We provide a fallback definition here that does nothing.
-set_approximation_variables!(q, mesh, equations, solver) = nothing
+# TODO: Uncomment the following line again
+# set_approximation_variables!(q, mesh, equations, solver) = nothing
 
 # For a hyperbolic approximation, we allow returning either the full set
 # of variables or a reduced number determining only the limit system.
