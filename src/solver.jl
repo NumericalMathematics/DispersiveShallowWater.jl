@@ -57,8 +57,8 @@ Create a solver, where the three summation-by-parts (SBP) first-, second-, and t
 are of accuracy order `accuracy_order` and associated to the `mesh`.
 
 !!! warning "Periodic operators only"
-    This constructor creates periodic derivative operators that are only compatible with periodic 
-    boundary conditions. For non-periodic boundary conditions, use the `Solver(D1, D2, D3)` 
+    This constructor creates periodic derivative operators that are only compatible with periodic
+    boundary conditions. For non-periodic boundary conditions, use the `Solver(D1, D2, D3)`
     constructor with appropriate non-periodic operators (or `nothing`).
 """
 function Solver(mesh, accuracy_order)
@@ -149,6 +149,12 @@ function compute_coefficients!(q, func, t, mesh,
         set_node_vars!(q, q_node, equations, i)
     end
 end
+
+# `set_approximation_variables!` is defined for equations, which are hyperbolic
+# approximations, but below it is called for `equations` for which the compiler
+# doesn't know from type annotations that these are hyperbolic approximations.
+# Therefore, JET.jl fails. We provide a fallback definition here that does nothing.
+set_approximation_variables!(q, mesh, equations, solver) = nothing
 
 # For a hyperbolic approximation, we allow returning either the full set
 # of variables or a reduced number determining only the limit system.
