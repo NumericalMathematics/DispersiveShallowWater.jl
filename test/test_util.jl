@@ -134,6 +134,7 @@ end
     @test_trixi_include(example; l2=nothing, linf=nothing, cons_error=nothing
                                 change_waterheight=nothing,
                                 change_velocity=nothing,
+                                change_momentum=nothing,
                                 change_entropy=nothing,
                                 change_entropy_modified=nothing,
                                 change_hamiltonian=nothing,
@@ -146,7 +147,7 @@ By default, only the absence of error output is checked.
 If `l2`, `linf` or `cons_error` are specified, in addition the resulting L2/Linf/conservation
 errors are compared approximately against these reference values, using `atol, rtol`
 as absolute/relative tolerance.
-If `change_waterheight`, `change_velocity`, `change_momemtum`, `change_entropy`, `change_entropy_modified`,
+If `change_waterheight`, `change_velocity`, `change_momentum`, `change_entropy`, `change_entropy_modified`,
 `change_hamiltonian`, or `lake_at_rest` are specified, in addition the resulting changes of the different errors are
 compared approximately against these reference values, using `atol_ints`, `rtol_ints` as absolute/relative tolerance.
 """
