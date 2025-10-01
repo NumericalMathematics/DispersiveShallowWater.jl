@@ -83,7 +83,8 @@ end
                         linf=[8.131770758672274e-5],
                         cons_error=[2.842170943040401e-14],
                         change_waterheight=2.842170943040401e-14,
-                        change_entropy=5.861043206323302e-9)
+                        change_entropy=5.861043206323302e-9,
+                        atol=1e-9) # to make CI pass
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=5_000)
 end

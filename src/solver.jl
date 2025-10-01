@@ -57,8 +57,8 @@ Create a solver, where the three summation-by-parts (SBP) first-, second-, and t
 are of accuracy order `accuracy_order` and associated to the `mesh`.
 
 !!! warning "Periodic operators only"
-    This constructor creates periodic derivative operators that are only compatible with periodic 
-    boundary conditions. For non-periodic boundary conditions, use the `Solver(D1, D2, D3)` 
+    This constructor creates periodic derivative operators that are only compatible with periodic
+    boundary conditions. For non-periodic boundary conditions, use the `Solver(D1, D2, D3)`
     constructor with appropriate non-periodic operators (or `nothing`).
 """
 function Solver(mesh, accuracy_order)
@@ -78,7 +78,7 @@ end
 
 Create a solver, where `D1` is an `AbstractDerivativeOperator`
 from [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl)
-of first `derivative_order`, `D2` is an `AbstractDerivativeOperator` 
+of first `derivative_order`, `D2` is an `AbstractDerivativeOperator`
 of second `derivative_order` or an `AbstractMatrix`, and `D3` is an `AbstractDerivativeOperator`
 of third `derivative_order` or an `AbstractMatrix`. `D2` and `D3` can also be `nothing`
 if that derivative is not used by the discretization.
@@ -135,14 +135,14 @@ end
     return nothing
 end
 
-function allocate_coefficients(mesh::Mesh1D, equations, solver::AbstractSolver)
+function allocate_coefficients(mesh, equations, solver)
     return ArrayPartition(ntuple(_ -> zeros(real(solver), nnodes(mesh)),
                                  Val(nvariables(equations))))
 end
 
-function compute_coefficients!(q, func, t, mesh::Mesh1D,
+function compute_coefficients!(q, func, t, mesh,
                                is_hyperbolic_appproximation::Val{false},
-                               equations, solver::AbstractSolver)
+                               equations, solver)
     x = grid(solver)
     for i in eachnode(solver)
         q_node = func(x[i], t, equations, mesh)
@@ -150,13 +150,19 @@ function compute_coefficients!(q, func, t, mesh::Mesh1D,
     end
 end
 
+# `set_approximation_variables!` is defined for equations, which are hyperbolic
+# approximations, but below it is called for `equations` for which the compiler
+# doesn't know from type annotations that these are hyperbolic approximations.
+# Therefore, JET.jl fails. We provide a fallback definition here that does nothing.
+set_approximation_variables!(q, mesh, equations, solver) = nothing
+
 # For a hyperbolic approximation, we allow returning either the full set
 # of variables or a reduced number determining only the limit system.
 # In the second case, we compute the remaining variables using the default
 # initialization specific to the equations.
-function compute_coefficients!(q, func, t, mesh::Mesh1D,
+function compute_coefficients!(q, func, t, mesh,
                                is_hyperbolic_appproximation::Val{true},
-                               equations, solver::AbstractSolver)
+                               equations, solver)
     x = grid(solver)
     q_node = func(x[begin], t, equations, mesh)
     if length(q_node) == nvariables(equations)
@@ -176,8 +182,8 @@ function compute_coefficients!(q, func, t, mesh::Mesh1D,
     end
 end
 
-function calc_error_norms(q, t, initial_condition, mesh::Mesh1D, equations,
-                          solver::AbstractSolver)
+function calc_error_norms(q, t, initial_condition, mesh, equations,
+                          solver)
     q_exact = similar(q)
     compute_coefficients!(q_exact, initial_condition, t, mesh,
                           is_hyperbolic_appproximation(equations), equations,
@@ -192,13 +198,11 @@ function calc_error_norms(q, t, initial_condition, mesh::Mesh1D, equations,
     return l2_error, linf_error
 end
 
-function calc_sources!(dq, q, t, source_terms::Nothing,
-                       equations::AbstractEquations{1}, solver::Solver)
+function calc_sources!(dq, q, t, source_terms::Nothing, equations, solver)
     return nothing
 end
 
-function calc_sources!(dq, q, t, source_terms,
-                       equations::AbstractEquations{1}, solver::Solver)
+function calc_sources!(dq, q, t, source_terms, equations, solver)
     x = grid(solver)
     for i in eachnode(solver)
         local_source = source_terms(get_node_vars(q, equations, i), x[i], t, equations)
