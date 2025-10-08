@@ -56,7 +56,7 @@ jobs:
         include:
           - version: '1.11'
             os: ubuntu-latest
-          - version: '~1.12.0-0'
+          - version: '1.12'
             os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
