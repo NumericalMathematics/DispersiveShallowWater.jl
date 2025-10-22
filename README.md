@@ -13,8 +13,8 @@
   <img height="200px" alt="logo" src="https://github.com/user-attachments/assets/d2bccfbd-19c9-4448-a5d9-6ac927c32cc5">
 </p>
 
-**DispersiveShallowWater.jl** is a [Julia](https://julialang.org/) package that implements structure-preserving numerical methods for dispersive shallow water models.
-To date, it provides provably conservative, entropy-conserving and well-balanced numerical schemes for some dispersive shallow water models:
+**DispersiveShallowWater.jl** is a [Julia](https://julialang.org/) package that implements structure-preserving numerical methods for one-dimensional dispersive shallow water models.
+To date, it provides provably conservative, entropy-conserving, and well-balanced numerical schemes for the following dispersive shallow water models:
 
 * the [Korteweg–De Vries (KdV) equation as the prototypical example of an integrable PDE](https://doi.org/10.1007/s10915-025-02898-x),
 * the [Benjamin-Bona-Mahony (BBM) equation, also known as regularized long-wave equation](https://doi.org/10.4208/cicp.OA-2020-0119),
@@ -97,7 +97,7 @@ with contributions from Hendrik Ranocha (Johannes Gutenberg University Mainz)
 and Collin Wittenstein (Johannes Gutenberg University Mainz).
 Some parts of this repository are based on parts of
 [Dispersive-wave-schemes-notebooks. A Broad Class of Conservative Numerical Methods for Dispersive Wave Equations](https://github.com/ranocha/Dispersive-wave-schemes-notebooks)
-by Hendrik Ranocha, Dimitrios Mitsotakis and David Ketcheson.
+by Hendrik Ranocha, Dimitrios Mitsotakis, and David Ketcheson.
 The code structure is inspired by [Trixi.jl](https://github.com/trixi-framework/Trixi.jl/).
 
 ## License and contributing
