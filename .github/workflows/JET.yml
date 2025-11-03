@@ -63,8 +63,12 @@ jobs:
         run: |
           using Pkg
           Pkg.add("JET")
+          # We need to add Plots.jl to make the definition of `is_attr_supported` available
+          # Otherwise, JET.jl fails since it is not defined for the keyword arguments in the plot recipes.
+          Pkg.add("Plots")
           Pkg.instantiate()
           using JET
+          import Plots
           using DispersiveShallowWater
 
           test_package(DispersiveShallowWater;
