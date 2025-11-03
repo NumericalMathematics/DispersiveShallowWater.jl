@@ -716,7 +716,7 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     if equations.bathymetry_type isa BathymetryMildSlope
         factor = 0.75
-    elseif equations.bathymetry_type isa BathymetryVariable
+    else # equations.bathymetry_type isa BathymetryVariable
         factor = 1.0
     end
     @.. M_h_p_h_bx2 = h + factor * h * b_x^2
@@ -748,7 +748,7 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     if equations.bathymetry_type isa BathymetryMildSlope
         factor = 0.75
-    elseif equations.bathymetry_type isa BathymetryVariable
+    else # equations.bathymetry_type isa BathymetryVariable
         factor = 1.0
     end
     @.. M_h_p_h_bx2 = h + factor * h * b_x^2
