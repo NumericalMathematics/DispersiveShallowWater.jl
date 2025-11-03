@@ -12,6 +12,7 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
+      - '.github/workflows/JET.yml'
       - 'docs/**'
 permissions:
   pull-requests: write    # action needs to post a comment

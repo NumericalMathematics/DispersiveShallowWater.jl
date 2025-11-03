@@ -11,6 +11,7 @@ on:
       - '.github/workflows/CI.yml'
       - '.github/workflows/CompatHelper.yml'
       - '.github/workflows/TagBot.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
   pull_request:
     paths-ignore:
@@ -19,6 +20,7 @@ on:
       - '.github/workflows/CI.yml'
       - '.github/workflows/CompatHelper.yml'
       - '.github/workflows/TagBot.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
   workflow_dispatch:
 
