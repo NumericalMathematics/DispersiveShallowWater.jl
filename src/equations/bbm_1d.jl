@@ -152,9 +152,6 @@ end
 function rhs!(dq, q, t, mesh, equations::BBMEquation1D, initial_condition,
               ::BoundaryConditionPeriodic, source_terms, solver, cache)
     (; invImD2, eta2, eta2_x, eta_x, etaeta_x, c_0, c_1) = cache
-    if solver.D1 isa PeriodicUpwindOperators
-        (; eta_x_upwind) = cache
-    end
 
     eta, = q.x
     deta, = dq.x
@@ -173,6 +170,7 @@ function rhs!(dq, q, t, mesh, equations::BBMEquation1D, initial_condition,
                 @.. deta = -(0.75 * c_1 * eta2_x + c_0 * eta_x)
             end
         elseif solver.D1 isa PeriodicUpwindOperators
+            (; eta_x_upwind) = cache
             mul!(eta2_x, solver.D1.central, eta2)
             mul!(eta_x_upwind, solver.D1.minus, eta)
             mul!(eta_x, solver.D1.central, eta)

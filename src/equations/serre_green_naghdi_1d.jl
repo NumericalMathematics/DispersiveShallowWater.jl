@@ -716,7 +716,7 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     if equations.bathymetry_type isa BathymetryMildSlope
         factor = 0.75
-    elseif equations.bathymetry_type isa BathymetryVariable
+    else # equations.bathymetry_type isa BathymetryVariable
         factor = 1.0
     end
     @.. M_h_p_h_bx2 = h + factor * h * b_x^2
@@ -748,7 +748,7 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     if equations.bathymetry_type isa BathymetryMildSlope
         factor = 0.75
-    elseif equations.bathymetry_type isa BathymetryVariable
+    else # equations.bathymetry_type isa BathymetryVariable
         factor = 1.0
     end
     @.. M_h_p_h_bx2 = h + factor * h * b_x^2
@@ -1019,9 +1019,6 @@ function rhs_sgn_central!(dq, q, t, equations, source_terms, solver, cache,
         # Compute all derivatives required below
         (; h, h_x, v_x, h_hpb_x, b, b_x, hv_x, v2_x,
         h2_v_vx_x, h_vx_x, p_h, p_x, tmp) = cache
-        if equations.bathymetry_type isa BathymetryVariable
-            (; psi) = cache
-        end
 
         @.. b = equations.eta0 - D
         @.. h = eta - b
@@ -1050,16 +1047,19 @@ function rhs_sgn_central!(dq, q, t, equations, source_terms, solver, cache,
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi = 0.125 * p_x
         end
         @.. tmp = b_x * v
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * h * v * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi += 0.125 * h * v * p_x
         end
         @.. p_h = p_h - 0.25 * (h_x * v + h * v_x) * b_x * v
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi -= 0.125 * (h_x * v + h * v_x) * b_x * v
         end
         @.. tmp = p_h * h
@@ -1086,6 +1086,7 @@ function rhs_sgn_central!(dq, q, t, equations, source_terms, solver, cache,
                    + p_x
                    + 1.5 * p_h * b_x)
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. dv = dv - psi * b_x
         end
     end
@@ -1134,9 +1135,6 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
         # Compute all derivatives required below
         (; h, h_x, v_x, v_x_upwind, h_hpb_x, b, b_x, hv_x, v2_x,
         h2_v_vx_x, h_vx_x, p_h, p_0, p_x, tmp) = cache
-        if equations.bathymetry_type isa BathymetryVariable
-            (; psi) = cache
-        end
 
         @.. b = equations.eta0 - D
         @.. h = eta - b
@@ -1165,12 +1163,14 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi = 0.125 * p_x
         end
         @.. tmp = b_x * v
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * h * v * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi += 0.125 * h * v * p_x
         end
         @.. p_0 = p_h * h
@@ -1180,6 +1180,7 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
                    -
                    0.25 * (h_x * v + h * v_x) * b_x * v)
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi -= 0.125 * (h_x * v + h * v_x) * b_x * v
         end
         @.. p_h = p_h + tmp
@@ -1207,6 +1208,7 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
                    + p_x
                    + 1.5 * p_h * b_x)
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. dv = dv - psi * b_x
         end
     end

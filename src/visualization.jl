@@ -31,24 +31,10 @@ end
 
     initial_condition = semi.initial_condition
     t = sol.t[step]
-
-    if plot_initial == true
-        q_exact = compute_coefficients(initial_condition, t, semi)
-        data_exact = zeros(nvars, nnodes(semi))
-    end
-
     q = sol.u[step]
+
     data = zeros(nvars, nnodes(semi))
-    if plot_bathymetry == true
-        bathy = zeros(nnodes(semi))
-    end
     for j in eachnode(semi)
-        if plot_bathymetry == true
-            bathy[j] = bathymetry(get_node_vars(q, equations, j), equations)
-        end
-        if plot_initial == true
-            data_exact[:, j] .= conversion(get_node_vars(q_exact, equations, j), equations)
-        end
         data[:, j] .= conversion(get_node_vars(q, equations, j), equations)
     end
 
@@ -62,6 +48,12 @@ end
 
         subplot += 1
         if plot_initial == true
+            q_exact = compute_coefficients(initial_condition, t, semi)
+            data_exact = zeros(nvars, nnodes(semi))
+            for j in eachnode(semi)
+                data_exact[:, j] .= conversion(get_node_vars(q_exact, equations, j),
+                                               equations)
+            end
             @series begin
                 subplot --> subplot
                 linestyle --> :solid
@@ -82,6 +74,10 @@ end
 
     # Plot the bathymetry
     if plot_bathymetry == true
+        bathy = zeros(nnodes(semi))
+        for j in eachnode(semi)
+            bathy[j] = bathymetry(get_node_vars(q, equations, j), equations)
+        end
         @series begin
             subplot --> 1
             linestyle --> :solid

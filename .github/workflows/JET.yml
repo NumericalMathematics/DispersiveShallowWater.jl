@@ -63,24 +63,13 @@ jobs:
         run: |
           using Pkg
           Pkg.add("JET")
+          # We need to add Plots.jl to make the definition of `is_attr_supported` available
+          # Otherwise, JET.jl fails since it is not defined for the keyword arguments in the plot recipes.
+          Pkg.add("Plots")
           Pkg.instantiate()
           using JET
+          import Plots
           using DispersiveShallowWater
 
-          # JET.jl
-          # With the default settings as of 2025-05-08, JET.jl
-          # reports issues originating from RecipesBase.jl.
-          # The only way to ignore them seems to be something like the
-          # following hack inspired by the discussion in
-          # https://github.com/aviatesk/JET.jl/issues/570
-          struct IgnoreRecipesBase end
-          function JET.match_module(::IgnoreRecipesBase,
-                                    @nospecialize(report::JET.InferenceErrorReport))
-              s = "MethodInstance for RecipesBase.apply_recipe"
-              any(report.vst) do vst
-                  occursin(s, string(vst))
-              end
-          end
           test_package(DispersiveShallowWater;
-                       target_defined_modules = true,
-                       ignored_modules = (IgnoreRecipesBase(),))
+                       target_modules = (DispersiveShallowWater,))

@@ -15,6 +15,7 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
       - 'docs/**'
   pull_request:
@@ -29,6 +30,7 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
       - 'docs/**'
   workflow_dispatch:
