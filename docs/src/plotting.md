@@ -127,6 +127,6 @@ nothing # hide
 
 ![error analysis](error_analysis.png)
 
-The `what = (:errors,)` parameter tells the plotting recipe to show errors instead of the default invariants. The errors plotted are the **total errors summed over all variables** (``L^2`` and ``L^\infty` norms). The `exclude = (:conservation_error,)` parameter removes the conservation error from the plot, focusing only on the discretization errors (``L^2`` and ``L^\infty``).
+The `what = (:errors,)` parameter tells the plotting recipe to show errors instead of the default invariants. The errors plotted are the **total errors summed over all variables** (``L^2`` and ``L^\infty`` norms). The `exclude = (:conservation_error,)` parameter removes the conservation error from the plot, focusing only on the discretization errors (``L^2`` and ``L^\infty``).
 
 The plotting system supports all standard [Plots.jl](https://github.com/JuliaPlots/Plots.jl) features like custom color schemes, annotations, and interactive backends. For more advanced plotting options, consult the [Plots.jl documentation](https://docs.juliaplots.org/).
