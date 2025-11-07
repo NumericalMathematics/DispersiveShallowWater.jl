@@ -70,7 +70,7 @@ julia> using Plots
 julia> plot(semi => sol)
 ```
 
-The command `plot` expects a `Pair` consisting of a `Semidiscretization` and an `ODESolution`. The visualization can also be customized, see the [documentation](https://NumericalMathematics.github.io/DispersiveShallowWater.jl/stable/overview#visualize_results)
+The command `plot` expects a `Pair` consisting of a `Semidiscretization` and an `ODESolution`. The visualization can also be customized, see the [documentation](https://numericalmathematics.github.io/DispersiveShallowWater.jl/stable/basic_example/#visualize_results)
 for more details. Other examples can be found in the subdirectory [examples/](https://github.com/NumericalMathematics/DispersiveShallowWater.jl/tree/main/examples).
 A list of all examples is returned by running `get_examples()`. You can pass the filename of one of the examples or your own simulation file to `include` in order to run it,
 e.g., `include(joinpath(examples_dir(), "svaerd_kalisch_1d", "svaerd_kalisch_1d_dingemans_relaxation.jl"))`.
