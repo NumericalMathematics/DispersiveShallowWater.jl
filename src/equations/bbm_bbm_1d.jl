@@ -420,11 +420,6 @@ end
 function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
               ::BoundaryConditionPeriodic, source_terms, solver, cache)
     (; etav, Dv, v2, tmp1, tmp2) = cache
-    if equations.bathymetry_type isa BathymetryFlat
-        (; invImD2) = cache
-    else # equations.bathymetry_type isa BathymetryVariable
-        (; invImDKD, invImD2K) = cache
-    end
 
     g = gravity(equations)
     eta, v, D = q.x
@@ -466,15 +461,19 @@ function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
 
     @trixi_timeit timer() "solving elliptic system deta" begin
         if equations.bathymetry_type isa BathymetryFlat
+            (; invImD2) = cache
             solve_system_matrix!(deta, invImD2, equations)
         else # equations.bathymetry_type isa BathymetryVariable
+            (; invImDKD, invImD2K) = cache
             solve_system_matrix!(deta, invImDKD, equations)
         end
     end
     @trixi_timeit timer() "solving elliptic system dv" begin
         if equations.bathymetry_type isa BathymetryFlat
+            (; invImD2) = cache
             solve_system_matrix!(dv, invImD2, equations)
         else # equations.bathymetry_type isa BathymetryVariable
+            (; invImDKD, invImD2K) = cache
             solve_system_matrix!(dv, invImD2K, equations)
         end
     end

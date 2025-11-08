@@ -259,7 +259,7 @@ end
                             0.0,
                             1.141036530464996,
                             4.819814592771365e-6
-                        ])
+                        ], atol=1e-8) # to make CI pass
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end

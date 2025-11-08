@@ -10,6 +10,9 @@ and experimental data, which is a matrix of wave heights at each gauge location 
 - Dingemans (1997):
   Water Wave Propagation Over Uneven Bottoms (In 2 Parts).
   [DOI: 10.1142/1241](https://doi.org/10.1142/1241)
+
+See also: [Dingemans Experiment](https://numericalmathematics.github.io/DispersiveShallowWater.jl/stable/dingemans/) 
+in the documentation for more details about this experiment and its use in validation.
 """
 function data_dingemans()
     path_dingemans = joinpath(data_dir(), "Dingemans.csv")

@@ -11,6 +11,7 @@ on:
       - '.github/workflows/CI.yml'
       - '.github/workflows/CompatHelper.yml'
       - '.github/workflows/TagBot.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
   pull_request:
     paths-ignore:
@@ -19,6 +20,7 @@ on:
       - '.github/workflows/CI.yml'
       - '.github/workflows/CompatHelper.yml'
       - '.github/workflows/TagBot.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
   workflow_dispatch:
 
@@ -32,7 +34,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1.10'

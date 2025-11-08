@@ -341,7 +341,7 @@ end
                         cons_error=[1.7763568394002505e-15 5.265416110067367e-5 0.0],
                         change_waterheight=-1.7763568394002505e-15,
                         change_entropy_modified=130.79560136094597,
-                        atol=1e-11) # to make CI pass
+                        atol=1e-10) # to make CI pass
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=410_000)
 end

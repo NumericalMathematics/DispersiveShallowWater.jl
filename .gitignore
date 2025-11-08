@@ -3,7 +3,7 @@
 *.jl.*.cov
 *.jl.cov
 *.jl.mem
-**/Manifest.toml
+**/Manifest*.toml
 out*/
 /docs/build/
 docs/src/changelog.md

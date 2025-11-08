@@ -1,5 +1,6 @@
 [default.extend-words]
 ater = "ater" # Needed for {D}ispersive{S}hallow{W}ater.jl
+tructure = "tructure" # Needed for {S}tructure-preserving
 
 [files]
 extend-exclude = ["paper/paper.bib"]

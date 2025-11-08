@@ -540,7 +540,7 @@ end
 
     accuracy_orders = [2, 4, 6]
     for accuracy_order in accuracy_orders
-        eoc_mean_values, _ = convergence_test(default_example(), 2, N = 512,
+        eoc_mean_values, _ = convergence_test(@__MODULE__, default_example(), 2, N = 512,
                                               tspan = (0.0, 1.0),
                                               accuracy_order = accuracy_order)
         @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
@@ -548,7 +548,7 @@ end
         @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:linf][2], accuracy_order, atol = 0.5)
 
-        eoc_mean_values2, _ = convergence_test(default_example(), [512, 1024],
+        eoc_mean_values2, _ = convergence_test(@__MODULE__, default_example(), [512, 1024],
                                                tspan = (0.0, 1.0),
                                                accuracy_order = accuracy_order)
         for kind in (:l2, :linf), variable in (1, 2)

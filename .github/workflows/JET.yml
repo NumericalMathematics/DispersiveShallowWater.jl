@@ -1,4 +1,4 @@
-name: CI
+name: JET
 on:
   push:
     branches:
@@ -15,7 +15,6 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
-      - '.github/workflows/JET.yml'
       - 'benchmark/**'
       - 'docs/**'
   pull_request:
@@ -30,7 +29,6 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
-      - '.github/workflows/JET.yml'
       - 'benchmark/**'
       - 'docs/**'
   workflow_dispatch:
@@ -50,16 +48,9 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.10'
+          - '1.12'
         os:
           - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        include:
-          - version: '1.11'
-            os: ubuntu-latest
-          - version: '1.12'
-            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: julia-actions/setup-julia@v2
@@ -67,29 +58,18 @@ jobs:
           version: ${{ matrix.version }}
       - run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
       - uses: julia-actions/cache@v2
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
-      - uses: julia-actions/julia-processcoverage@v1
-        with:
-          directories: src,examples
-      - uses: codecov/codecov-action@v5
-        with:
-          files: lcov.info
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: run-${{ join(matrix.*, '-') }}
-          parallel: true
-          path-to-lcov: ./lcov.info
+      - name: Install and run JET.jl
+        shell: julia --project="." --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.add("JET")
+          # We need to add Plots.jl to make the definition of `is_attr_supported` available
+          # Otherwise, JET.jl fails since it is not defined for the keyword arguments in the plot recipes.
+          Pkg.add("Plots")
+          Pkg.instantiate()
+          using JET
+          import Plots
+          using DispersiveShallowWater
 
-  finish:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@v2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+          test_package(DispersiveShallowWater;
+                       target_modules = (DispersiveShallowWater,))
