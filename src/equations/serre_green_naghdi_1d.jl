@@ -61,12 +61,12 @@ The semidiscretization implemented here conserves
 - the total momentum (integral of ``h v``) as a nonlinear invariant if the bathymetry is constant
 - the total modified energy
 
-for periodic boundary conditions (see Ranocha and Ricchiuto (2024)).
+for periodic boundary conditions (see Ranocha and Ricchiuto (2025)).
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see
-- Hendrik Ranocha and Mario Ricchiuto (2024)
-  Structure-preserving approximations of the Serre-Green-Naghdi
-  equations in standard and hyperbolic form
-  [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+- Hendrik Ranocha and Mario Ricchiuto (2025)
+  Structure-Preserving Approximations of the Serre-Green-Naghdi
+  Equations in Standard and Hyperbolic Form
+  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 """
 struct SerreGreenNaghdiEquations1D{Bathymetry <: AbstractBathymetry, RealT <: Real} <:
        AbstractSerreGreenNaghdiEquations{1, 3}
@@ -786,10 +786,10 @@ end
 # - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
 # - the total modified energy
 # for periodic boundary conditions, see
-# - Hendrik Ranocha and Mario Ricchiuto (2024)
-#   Structure-preserving approximations of the Serre-Green-Naghdi
-#   equations in standard and hyperbolic form
-#   [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+# - Hendrik Ranocha and Mario Ricchiuto (2025)
+#   Structure-Preserving Approximations of the Serre-Green-Naghdi
+#   Equations in Standard and Hyperbolic Form
+#   [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 function rhs!(dq, q, t, mesh,
               equations::SerreGreenNaghdiEquations1D,
               initial_condition,

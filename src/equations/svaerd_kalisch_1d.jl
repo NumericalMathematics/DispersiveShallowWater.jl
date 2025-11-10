@@ -36,15 +36,15 @@ The semidiscretization implemented here conserves
 - the total modified energy
 
 for periodic boundary conditions (see Lampert, Ranocha).
-Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2024).
+Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2025).
 
 - Magnus Svärd, Henrik Kalisch (2025)
   A novel energy-bounded Boussinesq model and a well-balanced and stable numerical discretization
   [arXiv: 2302.09924](https://arxiv.org/abs/2302.09924),
   [DOI: 10.1016/j.jcp.2024.113516](https://doi.org/10.1016/j.jcp.2024.113516)
-- Joshua Lampert, Hendrik Ranocha (2024)
-  Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-  [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+- Joshua Lampert, Hendrik Ranocha (2025)
+  Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+  [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 """
 struct SvaerdKalischEquations1D{Bathymetry <: AbstractBathymetry, RealT <: Real} <:
        AbstractSvaerdKalischEquations{1, 3}
@@ -368,9 +368,9 @@ end
 # - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
 # - the total modified energy
 # for periodic boundary conditions, see
-# - Joshua Lampert and Hendrik Ranocha (2024)
-#   Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#   [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#   [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 # TODO: Simplify for the case of flat bathymetry and use higher-order operators
 function rhs!(dq, q, t, mesh, equations::SvaerdKalischEquations1D,
               initial_condition, boundary_conditions::BoundaryConditionPeriodic,
