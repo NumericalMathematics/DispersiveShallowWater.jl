@@ -42,7 +42,7 @@ invariants, such as conservation laws and stability, to ensure that the resultin
 structure-preserving algorithms tailored for a wide range of dispersive wave models.
 Summation-by-parts (SBP) operators play a crucial role in the library by enabling the construction of numerical schemes that mimic the integration-by-parts property at the discrete level.
 This property is essential for ensuring provable conservation and stability in the numerical solution of dispersive wave equations, making SBP operators particularly well-suited for structure-preserving simulations.
-In recent years, SBP operators have gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@mattsson2014diagonal; @almquist2014high; @mattsson2016high; @lindeberg2021high; @ranocha2021broad; @ranocha2021rate; @rydin2021high; @linders2023resolving; @lampert2024structure; @biswas2025traveling; @kjelldahl2025numerical; @ranocha2025structure; @giesselmann2025convergence].
+In recent years, SBP operators have gained significant attention in the numerical analysis community and have been successfully applied to a variety of problems including dispersive wave equations [@mattsson2014diagonal; @almquist2014high; @mattsson2016high; @lindeberg2021high; @ranocha2021broad; @ranocha2021rate; @rydin2021high; @linders2023resolving; @lampert2025structure; @biswas2025traveling; @kjelldahl2025numerical; @ranocha2025structure; @giesselmann2025convergence].
 
 Despite the importance of structure-preserving methods for dispersive wave equations, such approaches are rarely available in existing open-source software packages. DispersiveShallowWater.jl is
 specifically designed to serve researchers who develop and compare numerical algorithms and mathematical models for dispersive wave phenomena. By providing a unified framework, the library enables
@@ -77,8 +77,8 @@ numerical artifacts and inaccuracies in the simulations.
 
 This leads to the recent trend in numerical analysis to develop structure-preserving discretization methods that maintain the physical properties of the equations.
 For the dispersive wave equations mentioned above, several structure-preserving methods have been proposed and analyzed in the literature, including the use of summation-by-parts (SBP) operators,
-cf. @biswas2025traveling, @ranocha2021broad, @linders2023resolving, @lampert2024structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which offers access
-to the numerical discretizations developed in these works. In @lampert2024structure, DispersiveShallowWater.jl is used for the implementation of the presented methods. The work also compares the numerical
+cf. @biswas2025traveling, @ranocha2021broad, @linders2023resolving, @lampert2025structure, and @ranocha2025structure. DispersiveShallowWater.jl provides a unified framework, which offers access
+to the numerical discretizations developed in these works. In @lampert2025structure, DispersiveShallowWater.jl is used for the implementation of the presented methods. The work also compares the numerical
 solutions to data obtained from experiments showing good agreement.
 
 To the authors' knowledge, no other software package provides the same level of functionality for simulating dispersive shallow water waves as DispersiveShallowWater.jl.
