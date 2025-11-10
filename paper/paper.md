@@ -90,7 +90,7 @@ and the HySEA family of codes ([https://edanya.uma.es/hysea/](https://edanya.uma
 focus on operational, production-grade simulations while DispersiveShallowWater.jl is aimed at developing and comparing models and numerical methods.
 The widely used coastal/tsunami models mentioned above offer similar capabilities for some of the relevant equations but may not include all the features and tools available in DispersiveShallowWater.jl and rely on different numerical methods and approaches.
 Other Julia packages, such as Oceananigans.jl [@ramadhan2020oceananigans], GeophysicalFlows.jl [@GeophysicalFlowsJOSS],
-SpectralWaves.jl [@paprota2025spectralwaves], ShallowWaters.jl [@klowershallowwaters], and TrixiShallowWater.jl [@winters2025trixi],
+SpectralWaves.jl [@paprota2025spectralwaves], WaterWaves1D.jl [@duchenewaterwaves1d], ShallowWaters.jl [@klowershallowwaters], and TrixiShallowWater.jl [@winters2025trixi],
 also provide tools for simulating shallow water and dispersive wave phenomena, but differ in their focus, supported models, and numerical methods.
 While some research papers offer supplementary code, these are typically limited to small scripts intended for reproducing specific results and are not
 developed as general-purpose software libraries.
