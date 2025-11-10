@@ -29,7 +29,7 @@ For the general case of variable vathymetry the BBM-BBM equations are
 One reference for the BBM-BBM system can be found in Bona et al. (1998).
 The semidiscretization implemented here was developed for flat bathymetry in
 Ranocha et al. (2020) and generalized for a variable bathymetry in
-Lampert and Ranocha (2024). It conserves
+Lampert and Ranocha (2025). It conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total velocity (integral of ``v``) as a linear invariant for flat bathymetry
 - the total energy
@@ -39,7 +39,7 @@ the semidiscretization conserves
 - the total water (integral of ``h``) as a linear invariant
 - the total energy.
 
-Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2024).
+Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2025).
 
 - Jerry L. Bona, Min Chen (1998)
   A Boussinesq system for two-way propagation of nonlinear dispersive waves
@@ -47,9 +47,9 @@ Additionally, it is well-balanced for the lake-at-rest stationary solution, see 
 - Hendrik Ranocha, Dimitrios Mitsotakis, David I. Ketcheson (2020)
   A Broad Class of Conservative Numerical Methods for Dispersive Wave Equations
   [DOI: 10.4208/cicp.OA-2020-0119](https://doi.org/10.4208/cicp.OA-2020-0119)
-- Joshua Lampert, Hendrik Ranocha (2024)
-  Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-  [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+- Joshua Lampert, Hendrik Ranocha (2025)
+  Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+  [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 """
 struct BBMBBMEquations1D{Bathymetry <: AbstractBathymetry, RealT <: Real} <:
        AbstractBBMBBMEquations{1, 3}
@@ -414,9 +414,9 @@ end
 # - the total momentum (integral of ``v``) as a linear invariant for flat bathymetry
 # - the total energy
 # for periodic boundary conditions, see
-# - Joshua Lampert and Hendrik Ranocha (2024)
-#   Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#   [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#   [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
               ::BoundaryConditionPeriodic, source_terms, solver, cache)
     (; etav, Dv, v2, tmp1, tmp2) = cache
@@ -484,9 +484,9 @@ end
 # - the total water (integral of ``h``) as a linear invariant
 # - the total energy
 # for reflecting boundary conditions, see
-# - Joshua Lampert and Hendrik Ranocha (2024)
-#   Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#   [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#   [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
               ::BoundaryConditionReflecting, source_terms, solver, cache)
     (; etav, Dv, v2, tmp1, tmp2) = cache

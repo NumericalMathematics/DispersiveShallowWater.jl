@@ -1,10 +1,10 @@
 # This elixir contains an artificial setup that can be used to check the
 # conservation properties of the equations and numerical methods as well as
 # a possible directional bias (if the velocity is set to zero). See
-# - Hendrik Ranocha and Mario Ricchiuto (2024)
-#   Structure-preserving approximations of the Serre-Green-Naghdi
-#   equations in standard and hyperbolic form
-#   [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+# - Hendrik Ranocha and Mario Ricchiuto (2025)
+#   Structure-Preserving Approximations of the Serre-Green-Naghdi
+#   Equations in Standard and Hyperbolic Form
+#   [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 
 using OrdinaryDiffEqTsit5
 using DispersiveShallowWater

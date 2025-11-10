@@ -76,12 +76,12 @@ The semidiscretization implemented here conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total modified energy
 
-for periodic boundary conditions (see Ranocha and Ricchiuto (2024)).
+for periodic boundary conditions (see Ranocha and Ricchiuto (2025)).
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see
-- Hendrik Ranocha and Mario Ricchiuto (2024)
-  Structure-preserving approximations of the Serre-Green-Naghdi
-  equations in standard and hyperbolic form
-  [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+- Hendrik Ranocha and Mario Ricchiuto (2025)
+  Structure-Preserving Approximations of the Serre-Green-Naghdi
+  Equations in Standard and Hyperbolic Form
+  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 """
 struct HyperbolicSerreGreenNaghdiEquations1D{Bathymetry <:
                                              Union{BathymetryFlat, BathymetryMildSlope},
@@ -196,10 +196,10 @@ end
 
 A smooth manufactured solution in combination with
 [`source_terms_manufactured`](@ref), see
-- Hendrik Ranocha and Mario Ricchiuto (2024)
-  Structure-preserving approximations of the Serre-Green-Naghdi
-  equations in standard and hyperbolic form
-  [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+- Hendrik Ranocha and Mario Ricchiuto (2025)
+  Structure-Preserving Approximations of the Serre-Green-Naghdi
+  Equations in Standard and Hyperbolic Form
+  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 """
 function initial_condition_manufactured(x, t,
                                         equations::HyperbolicSerreGreenNaghdiEquations1D,
@@ -359,10 +359,10 @@ end
 # - the total water mass (integral of ``h``) as a linear invariant
 # - the total modified energy
 # for periodic boundary conditions, see
-# - Hendrik Ranocha and Mario Ricchiuto (2024)
-#   Structure-preserving approximations of the Serre-Green-Naghdi
-#   equations in standard and hyperbolic form
-#   [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+# - Hendrik Ranocha and Mario Ricchiuto (2025)
+#   Structure-Preserving Approximations of the Serre-Green-Naghdi
+#   Equations in Standard and Hyperbolic Form
+#   [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 # for reflecting boundary conditions, calculation not published yet.
 function rhs!(dq, q, t, mesh,
               equations::HyperbolicSerreGreenNaghdiEquations1D,
