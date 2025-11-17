@@ -164,7 +164,7 @@ function pretty_form_utf(name)
     elseif name == :linf_error
         return "L∞ error"
     elseif name == :conservation_error
-        return "∫|q_q₀|"
+        return "∫|q-q₀|"
     elseif name == :lake_at_rest_error
         return "∫|η-η₀|"
     else
