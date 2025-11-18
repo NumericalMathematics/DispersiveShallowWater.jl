@@ -20,10 +20,10 @@ The KdV equation is first introduced by Joseph Valentin Boussinesq (1877) and re
 
 The semidiscretization implemented here is a modification of the one proposed by Biswas, Ketcheson, Ranocha, and Schütz (2025) for the non-dimensionalized KdV equation ``u_t + u u_x + u_{x x x} = 0.``
 
-The semidiscretization looks the following:
+The semidiscretization is given by:
 ```math
 \begin{aligned}
-  \eta_t+\sqrt{g D} D_1\eta+ 1 / 2 \sqrt{g / D} \eta D_1 \eta +  1 / 2 \sqrt{g / D} D_1 \eta^2 +1 / 6 \sqrt{g D} D^2 D_3\eta &= 0.
+  \eta_t + \sqrt{g D} D_1\eta + 1 / 2 \sqrt{g / D} \eta D_1 \eta +  1 / 2 \sqrt{g / D} D_1 \eta^2 + 1 / 6 \sqrt{g D} D^2 D_3\eta &= 0.
 \end{aligned}
 ```
 where ``D_1`` is a first-derivative operator, ``D_3`` a third-derivative operator, and ``D`` the still-water depth.
@@ -31,7 +31,7 @@ where ``D_1`` is a first-derivative operator, ``D_3`` a third-derivative operato
 It conserves
 - the total water mass (integral of ``\eta``) as a linear invariant
 and if upwind operators (``D_3 = D_{1,+} D_1 D_{1,-}``) or wide-stencil operators (``D_3 = D_1^3``) are used for the third derivative, it also conserves
-- the energy (integral of ``1/2\eta^2``)
+- the entropy/total energy (integral of ``U = 1/2\eta^2``)
 
 for periodic boundary conditions.
 
@@ -279,11 +279,11 @@ end
 """
     energy_total(q, equations::KdVEquation1D)
 
-Return the total energy of the primitive variables `q` for the
+Return the total energy ``e`` of the primitive variables `q` for the
 [`KdVEquation1D`](@ref). For the KdV equation, the total energy consists
 only of the potential energy, given by
 ```math
-\\frac{1}{2} g \\eta^2
+e(\\eta) = \\frac{1}{2} g \\eta^2
 ```
 where ``\\eta`` is the [`waterheight_total`](@ref) and ``g`` is the
 [`gravity`](@ref).
@@ -299,7 +299,7 @@ end
 """
     entropy(q, equations::KdVEquation1D)
 
-Return the entropy of the primitive variables `q` for the [`KdVEquation1D`](@ref).
+Return the entropy ``U`` of the primitive variables `q` for the [`KdVEquation1D`](@ref).
 For the KdV equation, the `entropy` is the same as the [`energy_total`](@ref).
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector

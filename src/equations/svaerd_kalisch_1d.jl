@@ -33,7 +33,8 @@ The equations by Svärd and Kalisch are presented and analyzed in Svärd and Kal
 The semidiscretization implemented here conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
-- the total modified energy
+- the total modified entropy/energy (integral of ``\hat U``/``\hat e``), which is called here
+  [`entropy_modified`](@ref) and [`energy_total_modified`](@ref)
 
 for periodic boundary conditions (see Lampert, Ranocha).
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2025).
@@ -366,7 +367,7 @@ end
 # Discretization that conserves
 # - the total water (integral of ``h``) as a linear invariant
 # - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
-# - the total modified energy
+# - the total modified entropy/energy (integral of ``\hat U``/``\hat e``) as a nonlinear invariant
 # for periodic boundary conditions, see
 # - Joshua Lampert, Hendrik Ranocha (2025)
 #   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
@@ -513,9 +514,9 @@ end
 
 # The modified entropy/energy takes the whole `q` for every point in space
 """
-    DispersiveShallowWater.energy_total_modified!(e, q_global, equations::SvaerdKalischEquations1D, cache)
+    DispersiveShallowWater.energy_total_modified!(e_mod, q_global, equations::SvaerdKalischEquations1D, cache)
 
-Return the modified total energy `e` of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 [`SvaerdKalischEquations1D`](@ref). It contains an additional term containing a
 derivative compared to the usual [`energy_total`](@ref) modeling
 non-hydrostatic contributions. The `energy_total_modified`
@@ -523,7 +524,7 @@ is a conserved quantity (for periodic boundary conditions).
 
 It is given by
 ```math
-\\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{2} \\hat\\beta v_x^2.
+\\hat e(\\eta, v) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{2} \\hat\\beta v_x^2.
 ```
 
 `q_global` is a vector of the primitive variables at ALL nodes.
@@ -531,7 +532,7 @@ It is given by
 
 See also [`energy_total_modified`](@ref).
 """
-@inline function energy_total_modified!(e, q_global, equations::SvaerdKalischEquations1D,
+@inline function energy_total_modified!(e_mod, q_global, equations::SvaerdKalischEquations1D,
                                         cache)
     # unpack physical parameters and SBP operator `D1`
     g = gravity(equations)
@@ -550,6 +551,6 @@ See also [`energy_total_modified`](@ref).
         mul!(v_x, D1, v)
     end
 
-    @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 2 * beta_hat * v_x^2
-    return e
+    @.. e_mod = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 2 * beta_hat * v_x^2
+    return e_mod
 end

@@ -74,7 +74,8 @@ References for the hyperbolized Serre-Green-Naghdi system can be found in
 
 The semidiscretization implemented here conserves
 - the total water mass (integral of ``h``) as a linear invariant
-- the total modified energy
+- the total modified entropy/energy (integral of ``\hat U``/``\hat e``), which is called here
+  [`entropy_modified`](@ref) and [`energy_total_modified`](@ref)
 
 for periodic boundary conditions (see Ranocha and Ricchiuto (2025)).
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see
@@ -357,7 +358,7 @@ end
 
 # Discretization that conserves
 # - the total water mass (integral of ``h``) as a linear invariant
-# - the total modified energy
+# - the total modified entropy/energy (integral of ``\hat U``/``\hat e``) as a nonlinear invariant
 # for periodic boundary conditions, see
 # - Hendrik Ranocha and Mario Ricchiuto (2025)
 #   Structure-Preserving Approximations of the Serre-Green-Naghdi
@@ -520,9 +521,9 @@ end
 
 # The entropy/energy takes the whole `q` for every point in space
 """
-    DispersiveShallowWater.energy_total_modified!(e, q_global, equations::HyperbolicSerreGreenNaghdiEquations1D, cache)
+    DispersiveShallowWater.energy_total_modified!(e_mod, q_global, equations::HyperbolicSerreGreenNaghdiEquations1D, cache)
 
-Return the modified total energy `e` of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 [`HyperbolicSerreGreenNaghdiEquations1D`](@ref).
 It contains additional terms compared to the usual [`energy_total`](@ref)
 modeling non-hydrostatic contributions. The `energy_total_modified`
@@ -531,7 +532,7 @@ is a conserved quantity (for periodic boundary conditions).
 For a [`bathymetry_mild_slope`](@ref) (and a [`bathymetry_flat`](@ref)),
 the total modified energy is given by
 ```math
-\\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 +
+\\hat e(\\eta, v, w) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 +
 \\frac{1}{6} h w^2 + \\frac{\\lambda}{6} h (1 - \\eta / h)^2.
 ```
 
@@ -539,7 +540,7 @@ the total modified energy is given by
 
 See also [`energy_total_modified`](@ref).
 """
-function energy_total_modified!(e, q_global,
+function energy_total_modified!(e_mod, q_global,
                                 equations::HyperbolicSerreGreenNaghdiEquations1D,
                                 cache)
     # unpack physical parameters and SBP operator `D1`
@@ -555,8 +556,8 @@ function energy_total_modified!(e, q_global,
     @.. h = eta - b
 
     # 1/2 g eta^2 + 1/2 h v^2 + 1/6 h^3 w^2 + λ/6 h (1 - H/h)^2
-    @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * w^2 +
-            lambda / 6 * h * (1 - H / h)^2
+    @.. e_mod = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * w^2 +
+                lambda / 6 * h * (1 - H / h)^2
 
-    return e
+    return e_mod
 end
