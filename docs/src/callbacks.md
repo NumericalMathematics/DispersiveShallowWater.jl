@@ -77,9 +77,9 @@ nothing # hide
 
 The analysis callback computes ``L^2`` and ``L^\infty`` errors by comparing the numerical solution to the initial condition at time ``t`` (which can be the analytical solution, if available). Additional error types can be specified using the `extra_analysis_errors` parameter, and physical quantities can be monitored using `extra_analysis_integrals`.
 
-The conservation error measures the temporal change of conserved quantities. For the BBM-BBM equations, important conserved quantities include the total water mass (integral of water height `h` given
-by [`waterheight_total`](@ref)), the total momentum (integral of `v` for flat bathymetry given by [`velocity`](@ref)), and the total entropy (integral of `U` given by [`entropy`](@ref)). The specific
-form of the [`entropy`](@ref) varies between different equation systems. For the BBM-BBM equations, the integral of the entropy is:
+The conservation error measures the temporal change of conserved quantities. For the BBM-BBM equations, important conserved quantities include the total water mass (integral of water height ``h`` given
+by [`waterheight`](@ref)), the total momentum (integral of ``v`` for flat bathymetry given by [`velocity`](@ref)), the integral of the total water height ``\eta`` given by [`waterheight_total`](@ref) and
+the total entropy (integral of `U` given by [`entropy`](@ref)). The specific form of the [`entropy`](@ref) varies between different equation systems. For the BBM-BBM equations, the integral of the entropy is:
 
 ```math
 \mathcal E(t; \eta, v) = \int_\Omega U(\eta, v) \, dx = \frac{1}{2}\int_\Omega g\eta^2 + (\eta + D)v^2 \, dx
