@@ -142,7 +142,7 @@ end
 """
     waterheight_total(q, equations)
 
-Return the total waterheight ``\\eta`` of the primitive variables `q` for a given set of
+Return the total water height ``\\eta`` of the primitive variables `q` for a given set of
 `equations`, i.e., the [`waterheight`](@ref) ``h`` plus the
 [`bathymetry`](@ref) ``b``.
 
@@ -158,8 +158,8 @@ varnames(::typeof(waterheight_total), equations) = ("η",)
 """
     waterheight(q, equations)
 
-Return the waterheight of the primitive variables `q` for a given set of
-`equations`, i.e., the waterheight ``h`` above the bathymetry ``b``.
+Return the water height of the primitive variables `q` for a given set of
+`equations`, i.e., the water height ``h`` above the bathymetry ``b``.
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector
 of the correct length `nvariables(equations)`.
