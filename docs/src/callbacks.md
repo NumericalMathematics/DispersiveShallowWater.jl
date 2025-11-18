@@ -82,7 +82,7 @@ by [`waterheight_total`](@ref)), the total momentum (integral of `v` for flat ba
 form of the [`entropy`](@ref) varies between different equation systems. For the BBM-BBM equations, the integral of the entropy is:
 
 ```math
-\mathcal E(t; \eta, v) = \int\Omega U(\eta, v) \, dx = \frac{1}{2}\int_\Omega g\eta^2 + (\eta + D)v^2 \, dx
+\mathcal E(t; \eta, v) = \int_\Omega U(\eta, v) \, dx = \frac{1}{2}\int_\Omega g\eta^2 + (\eta + D)v^2 \, dx
 ```
 
 where ``\eta`` is the total water height and ``D`` is the still-water depth.
