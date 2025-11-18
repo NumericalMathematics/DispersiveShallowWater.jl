@@ -75,6 +75,8 @@ end
 
 A traveling-wave solution used for convergence tests in a periodic domain.
 The bathymetry is constant.
+Note that the solution is unphysical as it allows for negative water heights.
+It is mainly used to verify the order of convergence of a numerical method.
 
 For details see Example 5 in Section 3 from (here adapted for dimensional equations):
 - Min Chen (1997)
