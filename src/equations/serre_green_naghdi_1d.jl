@@ -1444,7 +1444,7 @@ function energy_total_modified!(e_mod, q_global,
         end
 
         @.. e_mod = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 +
-                1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
+                    1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
         if equations.bathymetry_type isa BathymetryVariable
             @.. e_mod += 1 / 8 * h * (v * b_x)^2
         end

@@ -532,8 +532,8 @@ It is given by
 
 See also [`energy_total_modified`](@ref).
 """
-@inline function energy_total_modified!(e_mod, q_global, equations::SvaerdKalischEquations1D,
-                                        cache)
+@inline function energy_total_modified!(e_mod, q_global,
+                                        equations::SvaerdKalischEquations1D, cache)
     # unpack physical parameters and SBP operator `D1`
     g = gravity(equations)
     (; D1, h, b, v_x, beta_hat) = cache
