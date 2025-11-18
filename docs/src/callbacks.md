@@ -85,7 +85,9 @@ the total entropy (integral of `U` given by [`entropy`](@ref)). The specific for
 \mathcal E(t; \eta, v) = \int_\Omega U(\eta, v) \, dx = \frac{1}{2}\int_\Omega g\eta^2 + (\eta + D)v^2 \, dx
 ```
 
-where ``\eta`` is the total water height and ``D`` is the still-water depth.
+where ``\eta`` is the total water height and ``D`` is the still-water depth. Any scalar quantity taking a vector `q` of primitive variables and the `equations` as arguments and returning a scalar value can be used
+as an additional integral to monitor during the simulation by passing it to the `extra_analysis_integrals` parameter. Other quantities that can be monitored include [`momentum`](@ref), [`entropy_modified`](@ref),
+and [`hamiltonian`](@ref).
 
 ```@example callback
 tspan = (0.0, 20.0)
