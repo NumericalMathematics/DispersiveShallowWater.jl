@@ -75,6 +75,9 @@ nothing # hide
 
 ![variable conversions](variable_conversions.png)
 
+Note that the argument `plot_initial = true` plots the initial condition evaluated at the selected time step, which means that the analytical solution is plotted if the initial condition
+function describes an exact solution that varies with time.
+
 ## Time Series Analysis at Spatial Points
 
 You can analyze the temporal evolution of the solution at specific spatial locations by passing a spatial point as second argument. This is particularly useful for understanding wave propagation and local dynamics:
