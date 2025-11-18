@@ -25,6 +25,12 @@ The gravitational acceleration `gravity` is denoted by ``g`` and the bottom topo
 The water height above the bathymetry is therefore given by
 ``h = \eta - \eta_0 + D``.
 
+!!! warning "Choice of parameters"
+    Note that the above equations are the more general form of the equations presented in the [preprint](https://arxiv.org/abs/2302.09924) by Svärd and Kalisch (2023)
+    including ``\alpha`` and ``\gamma`` terms. The [published version](https://doi.org/10.1016/j.jcp.2024.113516) considers only the case ``\alpha = \gamma = 0``
+    and ``\beta = 1/3``, which is the default choice of the parameters. In the general case of nonzero ``\alpha`` and ``\gamma``, the equations have a number of
+    unphysical properties.
+
 Currently, the equations only support a general variable bathymetry, see [`bathymetry_variable`](@ref).
 
 `SvärdKalischEquations1D` is an alias for `SvaerdKalischEquations1D`.
