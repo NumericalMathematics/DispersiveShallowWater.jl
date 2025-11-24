@@ -142,7 +142,7 @@ end
 """
     waterheight_total(q, equations)
 
-Return the total waterheight of the primitive variables `q` for a given set of
+Return the total water height ``\\eta`` of the primitive variables `q` for a given set of
 `equations`, i.e., the [`waterheight`](@ref) ``h`` plus the
 [`bathymetry`](@ref) ``b``.
 
@@ -158,8 +158,8 @@ varnames(::typeof(waterheight_total), equations) = ("η",)
 """
     waterheight(q, equations)
 
-Return the waterheight of the primitive variables `q` for a given set of
-`equations`, i.e., the waterheight ``h`` above the bathymetry ``b``.
+Return the water height of the primitive variables `q` for a given set of
+`equations`, i.e., the water height ``h`` above the bathymetry ``b``.
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector
 of the correct length `nvariables(equations)`.
@@ -175,7 +175,7 @@ varnames(::typeof(waterheight), equations) = ("h",)
 """
     velocity(q, equations)
 
-Return the velocity of the primitive variables `q` for a given set of
+Return the velocity ``v`` of the primitive variables `q` for a given set of
 `equations`.
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector
@@ -190,7 +190,7 @@ varnames(::typeof(velocity), equations) = ("v",)
 """
     momentum(q, equations)
 
-Return the momentum/discharge of the primitive variables `q` for a given set of
+Return the momentum/discharge ``hv`` of the primitive variables `q` for a given set of
 `equations`, i.e., the [`waterheight`](@ref) times the [`velocity`](@ref).
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector
@@ -230,7 +230,7 @@ still_waterdepth(q, equations::AbstractEquations{1, 1}) = equations.D
 """
     bathymetry(q, equations)
 
-Return the bathymetry of the primitive variables `q` for a given set of
+Return the bathymetry ``b`` of the primitive variables `q` for a given set of
 `equations`.
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector
@@ -268,12 +268,12 @@ end
 """
     energy_total(q, equations)
 
-Return the total energy of the primitive variables `q` for a given set of
+Return the total energy ``e`` of the primitive variables `q` for a given set of
 `equations`. For all [`AbstractShallowWaterEquations`](@ref), the total
 energy is given by the sum of the kinetic and potential energy of the
 shallow water subsystem, i.e.,
 ```math
-\\frac{1}{2} h v^2 + \\frac{1}{2} g \\eta^2
+e(\\eta, v) = \\frac{1}{2} h v^2 + \\frac{1}{2} g \\eta^2
 ```
 in 1D, where ``h`` is the [`waterheight`](@ref),
 ``\\eta = h + b`` the [`waterheight_total`](@ref),
@@ -294,7 +294,7 @@ varnames(::typeof(energy_total), equations) = ("e_total",)
 """
     entropy(q, equations)
 
-Return the entropy of the primitive variables `q` for a given set of
+Return the entropy ``U`` of the primitive variables `q` for a given set of
 `equations`. For all [`AbstractShallowWaterEquations`](@ref), the `entropy`
 is just the [`energy_total`](@ref).
 
@@ -311,7 +311,7 @@ varnames(::typeof(entropy), equations) = ("U",)
 """
     energy_total_modified(q_global, equations, cache)
 
-Return the modified total energy of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 `equations`. This modified total energy is a conserved quantity and can
 contain additional terms compared to the usual [`energy_total`](@ref).
 For example, for the [`SvaerdKalischEquations1D`](@ref) and the
@@ -331,25 +331,25 @@ Internally, this function allocates a vector for the output and
 calls [`DispersiveShallowWater.energy_total_modified!`](@ref).
 """
 function energy_total_modified(q_global, equations::AbstractEquations, cache)
-    e = similar(q_global.x[begin])
-    return energy_total_modified!(e, q_global, equations, cache)
+    e_mod = similar(q_global.x[begin])
+    return energy_total_modified!(e_mod, q_global, equations, cache)
 end
 
 """
-    energy_total_modified!(e, q_global, equations, cache)
+    energy_total_modified!(e_mod, q_global, equations, cache)
 
 In-place version of [`energy_total_modified`](@ref).
 """
-function energy_total_modified!(e, q_global, equations::AbstractEquations,
+function energy_total_modified!(e_mod, q_global, equations::AbstractEquations,
                                 cache)
     # `q_global` is an `ArrayPartition` of the primitive variables at all nodes
     @assert nvariables(equations) == length(q_global.x)
 
     for i in eachindex(q_global.x[begin])
-        e[i] = energy_total(get_node_vars(q_global, equations, i), equations)
+        e_mod[i] = energy_total(get_node_vars(q_global, equations, i), equations)
     end
 
-    return e
+    return e_mod
 end
 
 varnames(::typeof(energy_total_modified), equations) = ("e_modified",)
@@ -360,19 +360,19 @@ varnames(::typeof(energy_total_modified), equations) = ("e_modified",)
 Alias for [`energy_total_modified`](@ref).
 """
 @inline function entropy_modified(q_global, equations::AbstractEquations, cache)
-    e = similar(q_global.x[begin])
-    return entropy_modified!(e, q_global, equations, cache)
+    U_mod = similar(q_global.x[begin])
+    return entropy_modified!(U_mod, q_global, equations, cache)
 end
 
 """
-    entropy_modified!(e, q_global, equations, cache)
+    entropy_modified!(U_mod, q_global, equations, cache)
 
 In-place version of [`entropy_modified`](@ref).
 """
-@inline entropy_modified!(e, q_global, equations, cache) = energy_total_modified!(e,
-                                                                                  q_global,
-                                                                                  equations,
-                                                                                  cache)
+@inline entropy_modified!(U_mod, q_global, equations, cache) = energy_total_modified!(U_mod,
+                                                                                      q_global,
+                                                                                      equations,
+                                                                                      cache)
 
 varnames(::typeof(entropy_modified), equations) = ("U_modified",)
 
@@ -380,7 +380,7 @@ varnames(::typeof(entropy_modified), equations) = ("U_modified",)
 """
     hamiltonian(q_global, equations, cache)
 
-Return the Hamiltonian of the primitive variables `q_global` for the
+Return the Hamiltonian ``H`` of the primitive variables `q_global` for the
 `equations`. The Hamiltonian is a conserved quantity and may contain
 derivatives of the solution.
 

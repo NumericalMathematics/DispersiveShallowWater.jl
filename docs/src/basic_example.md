@@ -131,7 +131,7 @@ By default, this will plot the bathymetry, but not the initial (analytical) solu
 
 You can adjust this by passing the boolean values `plot_bathymetry` (if `true`, always plot bathymetry in the first subplot) and `plot_initial`. Note that `plot_initial = true` will evaluate and plot the initial condition function at the same time `t` as the numerical solution being displayed (the final time by default). This means if your initial condition function represents an analytical solution, setting `plot_initial = true` will plot the analytical solution at that specific time for comparison.
 
-Plotting an animation over time can, e.g., be done by the following command, which uses `step` to plot the solution at a specific time step. Here `conversion = waterheight_total` makes it so that we only look at the waterheight ``\eta`` and not also the velocity ``v``. More on tutorials for plotting can be found in the chapter [Plotting Simulation Results](@ref plotting).
+Plotting an animation over time can, e.g., be done by the following command, which uses `step` to plot the solution at a specific time step. Here `conversion = waterheight_total` makes it so that we only look at the total water height ``\eta`` and not also the velocity ``v``. More on tutorials for plotting can be found in the chapter [Plotting Simulation Results](@ref plotting).
 
 ```@example overview
 anim = @animate for step in 1:length(sol.u)

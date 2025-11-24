@@ -22,12 +22,12 @@ for `split_form = true` and in Linders, Ranocha, and Birken (2023) for `split_fo
 If `split_form` is `true`, a split form in the semidiscretization is used, which conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - a quadratic invariant (integral of ``1/2\eta(\eta - 1/6D^2\eta_{xx})`` or for periodic boundary conditions
-  equivalently ``1/2(\eta^2 + 1/6D^2\eta_x^2)``), which is called here [`energy_total_modified`](@ref)
+  equivalently ``\hat U = 1/2(\eta^2 + 1/6D^2\eta_x^2)``), which is called here [`energy_total_modified`](@ref)
   (and [`entropy_modified`](@ref)) because it contains derivatives of the solution
 
 for periodic boundary conditions. If `split_form` is `false` the semidiscretization conserves
 - the total water mass (integral of ``h``) as a linear invariant
-- the Hamiltonian (integral of ``1/4\sqrt{g/D}\eta^3 + 1/2\sqrt{gD}\eta^2``) (see [`hamiltonian`](@ref))
+- the Hamiltonian (integral of ``H = 1/4\sqrt{g/D}\eta^3 + 1/2\sqrt{gD}\eta^2``) (see [`hamiltonian`](@ref))
 
 for periodic boundary conditions.
 
@@ -195,15 +195,15 @@ function rhs!(dq, q, t, mesh, equations::BBMEquation1D, initial_condition,
 end
 
 """
-    energy_total_modified!(e, q_global, equations::BBMEquation1D, cache)
+    energy_total_modified!(e_mod, q_global, equations::BBMEquation1D, cache)
 
-Return the modified total energy `e` of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 [`BBMEquation1D`](@ref). The `energy_total_modified`
 is a conserved quantity (for periodic boundary conditions).
 
 It is given by
 ```math
-\\frac{1}{2} \\eta(\\eta - \\frac{1}{6}D^2\\eta_{xx}).
+\\hat e(\\eta) = \\frac{1}{2} \\eta(\\eta - \\frac{1}{6}D^2\\eta_{xx}).
 ```
 
 `q_global` is a vector of the primitive variables at ALL nodes.
@@ -211,7 +211,7 @@ It is given by
 
 See also [`energy_total_modified`](@ref).
 """
-function energy_total_modified!(e, q_global, equations::BBMEquation1D, cache)
+function energy_total_modified!(e_mod, q_global, equations::BBMEquation1D, cache)
     eta, = q_global.x
     D = equations.D
 
@@ -223,17 +223,17 @@ function energy_total_modified!(e, q_global, equations::BBMEquation1D, cache)
         mul!(eta_xx, D2, eta)
     end
 
-    @.. e = 0.5 * eta * (eta - 1 / 6 * D^2 * eta_xx)
-    return e
+    @.. e_mod = 0.5 * eta * (eta - 1 / 6 * D^2 * eta_xx)
+    return e_mod
 end
 
 """
     hamiltonian!(H, q_global, equations::BBMEquation1D, cache)
 
-Return the Hamiltonian `H` of the primitive variables `q_global` for the
+Return the Hamiltonian ``H`` of the primitive variables `q_global` for the
 [`BBMEquation1D`](@ref). The Hamiltonian is given by
 ```math
-\\frac{1}{4}\\sqrt{\\frac{g}{D}}\\eta^3 + \\frac{1}{2}\\sqrt{gD}\\eta^2.
+H(\\eta) = \\frac{1}{4}\\sqrt{\\frac{g}{D}}\\eta^3 + \\frac{1}{2}\\sqrt{gD}\\eta^2.
 ```
 
 `q_global` is a vector of the primitive variables at ALL nodes.

@@ -336,6 +336,7 @@ function analyze!(semi::Semidiscretization, quantity, q, t)
     integrate_quantity!(semi.cache.tmp1, quantity, q, semi)
 end
 
+pretty_form_utf(::typeof(waterheight)) = "∫h"
 pretty_form_utf(::typeof(waterheight_total)) = "∫η"
 pretty_form_utf(::typeof(velocity)) = "∫v"
 pretty_form_utf(::typeof(momentum)) = "∫P"

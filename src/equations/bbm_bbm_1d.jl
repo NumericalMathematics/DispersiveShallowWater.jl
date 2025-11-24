@@ -32,12 +32,12 @@ Ranocha et al. (2020) and generalized for a variable bathymetry in
 Lampert and Ranocha (2025). It conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total velocity (integral of ``v``) as a linear invariant for flat bathymetry
-- the total energy
+- the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 
 for periodic boundary conditions (see Lampert, Ranocha). For reflecting boundary conditions,
 the semidiscretization conserves
 - the total water (integral of ``h``) as a linear invariant
-- the total energy.
+- the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2025).
 
@@ -75,6 +75,8 @@ end
 
 A traveling-wave solution used for convergence tests in a periodic domain.
 The bathymetry is constant.
+Note that the solution is unphysical as it allows for negative water heights.
+It is mainly used to verify the order of convergence of a numerical method.
 
 For details see Example 5 in Section 3 from (here adapted for dimensional equations):
 - Min Chen (1997)
@@ -412,7 +414,7 @@ end
 # Discretization that conserves
 # - the total water (integral of ``h``) as a linear invariant
 # - the total momentum (integral of ``v``) as a linear invariant for flat bathymetry
-# - the total energy
+# - the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 # for periodic boundary conditions, see
 # - Joshua Lampert, Hendrik Ranocha (2025)
 #   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
@@ -482,7 +484,7 @@ end
 
 # Discretization that conserves
 # - the total water (integral of ``h``) as a linear invariant
-# - the total energy
+# - the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 # for reflecting boundary conditions, see
 # - Joshua Lampert, Hendrik Ranocha (2025)
 #   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
