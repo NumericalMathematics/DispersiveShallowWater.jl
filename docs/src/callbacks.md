@@ -130,7 +130,7 @@ For example, in this case, we obtain
 integrals(analysis_callback).entropy[begin]
 ```
 
-Thus, a change of `0.005` of the entropy (the total energy) corresponds to a relative change of roughly $$10^{-6}$$.
+Thus, a change of `0.005` of the entropy (the total energy) corresponds to a relative change of roughly ``10^{-6}``.
 This occurs because standard time integration methods do not necessarily preserve nonlinear invariants, even when the spatial discretization is conservative.
 
 For a fully discrete entropy-conservative method, see also the following section about relaxation and the [`RelaxationCallback`](@ref).
