@@ -27,7 +27,7 @@ bibliography: paper.bib
 
 # Summary
 
-DispersiveShallowWater.jl is a Julia library designed for the numerical simulation of dispersive wave equations, with a focus on structure-preserving methods. The library aims to provide a flexible and efficient
+DispersiveShallowWater.jl is a Julia library designed for the numerical simulation of one-dimensional dispersive wave equations, with a focus on structure-preserving methods, i.e., numerical methods that conserve invariants like the total mass and total energy as well as steady states like a lake at rest (vanishing velocity and constant total water height). The library aims to provide a flexible and efficient
 framework for researchers and users working in the field of wave dynamics. The design of DispersiveShallowWater.jl emphasizes broad applicability to a variety of dispersive wave equations, supporting
 multiple numerical methods including finite difference (FD), discontinuous Galerkin (DG), continuous Galerkin (CG), and Fourier pseudospectral approaches enabled by the generality of
 summation-by-parts (SBP) operators. A central goal is the preservation of key structural properties of the underlying equations, ensuring physically meaningful and robust simulations across diverse scenarios.
