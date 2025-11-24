@@ -117,6 +117,17 @@ M = \Delta x \cdot \text{diag}(1/2, 1, 1, \ldots, 1, 1/2)
 ```
 
 You can verify that this satisfies the SBP property and provides second-order accuracy in the interior with first-order accuracy at the boundaries.
+Thus, under standard assumptions, one can prove that this SBP operator leads to methods with order of convergence two (in the discrete ``L^2`` norm induced by the mass matrix).[^SvärdNordström2019][^SvärdNordström2021]
+
+[^SvärdNordström2019]:
+    Svärd, Nordström (2019):
+    On the convergence rates of energy-stable finite-difference schemes
+    [DOI: 10.1016/j.jcp.2019.07.018](https://doi.org/10.1016/j.jcp.2019.07.018)
+
+[^SvärdNordström2021]:
+    Svärd, Nordström (2021):
+    Convergence of energy stable finite-difference schemes with interfaces
+    [DOI: 10.1016/j.jcp.2020.110020](https://doi.org/10.1016/j.jcp.2020.110020)
 
 ## 3. Types of SBP Operators
 
