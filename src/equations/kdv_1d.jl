@@ -299,7 +299,7 @@ end
 """
     entropy(q, equations::KdVEquation1D)
 
-Return the entropy ``U`` of the primitive variables `q` for the [`KdVEquation1D`](@ref).
+Return the mathematical entropy ``U`` of the primitive variables `q` for the [`KdVEquation1D`](@ref).
 For the KdV equation, the `entropy` is the same as the [`energy_total`](@ref).
 
 `q` is a vector of the primitive variables at a single node, i.e., a vector

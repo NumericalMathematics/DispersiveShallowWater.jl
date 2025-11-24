@@ -294,7 +294,7 @@ varnames(::typeof(energy_total), equations) = ("e_total",)
 """
     entropy(q, equations)
 
-Return the entropy ``U`` of the primitive variables `q` for a given set of
+Return the mathematical entropy ``U`` of the primitive variables `q` for a given set of
 `equations`. For all [`AbstractShallowWaterEquations`](@ref), the `entropy`
 is just the [`energy_total`](@ref).
 
