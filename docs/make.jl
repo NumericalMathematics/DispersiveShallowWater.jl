@@ -69,24 +69,27 @@ end
 
 makedocs(;
          modules = [DispersiveShallowWater, TrixiBase],
-         authors = "Joshua Lampert <joshua.lampert@uni-hamburg.de>",
          repo = Remotes.GitHub("NumericalMathematics", "DispersiveShallowWater.jl"),
          sitename = "DispersiveShallowWater.jl",
          format = Documenter.HTML(;
                                   prettyurls = get(ENV, "CI", "false") == "true",
                                   canonical = "https://NumericalMathematics.github.io/DispersiveShallowWater.jl/stable",
                                   edit_link = "main",
-                                  assets = String[],
+                                  # Explicitly add favicon as asset
+                                  assets = ["assets/favicon.ico"],
                                   size_threshold = 1200 * 1024, # the generated .gif files can be too large
                                   size_threshold_warn = 1000 * 1024),
          pages = ["Home" => "index.md",
              "Overview" => "overview.md",
+             "Basic Example" => "basic_example.md",
+             "Summation-by-Parts Operators" => "SBP_Operators.md",
              "Dispersion" => "dispersion.md",
+             "Using Different Solvers" => "solvers.md",
+             "Callbacks and Relaxation" => "callbacks.md",
+             "Plotting" => "plotting.md",
+             "Experimental Data" => "dingemans.md",
              "Development" => "development.md",
-             "Reference" => [
-                 "TrixiBase" => "ref-trixibase.md",
-                 "DispersiveShallowWater" => "ref.md"
-             ],
+             "Reference" => "ref.md",
              "Changelog" => "changelog.md",
              "Contributing" => "contributing.md",
              "Code of Conduct" => "code_of_conduct.md",
@@ -95,4 +98,6 @@ makedocs(;
 deploydocs(;
            repo = "github.com/NumericalMathematics/DispersiveShallowWater.jl",
            devbranch = "main",
-           push_preview = true)
+           push_preview = all(!isempty,
+                              (get(ENV, "GITHUB_TOKEN", ""),
+                               get(ENV, "DOCUMENTER_KEY", ""))))

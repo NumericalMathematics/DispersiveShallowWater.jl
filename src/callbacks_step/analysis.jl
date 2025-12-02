@@ -13,7 +13,7 @@ solution and integrated over the computational domain. Some examples for this ar
 [`entropy`](@ref), and [`energy_total`](@ref).
 You can also write your own function with the same signature as the examples listed above and
 pass it via `extra_analysis_integrals`.
-The computed errors and intergrals are saved for each timestep and can be obtained by calling
+The computed errors and integrals are saved for each timestep and can be obtained by calling
 [`errors`](@ref) and [`integrals`](@ref).
 
 During the Simulation, the `AnalysisCallback` will print information to `io`.
@@ -336,6 +336,7 @@ function analyze!(semi::Semidiscretization, quantity, q, t)
     integrate_quantity!(semi.cache.tmp1, quantity, q, semi)
 end
 
+pretty_form_utf(::typeof(waterheight)) = "∫h"
 pretty_form_utf(::typeof(waterheight_total)) = "∫η"
 pretty_form_utf(::typeof(velocity)) = "∫v"
 pretty_form_utf(::typeof(momentum)) = "∫P"

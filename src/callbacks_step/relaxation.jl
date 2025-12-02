@@ -97,7 +97,8 @@ end
         val2 = relaxation_functional(tmp1, tmp_partitioned, semi) - energy_old
 
         if (val1 * val2) > 0
-            terminate_integration = true
+            # terminate if there is no root in [gamma_lo, gamma_hi]
+            gamma = zero(typeof(tnew))
         else
             gamma = find_zero(root_closure, (gamma_lo, gamma_hi), AlefeldPotraShi())
         end

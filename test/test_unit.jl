@@ -92,6 +92,29 @@ end
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
 end
 
+@testitem "Solver consistency" setup=[Setup, AdditionalImports] begin
+    mesh = Mesh1D(-1.0, 1.0, 10)
+    initial_condition = initial_condition_convergence_test
+    D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
+    solver = Solver(D1)
+
+    equations = KdVEquation1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+
+    equations = BBMEquation1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+
+    equations = BBMBBMEquations1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+
+    equations = SvaerdKalischEquations1D(gravity = 1.0)
+    @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
+                                                  solver)
+end
+
 @testitem "Boundary conditions" setup=[Setup] begin
     boundary_conditions = boundary_condition_periodic
     @test_nowarn print(boundary_conditions)
@@ -108,7 +131,12 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
-        prim2nondim
+        entropy,
+        energy_total,
+        prim2nondim,
+        prim2cons,
+        prim2prim,
+        prim2phys
     ]
     for conversion in conversion_functions
         @test DispersiveShallowWater.varnames(conversion, equations) isa Tuple
@@ -126,6 +154,26 @@ end
     u_expected = q ./ 3.0 .+ 2 / 3
     @test @inferred(prim2nondim(q, equations_nondim)) == u_expected
     @test @inferred(nondim2prim(u_expected, equations_nondim)) == q
+    @test @inferred(energy_total(q, equations)) == @inferred(entropy(q, equations))
+    @testset "energy_total" begin
+        initial_condition = initial_condition_manufactured
+        boundary_conditions = boundary_condition_periodic
+        mesh = @inferred Mesh1D(-1.0, 1.0, 10)
+        solver = Solver(mesh, 4)
+        semi = @inferred Semidiscretization(mesh, equations, initial_condition,
+                                            solver; boundary_conditions)
+        q = @inferred DispersiveShallowWater.compute_coefficients(initial_condition,
+                                                                  0.0, semi)
+        _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
+        e = @inferred energy_total_modified(q, equations, cache)
+        e_total = @inferred DispersiveShallowWater.integrate(e, semi)
+        @test isapprox(e_total, 1.5)
+        @test isapprox(DispersiveShallowWater.integrate_quantity(energy_total, q, semi),
+                       1.5)
+        U = @inferred entropy_modified(q, equations, cache)
+        U_total = @inferred DispersiveShallowWater.integrate(U, semi)
+        @test isapprox(U_total, e_total)
+    end
 end
 
 @testitem "BBMEquation1D" setup=[Setup] begin
@@ -448,6 +496,7 @@ end
     k = 2 * pi
     frequencies = [
         7.850990247314777,
+        -1984.4012605086898,
         0.5660455316649682,
         0.5660455316649682,
         7.700912310929906,
@@ -455,6 +504,7 @@ end
     ]
     wave_speeds = [
         1.2495239060264087,
+        -315.8272696877459,
         0.09008894437955965,
         0.09008894437955965,
         1.2256382606017253,
@@ -462,6 +512,7 @@ end
     ]
 
     for (i, equations) in enumerate((EulerEquations1D(gravity = g),
+                                     KdVEquation1D(gravity = g),
                                      BBMEquation1D(gravity = g),
                                      BBMBBMEquations1D(gravity = g),
                                      SvaerdKalischEquations1D(gravity = g,
@@ -481,11 +532,15 @@ end
 end
 
 @testitem "util" setup=[Setup] begin
+    @test_nowarn examples_dir()
     @test_nowarn get_examples()
+    @test_nowarn data_dir()
+    t, x, experimental_data = data_dingemans()
+    @test size(experimental_data) == (length(t), length(x))
 
     accuracy_orders = [2, 4, 6]
     for accuracy_order in accuracy_orders
-        eoc_mean_values, _ = convergence_test(default_example(), 2, N = 512,
+        eoc_mean_values, _ = convergence_test(@__MODULE__, default_example(), 2, N = 512,
                                               tspan = (0.0, 1.0),
                                               accuracy_order = accuracy_order)
         @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
@@ -493,7 +548,7 @@ end
         @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:linf][2], accuracy_order, atol = 0.5)
 
-        eoc_mean_values2, _ = convergence_test(default_example(), [512, 1024],
+        eoc_mean_values2, _ = convergence_test(@__MODULE__, default_example(), [512, 1024],
                                                tspan = (0.0, 1.0),
                                                accuracy_order = accuracy_order)
         for kind in (:l2, :linf), variable in (1, 2)

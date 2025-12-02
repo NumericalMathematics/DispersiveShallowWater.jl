@@ -29,17 +29,17 @@ For the general case of variable vathymetry the BBM-BBM equations are
 One reference for the BBM-BBM system can be found in Bona et al. (1998).
 The semidiscretization implemented here was developed for flat bathymetry in
 Ranocha et al. (2020) and generalized for a variable bathymetry in
-Lampert and Ranocha (2024). It conserves
+Lampert and Ranocha (2025). It conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total velocity (integral of ``v``) as a linear invariant for flat bathymetry
-- the total energy
+- the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 
 for periodic boundary conditions (see Lampert, Ranocha). For reflecting boundary conditions,
 the semidiscretization conserves
 - the total water (integral of ``h``) as a linear invariant
-- the total energy.
+- the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 
-Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2024).
+Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2025).
 
 - Jerry L. Bona, Min Chen (1998)
   A Boussinesq system for two-way propagation of nonlinear dispersive waves
@@ -47,9 +47,9 @@ Additionally, it is well-balanced for the lake-at-rest stationary solution, see 
 - Hendrik Ranocha, Dimitrios Mitsotakis, David I. Ketcheson (2020)
   A Broad Class of Conservative Numerical Methods for Dispersive Wave Equations
   [DOI: 10.4208/cicp.OA-2020-0119](https://doi.org/10.4208/cicp.OA-2020-0119)
-- Joshua Lampert, Hendrik Ranocha (2024)
-  Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-  [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+- Joshua Lampert, Hendrik Ranocha (2025)
+  Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+  [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 """
 struct BBMBBMEquations1D{Bathymetry <: AbstractBathymetry, RealT <: Real} <:
        AbstractBBMBBMEquations{1, 3}
@@ -64,11 +64,19 @@ function BBMBBMEquations1D(; bathymetry_type = bathymetry_variable,
     BBMBBMEquations1D(bathymetry_type, gravity, eta0)
 end
 
+function check_solver(::BBMBBMEquations1D, solver, boundary_conditions)
+    if isnothing(solver.D2)
+        throw(ArgumentError("The BBM-BBM equations require a second-derivative operator. Explicitly set `D2`."))
+    end
+end
+
 """
     initial_condition_convergence_test(x, t, equations::BBMBBMEquations1D, mesh)
 
 A traveling-wave solution used for convergence tests in a periodic domain.
 The bathymetry is constant.
+Note that the solution is unphysical as it allows for negative water heights.
+It is mainly used to verify the order of convergence of a numerical method.
 
 For details see Example 5 in Section 3 from (here adapted for dimensional equations):
 - Min Chen (1997)
@@ -223,6 +231,8 @@ function source_terms_manufactured_reflecting(q, x, t,
     return SVector(s1, s2, zero(s1))
 end
 
+dingemans_calibration(equations::BBMBBMEquations1D) = 2.7
+
 """
     initial_condition_dingemans(x, t, equations::BBMBBMEquations1D, mesh)
 
@@ -249,12 +259,13 @@ function initial_condition_dingemans(x, t, equations::BBMBBMEquations1D, mesh)
     A = 0.02
     # omega = 2*pi/(2.02*sqrt(2))
     k = 0.8406220896381442 # precomputed result of find_zero(k -> omega^2 - g * k * tanh(k * h0), 1.0) using Roots.jl
-    if x < -30.5 * pi / k || x > -8.5 * pi / k
-        h = 0.0
+    offset = dingemans_calibration(equations)
+    if x - offset < -34.5 * pi / k || x - offset > -4.5 * pi / k
+        eta_prime = 0.0
     else
-        h = A * cos(k * x)
+        eta_prime = A * cos(k * (x - offset))
     end
-    v = sqrt(g / k * tanh(k * h0)) * h / h0
+    v = sqrt(g / k * tanh(k * h0)) * eta_prime / h0
     if 11.01 <= x && x < 23.04
         b = 0.6 * (x - 11.01) / (23.04 - 11.01)
     elseif 23.04 <= x && x < 27.04
@@ -264,9 +275,9 @@ function initial_condition_dingemans(x, t, equations::BBMBBMEquations1D, mesh)
     else
         b = 0.0
     end
-    # Here, we compute eta - h0!! To obtain the original eta, h0 = 0.8 needs to be added again!
+    # Here, we compute eta - eta0!! To obtain the original eta, eta0 = 0.8 needs to be added again!
     # This is because the BBM-BBM equations are only implemented for eta0 = 0
-    eta = h
+    eta = eta_prime
     D = h0 - b
     return SVector(eta, v, D)
 end
@@ -403,19 +414,14 @@ end
 # Discretization that conserves
 # - the total water (integral of ``h``) as a linear invariant
 # - the total momentum (integral of ``v``) as a linear invariant for flat bathymetry
-# - the total energy
+# - the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 # for periodic boundary conditions, see
-# - Joshua Lampert and Hendrik Ranocha (2024)
-#   Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#   [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#   [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
               ::BoundaryConditionPeriodic, source_terms, solver, cache)
     (; etav, Dv, v2, tmp1, tmp2) = cache
-    if equations.bathymetry_type isa BathymetryFlat
-        (; invImD2) = cache
-    else # equations.bathymetry_type isa BathymetryVariable
-        (; invImDKD, invImD2K) = cache
-    end
 
     g = gravity(equations)
     eta, v, D = q.x
@@ -457,15 +463,19 @@ function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
 
     @trixi_timeit timer() "solving elliptic system deta" begin
         if equations.bathymetry_type isa BathymetryFlat
+            (; invImD2) = cache
             solve_system_matrix!(deta, invImD2, equations)
         else # equations.bathymetry_type isa BathymetryVariable
+            (; invImDKD, invImD2K) = cache
             solve_system_matrix!(deta, invImDKD, equations)
         end
     end
     @trixi_timeit timer() "solving elliptic system dv" begin
         if equations.bathymetry_type isa BathymetryFlat
+            (; invImD2) = cache
             solve_system_matrix!(dv, invImD2, equations)
         else # equations.bathymetry_type isa BathymetryVariable
+            (; invImDKD, invImD2K) = cache
             solve_system_matrix!(dv, invImD2K, equations)
         end
     end
@@ -474,11 +484,11 @@ end
 
 # Discretization that conserves
 # - the total water (integral of ``h``) as a linear invariant
-# - the total energy
+# - the total entropy/energy (integral of ``U = 1/2 hv^2 + 1/2 g\eta^2``)
 # for reflecting boundary conditions, see
-# - Joshua Lampert and Hendrik Ranocha (2024)
-#   Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#   [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#   [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 function rhs!(dq, q, t, mesh, equations::BBMBBMEquations1D, initial_condition,
               ::BoundaryConditionReflecting, source_terms, solver, cache)
     (; etav, Dv, v2, tmp1, tmp2) = cache

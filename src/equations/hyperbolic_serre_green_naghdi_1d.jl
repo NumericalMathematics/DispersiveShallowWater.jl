@@ -74,14 +74,15 @@ References for the hyperbolized Serre-Green-Naghdi system can be found in
 
 The semidiscretization implemented here conserves
 - the total water mass (integral of ``h``) as a linear invariant
-- the total modified energy
+- the total modified entropy/energy (integral of ``\hat U``/``\hat e``), which is called here
+  [`entropy_modified`](@ref) and [`energy_total_modified`](@ref)
 
-for periodic boundary conditions (see Ranocha and Ricchiuto (2024)).
+for periodic boundary conditions (see Ranocha and Ricchiuto (2025)).
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see
-- Hendrik Ranocha and Mario Ricchiuto (2024)
-  Structure-preserving approximations of the Serre-Green-Naghdi
-  equations in standard and hyperbolic form
-  [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+- Hendrik Ranocha and Mario Ricchiuto (2025)
+  Structure-Preserving Approximations of the Serre-Green-Naghdi
+  Equations in Standard and Hyperbolic Form
+  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 """
 struct HyperbolicSerreGreenNaghdiEquations1D{Bathymetry <:
                                              Union{BathymetryFlat, BathymetryMildSlope},
@@ -196,10 +197,10 @@ end
 
 A smooth manufactured solution in combination with
 [`source_terms_manufactured`](@ref), see
-- Hendrik Ranocha and Mario Ricchiuto (2024)
-  Structure-preserving approximations of the Serre-Green-Naghdi
-  equations in standard and hyperbolic form
-  [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+- Hendrik Ranocha and Mario Ricchiuto (2025)
+  Structure-Preserving Approximations of the Serre-Green-Naghdi
+  Equations in Standard and Hyperbolic Form
+  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 """
 function initial_condition_manufactured(x, t,
                                         equations::HyperbolicSerreGreenNaghdiEquations1D,
@@ -247,9 +248,86 @@ function source_terms_manufactured(q, x, t,
     return SVector(s1, s2, s3, s4, s5)
 end
 
+"""
+    initial_condition_manufactured_reflecting(x, t, equations::HyperbolicSerreGreenNaghdiEquations1D, mesh)
+
+A smooth manufactured solution for reflecting boundary conditions in combination
+with [`source_terms_manufactured_reflecting`](@ref).
+"""
+function initial_condition_manufactured_reflecting(x, t,
+                                                   equations::HyperbolicSerreGreenNaghdiEquations1D,
+                                                   mesh)
+    h = 1 + (2 * t) * (cospi(x) + x + 2)
+    v = (-t * x) * sinpi(x)
+    D = zero(h) # flat bathymetry (D = 0)
+    if equations.bathymetry_type isa BathymetryMildSlope
+        D = -(2 * x)
+    end
+    # w = -h v_x + 3/2 v b_x
+    w = (-t * sinpi(x) - pi * t * x * cospi(x)) * (-1 - 2 * t * (2 + x + cospi(x)))
+    H = h
+
+    b = equations.eta0 - D
+    eta = h + b
+
+    return SVector(eta, v, D, w, H)
+end
+
+"""
+    source_terms_manufactured_reflecting(q, x, t, equations::HyperbolicSerreGreenNaghdiEquations1D)
+
+A smooth manufactured solution in combination with
+[`initial_condition_manufactured_reflecting`](@ref).
+
+calculated as shown in:
+https://github.com/NumericalMathematics/DispersiveShallowWater.jl/pull/228#issuecomment-3123350726
+"""
+function source_terms_manufactured_reflecting(q, x, t,
+                                              equations::HyperbolicSerreGreenNaghdiEquations1D)
+    g = gravity(equations)
+
+    a1 = 2 + x + cospi(x)
+    a2 = pi * t * x * cospi(x)
+    t_2 = t^2
+    pi_2 = pi^2
+
+    s1 = 2 * a1 + t * (-1 - 2t * a1) * sinpi(x) +
+         pi * t * (-1 - 2t * a1) * x * cospi(x) -
+         2(1 - pi * sinpi(x)) * t_2 * x * sinpi(x)
+    s2 = 2 * g * t - x * sinpi(x) - 2 * g * pi * t * sinpi(x) +
+         t_2 * x * (sinpi(x)^2) + pi * t_2 * (x^2) * cospi(x) * sinpi(x)
+    s3 = zero(s1)
+    s4 = -2(-t * sinpi(x) - a2) * a1 +
+         (-sinpi(x) - pi * x * cospi(x)) * (-1 - 2t * a1) +
+         ((2pi * t * cospi(x) - pi_2 * t * x * sinpi(x)) *
+          (-1 - 2t * a1) +
+          2(-t * sinpi(x) - a2) * (1 - pi * sinpi(x)) * t) * t *
+         x * sinpi(x)
+    s5 = 2 * a1 +
+         (t * sinpi(x) + a2) * (-1 - 2t * a1) -
+         2(1 - pi * sinpi(x)) * t_2 * x * sinpi(x)
+    if equations.bathymetry_type isa BathymetryMildSlope
+        s2 += 2 * g
+        s4 -= 3x * sinpi(x) +
+              ((2pi * t * cospi(x) - pi_2 * t * x * sinpi(x)) *
+               (-1 - 2t * a1) +
+               2(-t * sinpi(x) - a2) * (1 - pi * sinpi(x)) * t) * t * x *
+              sinpi(x) +
+              (-3t * sinpi(x) - 3 * a2 +
+               (-2pi * t * cospi(x) + pi_2 * t * x * sinpi(x)) *
+               (-1 - 2t * a1) -
+               2(-t * sinpi(x) - a2) * (1 - pi * sinpi(x)) * t) * t * x *
+              sinpi(x)
+    end
+    return SVector(s1, s2, s3, s4, s5)
+end
+
+dingemans_calibration(equations::HyperbolicSerreGreenNaghdiEquations1D) = 2.4
+
 function create_cache(mesh, equations::HyperbolicSerreGreenNaghdiEquations1D,
                       solver, initial_condition,
-                      ::BoundaryConditionPeriodic,
+                      boundary_conditions::Union{BoundaryConditionPeriodic,
+                                                 BoundaryConditionReflecting},
                       RealT, uEltype)
     # We use `DiffCache` from PreallocationTools.jl to enable automatic/algorithmic differentiation
     # via ForwardDiff.jl. We also pass the second argument determining the chunk size since the
@@ -280,16 +358,18 @@ end
 
 # Discretization that conserves
 # - the total water mass (integral of ``h``) as a linear invariant
-# - the total modified energy
+# - the total modified entropy/energy (integral of ``\hat U``/``\hat e``) as a nonlinear invariant
 # for periodic boundary conditions, see
-# - Hendrik Ranocha and Mario Ricchiuto (2024)
-#   Structure-preserving approximations of the Serre-Green-Naghdi
-#   equations in standard and hyperbolic form
-#   [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+# - Hendrik Ranocha and Mario Ricchiuto (2025)
+#   Structure-Preserving Approximations of the Serre-Green-Naghdi
+#   Equations in Standard and Hyperbolic Form
+#   [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
+# for reflecting boundary conditions, calculation not published yet.
 function rhs!(dq, q, t, mesh,
               equations::HyperbolicSerreGreenNaghdiEquations1D,
               initial_condition,
-              ::BoundaryConditionPeriodic,
+              boundary_conditions::Union{BoundaryConditionPeriodic,
+                                         BoundaryConditionReflecting},
               source_terms,
               solver, cache)
     # Unpack physical parameters and SBP operator `D1`
@@ -370,6 +450,10 @@ function rhs!(dq, q, t, mesh,
         # Split form for energy conservation:
         # h_t + h_x v + h v_x = 0
         @.. dh = -(h_x * v + h * v_x)
+        if boundary_conditions isa BoundaryConditionReflecting
+            dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
+            dh[end] += h[end] * v[end] / right_boundary_weight(D1)
+        end
 
         # Plain: h v_t + h v v_x + g (h + b) h_x
         #              + ... = 0
@@ -437,9 +521,9 @@ end
 
 # The entropy/energy takes the whole `q` for every point in space
 """
-    DispersiveShallowWater.energy_total_modified!(e, q_global, equations::HyperbolicSerreGreenNaghdiEquations1D, cache)
+    DispersiveShallowWater.energy_total_modified!(e_mod, q_global, equations::HyperbolicSerreGreenNaghdiEquations1D, cache)
 
-Return the modified total energy `e` of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 [`HyperbolicSerreGreenNaghdiEquations1D`](@ref).
 It contains additional terms compared to the usual [`energy_total`](@ref)
 modeling non-hydrostatic contributions. The `energy_total_modified`
@@ -448,7 +532,7 @@ is a conserved quantity (for periodic boundary conditions).
 For a [`bathymetry_mild_slope`](@ref) (and a [`bathymetry_flat`](@ref)),
 the total modified energy is given by
 ```math
-\\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 +
+\\hat e(\\eta, v, w) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 +
 \\frac{1}{6} h w^2 + \\frac{\\lambda}{6} h (1 - \\eta / h)^2.
 ```
 
@@ -456,7 +540,7 @@ the total modified energy is given by
 
 See also [`energy_total_modified`](@ref).
 """
-function energy_total_modified!(e, q_global,
+function energy_total_modified!(e_mod, q_global,
                                 equations::HyperbolicSerreGreenNaghdiEquations1D,
                                 cache)
     # unpack physical parameters and SBP operator `D1`
@@ -472,8 +556,8 @@ function energy_total_modified!(e, q_global,
     @.. h = eta - b
 
     # 1/2 g eta^2 + 1/2 h v^2 + 1/6 h^3 w^2 + λ/6 h (1 - H/h)^2
-    @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * w^2 +
-            lambda / 6 * h * (1 - H / h)^2
+    @.. e_mod = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 6 * h * w^2 +
+                lambda / 6 * h * (1 - H / h)^2
 
-    return e
+    return e_mod
 end

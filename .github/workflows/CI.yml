@@ -15,6 +15,7 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
       - 'docs/**'
   pull_request:
@@ -29,6 +30,7 @@ on:
       - '.github/workflows/Format-check.yml'
       - '.github/workflows/TagBot.yml'
       - '.github/workflows/SpellCheck.yml'
+      - '.github/workflows/JET.yml'
       - 'benchmark/**'
       - 'docs/**'
   workflow_dispatch:
@@ -56,8 +58,10 @@ jobs:
         include:
           - version: '1.11'
             os: ubuntu-latest
+          - version: '1.12'
+            os: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}

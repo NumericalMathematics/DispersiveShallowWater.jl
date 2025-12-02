@@ -16,6 +16,7 @@ See also: [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/Di
 module DispersiveShallowWater
 
 using BandedMatrices: BandedMatrix
+using DelimitedFiles: readdlm
 using DiffEqBase: DiffEqBase, terminate!
 using FastBroadcast: @..
 using ForwardDiff: ForwardDiff
@@ -49,12 +50,14 @@ using SummationByPartsOperators: SummationByPartsOperators,
                                  periodic_derivative_operator,
                                  derivative_order, integrate, mass_matrix,
                                  scale_by_mass_matrix!,
-                                 scale_by_inverse_mass_matrix!
+                                 scale_by_inverse_mass_matrix!,
+                                 left_boundary_weight, right_boundary_weight
 import SummationByPartsOperators: grid, xmin, xmax, semidiscretize
 using TimerOutputs: TimerOutputs, print_timer, reset_timer!
 @reexport using TrixiBase: trixi_include
 using TrixiBase: TrixiBase, @trixi_timeit, timer
 
+include("experimental_data.jl")
 include("boundary_conditions.jl")
 include("mesh.jl")
 include("equations/equations.jl")
@@ -65,7 +68,9 @@ include("callbacks_step/callbacks_step.jl")
 include("visualization.jl")
 include("util.jl")
 
-export examples_dir, get_examples, default_example, convergence_test
+export examples_dir, get_examples, default_example, convergence_test, data_dir
+
+export data_dingemans
 
 export AbstractShallowWaterEquations,
        KdVEquation1D,

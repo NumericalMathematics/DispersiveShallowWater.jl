@@ -1,0 +1,75 @@
+name: JET
+on:
+  push:
+    branches:
+      - main
+    tags: ['*']
+    paths-ignore:
+      - 'CITATION.bib'
+      - 'LICENSE.md'
+      - 'README.md'
+      - '.zenodo.json'
+      - '.github/workflows/benchmark.yml'
+      - '.github/workflows/CompatHelper.yml'
+      - '.github/workflows/Documenter.yml'
+      - '.github/workflows/Format-check.yml'
+      - '.github/workflows/TagBot.yml'
+      - '.github/workflows/SpellCheck.yml'
+      - 'benchmark/**'
+      - 'docs/**'
+  pull_request:
+    paths-ignore:
+      - 'CITATION.bib'
+      - 'LICENSE.md'
+      - 'README.md'
+      - '.zenodo.json'
+      - '.github/workflows/benchmark.yml'
+      - '.github/workflows/CompatHelper.yml'
+      - '.github/workflows/Documenter.yml'
+      - '.github/workflows/Format-check.yml'
+      - '.github/workflows/TagBot.yml'
+      - '.github/workflows/SpellCheck.yml'
+      - 'benchmark/**'
+      - 'docs/**'
+  workflow_dispatch:
+
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: only if it is a pull request build.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  test:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - '1.12'
+        os:
+          - ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.version }}
+      - run: julia -e 'using InteractiveUtils; versioninfo(verbose=true)'
+      - uses: julia-actions/cache@v2
+      - name: Install and run JET.jl
+        shell: julia --project="." --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.add("JET")
+          # We need to add Plots.jl to make the definition of `is_attr_supported` available
+          # Otherwise, JET.jl fails since it is not defined for the keyword arguments in the plot recipes.
+          Pkg.add("Plots")
+          Pkg.instantiate()
+          using JET
+          import Plots
+          using DispersiveShallowWater
+
+          test_package(DispersiveShallowWater;
+                       target_modules = (DispersiveShallowWater,))

@@ -27,7 +27,8 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
 
 ###############################################################################
 # Create `ODEProblem` and run the simulation
-tspan = (0.0, (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * gravity(equations))) # one period
+periods = 1.0
+tspan = (0.0, periods * (xmax(mesh) - xmin(mesh)) / sqrt(1.2 * gravity(equations)))
 ode = semidiscretize(semi, tspan)
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,

@@ -76,6 +76,7 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
         throw(ArgumentError("Non-periodic derivative operators in `solver` are incompatible with periodic boundary conditions."))
     end
 
+    check_solver(equations, solver, boundary_conditions)
     cache = (;
              create_cache(mesh, equations, solver, initial_condition, boundary_conditions,
                           RealT, uEltype)...,
@@ -87,6 +88,19 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                                                       boundary_conditions, source_terms,
                                                       solver, cache)
 end
+
+"""
+    check_solver(equations, solver, boundary_conditions)
+
+Check that the `solver` is compatible with the given `equations` and 
+`boundary_conditions`. The default implementation performs no checks.
+Specific equation types can override this method to validate that 
+required derivative operators are present (e.g., some equations 
+require `D2` or `D3` to be non-`nothing`).
+
+Throws an `ArgumentError` if the solver is incompatible.
+"""
+check_solver(equations, solver, boundary_conditions) = nothing
 
 function Base.show(io::IO, semi::Semidiscretization)
     @nospecialize semi # reduce precompilation time
@@ -150,12 +164,12 @@ function PolynomialBases.integrate(q, semi::Semidiscretization)
     integrate(identity, q, semi)
 end
 
-function integrate_quantity(func, q, semi::Semidiscretization)
+function integrate_quantity(func, q, semi)
     quantity = zeros(eltype(q), nnodes(semi))
     integrate_quantity!(quantity, func, q, semi)
 end
 
-function integrate_quantity!(quantity, func, q, semi::Semidiscretization)
+function integrate_quantity!(quantity, func, q, semi)
     for i in eachnode(semi)
         quantity[i] = func(get_node_vars(q, semi.equations, i), semi.equations)
     end
@@ -172,26 +186,26 @@ function integrate_quantity!(quantity,
                              func::Union{typeof(energy_total_modified),
                                          typeof(entropy_modified),
                                          typeof(hamiltonian)}, q,
-                             semi::Semidiscretization)
+                             semi)
     inplace_version(func)(quantity, q, semi.equations, semi.cache)
     integrate(quantity, semi)
 end
 
-@inline function mesh_equations_solver(semi::Semidiscretization)
+@inline function mesh_equations_solver(semi)
     @unpack mesh, equations, solver = semi
     return mesh, equations, solver
 end
 
-@inline function mesh_equations_solver_cache(semi::Semidiscretization)
+@inline function mesh_equations_solver_cache(semi)
     @unpack mesh, equations, solver, cache = semi
     return mesh, equations, solver, cache
 end
 
-function calc_error_norms(q, t, semi::Semidiscretization)
+function calc_error_norms(q, t, semi)
     calc_error_norms(q, t, semi.initial_condition, mesh_equations_solver(semi)...)
 end
 
-function rhs!(dq, q, semi::Semidiscretization, t)
+function rhs!(dq, q, semi, t)
     @unpack mesh, equations, initial_condition, boundary_conditions, solver, source_terms, cache = semi
 
     @trixi_timeit timer() "rhs!" rhs!(dq, q, t, mesh, equations, initial_condition,
@@ -200,14 +214,14 @@ function rhs!(dq, q, semi::Semidiscretization, t)
     return nothing
 end
 
-function compute_coefficients(func, t, semi::Semidiscretization)
+function compute_coefficients(func, t, semi)
     @unpack mesh, equations, solver = semi
     q = allocate_coefficients(mesh_equations_solver(semi)...)
     compute_coefficients!(q, func, t, semi)
     return q
 end
 
-function compute_coefficients!(q, func, t, semi::Semidiscretization)
+function compute_coefficients!(q, func, t, semi)
     # Call `compute_coefficients` defined by the solver
     mesh, equations, solver = mesh_equations_solver(semi)
     compute_coefficients!(q, func, t, mesh,

@@ -44,7 +44,11 @@ k = 0.01:0.01:5.0
 
 euler = EulerEquations1D(; gravity = g, eta0 = eta0)
 c_euler = wave_speed.(disp_rel, euler, k; normalize = true)
-plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :topright)
+plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :topright, yrange = (-0.1, 1.1))
+
+kdv = KdVEquation1D(; gravity = g, eta0 = eta0, D = h0)
+c_kdv = wave_speed.(disp_rel, kdv, k; normalize = true)
+plot!(k, c_kdv, label = "KdV")
 
 bbm = BBMEquation1D(; gravity = g, eta0 = eta0, D = h0)
 c_bbm = wave_speed.(disp_rel, bbm, k; normalize = true)
@@ -84,9 +88,9 @@ function initial_condition_traveling_wave(x, t, equations, mesh)
     omega = frequency(k)
     h0 = reference_height()
     A = 0.02
-    h = A * cos(k * x - omega * t)
-    v = sqrt(equations.gravity / k * tanh(k * h0)) * h / h0
-    eta = h + equations.eta0
+    eta_prime = A * cos(k * x - omega * t)
+    v = sqrt(equations.gravity / k * tanh(k * h0)) * eta_prime / h0
+    eta = eta_prime + equations.eta0
     D = h0
     return SVector(eta, v, D)
 end
@@ -128,7 +132,7 @@ anim = @animate for step in eachindex(sol.u)
     plot!(semi => sol, plot_initial = true, plot_bathymetry = false,
           conversion = waterheight_total, step = step, legend = :topleft, linewidth = 2,
           plot_title = @sprintf("t = %.3f", t), yrange = (eta0 - 0.03, eta0 + 0.03),
-          linestyles = [:solid :dot], labels = ["Euler" "Svärd-Kälisch"],
+          linestyles = [:solid :dot], labels = ["Euler" "Svärd-Kalisch"],
           color = [:blue :green])
 end
 gif(anim, "traveling_waves.gif", fps = 25)

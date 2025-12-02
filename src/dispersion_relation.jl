@@ -70,6 +70,13 @@ function (disp_rel::LinearDispersionRelation)(equations::EulerEquations1D, k)
     return sqrt(g * k * tanh(h0 * k))
 end
 
+function (disp_rel::LinearDispersionRelation)(equations::KdVEquation1D, k)
+    eta0 = equations.eta0
+    h0 = disp_rel.ref_height
+    g = gravity(equations)
+    return sqrt(g * h0) * (k * (1 + 1.5 * eta0 / h0) - 1 / 6 * h0^2 * k^3)
+end
+
 function (disp_rel::LinearDispersionRelation)(equations::BBMEquation1D, k)
     eta0 = equations.eta0
     h0 = disp_rel.ref_height
@@ -78,9 +85,9 @@ function (disp_rel::LinearDispersionRelation)(equations::BBMEquation1D, k)
 end
 
 # See
-# - Joshua Lampert, Hendrik Ranocha (2024)
-#  Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#  [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#  Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#  [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 # Here, for general `eta0`.
 function (disp_rel::LinearDispersionRelation)(equations::BBMBBMEquations1D, k)
     h0 = disp_rel.ref_height

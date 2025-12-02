@@ -1,7 +1,7 @@
 """
     examples_dir()
 
-Return the directory where the example files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater is
+Return the directory where the example files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater.jl is
 installed as a regular package (with `]add DispersiveShallowWater`), these files are read-only and should *not* be
 modified. To find out which files are available, use, e.g., `readdir`.
 
@@ -47,6 +47,19 @@ function default_example()
     joinpath(examples_dir(), "bbm_bbm_1d", "bbm_bbm_1d_basic.jl")
 end
 
+"""
+    data_dir()
+
+Return the directory where the data files provided with DispersiveShallowWater.jl are located. If DispersiveShallowWater.jl is
+installed as a regular package (with `]add DispersiveShallowWater`), these files are read-only and should *not* be
+modified. To find out which files are available, use, e.g., `readdir`.
+
+```@example
+readdir(data_dir())
+```
+"""
+data_dir() = pkgdir(DispersiveShallowWater, "data")::String
+
 function convergence_test(example::AbstractString, iterations_or_Ns; kwargs...)
     convergence_test(Main, example::AbstractString, iterations_or_Ns; kwargs...)
 end
@@ -88,7 +101,7 @@ function convergence_test(mod::Module, example::AbstractString, Ns::AbstractVect
 
         trixi_include(mod, example; kwargs..., N = Ns[iter])
 
-        l2_error, linf_error = mod.analysis_callback(mod.sol)
+        l2_error, linf_error = @invokelatest mod.analysis_callback(@invokelatest mod.sol)
 
         # collect errors as one vector to reshape later
         append!(errors[:l2], l2_error)
@@ -99,7 +112,7 @@ function convergence_test(mod::Module, example::AbstractString, Ns::AbstractVect
     end
 
     # Use raw error values to compute EOC
-    analyze_convergence(io, errors, iterations, mod.semi, Ns)
+    analyze_convergence(io, errors, iterations, (@invokelatest mod.semi), Ns)
 end
 
 # Analyze convergence for any semidiscretization

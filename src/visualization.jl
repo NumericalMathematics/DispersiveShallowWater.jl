@@ -31,45 +31,39 @@ end
 
     initial_condition = semi.initial_condition
     t = sol.t[step]
-
-    if plot_initial == true
-        q_exact = compute_coefficients(initial_condition, t, semi)
-        data_exact = zeros(nvars, nnodes(semi))
-    end
-
     q = sol.u[step]
+
     data = zeros(nvars, nnodes(semi))
-    if plot_bathymetry == true
-        bathy = zeros(nnodes(semi))
-    end
     for j in eachnode(semi)
-        if plot_bathymetry == true
-            bathy[j] = bathymetry(get_node_vars(q, equations, j), equations)
-        end
-        if plot_initial == true
-            data_exact[:, j] .= conversion(get_node_vars(q_exact, equations, j), equations)
-        end
         data[:, j] .= conversion(get_node_vars(q, equations, j), equations)
     end
 
     plot_title --> "$(get_name(equations)) at t = $(round(t, digits=5))"
     layout --> nsubplots
 
-    for i in 1:nsubplots
+    subplot = 0
+    for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ["D", "b"] && continue
+        names[i] in ("D", "b") && continue
 
+        subplot += 1
         if plot_initial == true
+            q_exact = compute_coefficients(initial_condition, t, semi)
+            data_exact = zeros(nvars, nnodes(semi))
+            for j in eachnode(semi)
+                data_exact[:, j] .= conversion(get_node_vars(q_exact, equations, j),
+                                               equations)
+            end
             @series begin
-                subplot --> i
-                linestyle := :solid
+                subplot --> subplot
+                linestyle --> :solid
                 label --> "initial $(names[i])"
                 grid(semi), data_exact[i, :]
             end
         end
 
         @series begin
-            subplot --> i
+            subplot --> subplot
             label --> names[i]
             xguide --> "x"
             yguide --> names[i]
@@ -80,14 +74,18 @@ end
 
     # Plot the bathymetry
     if plot_bathymetry == true
+        bathy = zeros(nnodes(semi))
+        for j in eachnode(semi)
+            bathy[j] = bathymetry(get_node_vars(q, equations, j), equations)
+        end
         @series begin
             subplot --> 1
-            linestyle := :solid
-            label := "bathymetry"
+            linestyle --> :solid
+            label --> "bathymetry"
             xguide --> "x"
             yguide --> names[1]
             title --> names[1]
-            color := :black
+            color --> :black
             grid(semi), bathy
         end
     end
@@ -166,7 +164,7 @@ function pretty_form_utf(name)
     elseif name == :linf_error
         return "L∞ error"
     elseif name == :conservation_error
-        return "∫|q_q₀|"
+        return "∫|q-q₀|"
     elseif name == :lake_at_rest_error
         return "∫|η-η₀|"
     else
@@ -189,7 +187,7 @@ end
             quantity = cb.affect!.analysis_integrals[i]
             @series begin
                 subplot --> subplot
-                label := pretty_form_utf(quantity) * " " * label_extension
+                label --> pretty_form_utf(quantity) * " " * label_extension
                 title --> "change of invariants"
                 xguide --> "t"
                 yguide --> "change of invariants"

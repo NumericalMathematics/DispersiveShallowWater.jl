@@ -25,6 +25,12 @@ The gravitational acceleration `gravity` is denoted by ``g`` and the bottom topo
 The water height above the bathymetry is therefore given by
 ``h = \eta - \eta_0 + D``.
 
+!!! warning "Choice of parameters"
+    Note that the above equations are the more general form of the equations presented in the [preprint](https://arxiv.org/abs/2302.09924) by Svärd and Kalisch (2023)
+    including ``\alpha`` and ``\gamma`` terms. The [published version](https://doi.org/10.1016/j.jcp.2024.113516) considers only the case ``\alpha = \gamma = 0``
+    and ``\beta = 1/3``, which is the default choice of the parameters. In the general case of nonzero ``\alpha`` and ``\gamma``, the equations have a number of
+    unphysical properties.
+
 Currently, the equations only support a general variable bathymetry, see [`bathymetry_variable`](@ref).
 
 `SvärdKalischEquations1D` is an alias for `SvaerdKalischEquations1D`.
@@ -33,18 +39,19 @@ The equations by Svärd and Kalisch are presented and analyzed in Svärd and Kal
 The semidiscretization implemented here conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
-- the total modified energy
+- the total modified entropy/energy (integral of ``\hat U``/``\hat e``), which is called here
+  [`entropy_modified`](@ref) and [`energy_total_modified`](@ref)
 
 for periodic boundary conditions (see Lampert, Ranocha).
-Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2024).
+Additionally, it is well-balanced for the lake-at-rest stationary solution, see Lampert and Ranocha (2025).
 
 - Magnus Svärd, Henrik Kalisch (2025)
   A novel energy-bounded Boussinesq model and a well-balanced and stable numerical discretization
   [arXiv: 2302.09924](https://arxiv.org/abs/2302.09924),
   [DOI: 10.1016/j.jcp.2024.113516](https://doi.org/10.1016/j.jcp.2024.113516)
-- Joshua Lampert, Hendrik Ranocha (2024)
-  Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-  [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+- Joshua Lampert, Hendrik Ranocha (2025)
+  Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+  [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 """
 struct SvaerdKalischEquations1D{Bathymetry <: AbstractBathymetry, RealT <: Real} <:
        AbstractSvaerdKalischEquations{1, 3}
@@ -66,6 +73,12 @@ const SvärdKalischEquations1D = SvaerdKalischEquations1D
 function SvaerdKalischEquations1D(; bathymetry_type = bathymetry_variable, gravity,
                                   eta0 = 0.0, alpha = 0.0, beta = 1 / 3, gamma = 0.0)
     SvaerdKalischEquations1D(bathymetry_type, gravity, eta0, alpha, beta, gamma)
+end
+
+function check_solver(::SvaerdKalischEquations1D, solver, ::BoundaryConditionPeriodic)
+    if isnothing(solver.D2)
+        throw(ArgumentError("The Svärd-Kalisch equations with periodic boundary conditions require a second-derivative operator. Explicitly set `D2`."))
+    end
 end
 
 """
@@ -196,6 +209,8 @@ function source_terms_manufactured_reflecting(q, x, t, equations::SvaerdKalischE
 
     return SVector(s1, s2, zero(s1))
 end
+
+dingemans_calibration(equations::SvaerdKalischEquations1D) = 2.2
 
 # For periodic boundary conditions
 function assemble_system_matrix!(cache, h,
@@ -358,11 +373,11 @@ end
 # Discretization that conserves
 # - the total water (integral of ``h``) as a linear invariant
 # - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
-# - the total modified energy
+# - the total modified entropy/energy (integral of ``\hat U``/``\hat e``) as a nonlinear invariant
 # for periodic boundary conditions, see
-# - Joshua Lampert and Hendrik Ranocha (2024)
-#   Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-#   [DOI: 10.48550/arXiv.2402.16669](https://doi.org/10.48550/arXiv.2402.16669)
+# - Joshua Lampert, Hendrik Ranocha (2025)
+#   Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+#   [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 # TODO: Simplify for the case of flat bathymetry and use higher-order operators
 function rhs!(dq, q, t, mesh, equations::SvaerdKalischEquations1D,
               initial_condition, boundary_conditions::BoundaryConditionPeriodic,
@@ -505,9 +520,9 @@ end
 
 # The modified entropy/energy takes the whole `q` for every point in space
 """
-    DispersiveShallowWater.energy_total_modified!(e, q_global, equations::SvaerdKalischEquations1D, cache)
+    DispersiveShallowWater.energy_total_modified!(e_mod, q_global, equations::SvaerdKalischEquations1D, cache)
 
-Return the modified total energy `e` of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 [`SvaerdKalischEquations1D`](@ref). It contains an additional term containing a
 derivative compared to the usual [`energy_total`](@ref) modeling
 non-hydrostatic contributions. The `energy_total_modified`
@@ -515,7 +530,7 @@ is a conserved quantity (for periodic boundary conditions).
 
 It is given by
 ```math
-\\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{2} \\hat\\beta v_x^2.
+\\hat e(\\eta, v) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{2} \\hat\\beta v_x^2.
 ```
 
 `q_global` is a vector of the primitive variables at ALL nodes.
@@ -523,8 +538,8 @@ It is given by
 
 See also [`energy_total_modified`](@ref).
 """
-@inline function energy_total_modified!(e, q_global, equations::SvaerdKalischEquations1D,
-                                        cache)
+@inline function energy_total_modified!(e_mod, q_global,
+                                        equations::SvaerdKalischEquations1D, cache)
     # unpack physical parameters and SBP operator `D1`
     g = gravity(equations)
     (; D1, h, b, v_x, beta_hat) = cache
@@ -542,6 +557,6 @@ See also [`energy_total_modified`](@ref).
         mul!(v_x, D1, v)
     end
 
-    @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 2 * beta_hat * v_x^2
-    return e
+    @.. e_mod = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 + 1 / 2 * beta_hat * v_x^2
+    return e_mod
 end

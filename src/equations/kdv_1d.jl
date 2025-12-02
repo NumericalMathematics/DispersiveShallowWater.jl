@@ -20,10 +20,10 @@ The KdV equation is first introduced by Joseph Valentin Boussinesq (1877) and re
 
 The semidiscretization implemented here is a modification of the one proposed by Biswas, Ketcheson, Ranocha, and Schütz (2025) for the non-dimensionalized KdV equation ``u_t + u u_x + u_{x x x} = 0.``
 
-The semidiscretization looks the following:
+The semidiscretization is given by:
 ```math
 \begin{aligned}
-  \eta_t+\sqrt{g D} D_1\eta+ 1 / 2 \sqrt{g / D} \eta D_1 \eta +  1 / 2 \sqrt{g / D} D_1 \eta^2 +1 / 6 \sqrt{g D} D^2 D_3\eta &= 0.
+  \eta_t + \sqrt{g D} D_1\eta + 1 / 2 \sqrt{g / D} \eta D_1 \eta +  1 / 2 \sqrt{g / D} D_1 \eta^2 + 1 / 6 \sqrt{g D} D^2 D_3\eta &= 0.
 \end{aligned}
 ```
 where ``D_1`` is a first-derivative operator, ``D_3`` a third-derivative operator, and ``D`` the still-water depth.
@@ -31,7 +31,7 @@ where ``D_1`` is a first-derivative operator, ``D_3`` a third-derivative operato
 It conserves
 - the total water mass (integral of ``\eta``) as a linear invariant
 and if upwind operators (``D_3 = D_{1,+} D_1 D_{1,-}``) or wide-stencil operators (``D_3 = D_1^3``) are used for the third derivative, it also conserves
-- the energy (integral of ``1/2\eta^2``)
+- the entropy/total energy (integral of ``U = 1/2\eta^2``)
 
 for periodic boundary conditions.
 
@@ -51,6 +51,13 @@ end
 function KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
     eta0 == 0.0 || @warn "The still-water surface needs to be 0 for the KdV equations"
     KdVEquation1D(gravity, D, eta0)
+end
+
+function check_solver(::KdVEquation1D, solver, boundary_conditions)
+    if !(solver.D1 isa PeriodicUpwindOperators && isnothing(solver.D3)) &&
+       isnothing(solver.D3)
+        throw(ArgumentError("The KdV equation requires a third-derivative operator. Either explicitly set `D3` or set `D1` as an upwind operator."))
+    end
 end
 
 """
@@ -133,14 +140,14 @@ where `D` is the still-water depth.
 
 !!! warning "Parameter constraints"
     This conversion is only valid for equations with specific parameter values:
-    - `gravity = 4/27` 
-    - `D = 3.0` 
-    
-    These values ensure the dimensional KdV equation matches the standard 
+    - `gravity = 4/27`
+    - `D = 3.0`
+
+    These values ensure the dimensional KdV equation matches the standard
     non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
 
-This function allows converting solutions from the standard non-dimensional 
-KdV form commonly found in literature to the dimensional form implemented 
+This function allows converting solutions from the standard non-dimensional
+KdV form commonly found in literature to the dimensional form implemented
 in DispersiveShallowWater.jl.
 
 See also [`prim2nondim`](@ref).
@@ -153,7 +160,7 @@ end
 """
     prim2nondim(eta, equations::KdVEquation1D)
 
-Convert the primitive/physical variable `eta` (total water height) to the 
+Convert the primitive/physical variable `eta` (total water height) to the
 non-dimensional variable `u` for the [`KdVEquation1D`](@ref).
 
 The transformation is given by:
@@ -164,15 +171,15 @@ where `D` is the still-water depth.
 
 !!! warning "Parameter constraints"
     This conversion is only valid for equations with specific parameter values:
-    - `gravity = 4/27` 
+    - `gravity = 4/27`
     - `D = 3.0`
-    
-    These values ensure the dimensional KdV equation matches the standard 
+
+    These values ensure the dimensional KdV equation matches the standard
     non-dimensional form `u_t + u u_x + u_{xxx} = 0`.
 
-This function allows converting solutions from the dimensional form implemented 
-in DispersiveShallowWater.jl to the standard non-dimensional KdV form 
-commonly found in literature, enabling comparison with theoretical results 
+This function allows converting solutions from the dimensional form implemented
+in DispersiveShallowWater.jl to the standard non-dimensional KdV form
+commonly found in literature, enabling comparison with theoretical results
 and other implementations.
 
 See also [`nondim2prim`](@ref).
@@ -267,4 +274,37 @@ function rhs!(dq, q, t, mesh, equations::KdVEquation1D, initial_condition,
                                                        solver)
 
     return nothing
+end
+
+"""
+    energy_total(q, equations::KdVEquation1D)
+
+Return the total energy ``e`` of the primitive variables `q` for the
+[`KdVEquation1D`](@ref). For the KdV equation, the total energy consists
+only of the potential energy, given by
+```math
+e(\\eta) = \\frac{1}{2} g \\eta^2
+```
+where ``\\eta`` is the [`waterheight_total`](@ref) and ``g`` is the
+[`gravity`](@ref).
+
+`q` is a vector of the primitive variables at a single node, i.e., a vector
+of length 1 in this case.
+"""
+@inline function energy_total(q, equations::KdVEquation1D)
+    eta = waterheight_total(q, equations)
+    return 0.5f0 * gravity(equations) * eta^2
+end
+
+"""
+    entropy(q, equations::KdVEquation1D)
+
+Return the mathematical entropy ``U`` of the primitive variables `q` for the [`KdVEquation1D`](@ref).
+For the KdV equation, the `entropy` is the same as the [`energy_total`](@ref).
+
+`q` is a vector of the primitive variables at a single node, i.e., a vector
+of length 1 in this case.
+"""
+function entropy(q, equations::KdVEquation1D)
+    return energy_total(q, equations)
 end
