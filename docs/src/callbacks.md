@@ -118,11 +118,20 @@ savefig("analysis_callback.png") # hide
 nothing # hide
 ```
 
+Please note that this plot shows the *change* of the invariants over time, i.e., the difference from their initial values.
 More on different options for plotting the analysis callback can be found in the chapter [Plotting Simulation Results](@ref plotting).
 
 ![analysis callback](analysis_callback.png)
 
-The plot shows that linear invariants such as the total water mass and total velocity are conserved exactly. However, nonlinear invariants such as the entropy may exhibit small growth over time. This occurs because standard time integration methods do not necessarily preserve nonlinear invariants, even when the spatial discretization is conservative.
+The plot shows that linear invariants such as the total water mass and total velocity are conserved exactly. However, nonlinear invariants such as the entropy may exhibit small growth over time (compared to the growth one would obtain from a standard spatial discretization that does not conserve these invariants).
+For example, in this case, we obtain
+
+```@example callback
+integrals(analysis_callback).entropy[begin]
+```
+
+Thus, a change of `0.005` of the entropy (the total energy) corresponds to a relative change of roughly ``10^{-6}``.
+This occurs because standard time integration methods do not necessarily preserve nonlinear invariants, even when the spatial discretization is conservative.
 
 For a fully discrete entropy-conservative method, see also the following section about relaxation and the [`RelaxationCallback`](@ref).
 

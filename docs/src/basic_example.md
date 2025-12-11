@@ -118,9 +118,9 @@ After running the simulation, the results can be visualized using [Plots.jl](htt
 plot the solution at the final time by calling `plot` on a `Pair` of the `Semidiscretization` and the corresponding `ODESolution` `sol`. The result is depicted in the following picture.
 
 ```@example overview
-using Plots
-# default( grid=true, box=:on, dpi=100, titlefont=font(16), linewidth=3, gridlinewidth=2, markersize=4, markerstrokewidth=2, xtickfontsize=14, ytickfontsize=14, xguidefontsize=16, yguidefontsize=16, ztickfontsize=14, zguidefontsize=16, legendfontsize=14) # hide
-plot(semi => sol)
+using Plots, Printf
+# default(grid=true, box=:on, dpi=100, titlefont=font(16), linewidth=3, gridlinewidth=2, markersize=4, markerstrokewidth=2, xtickfontsize=14, ytickfontsize=14, xguidefontsize=16, yguidefontsize=16, ztickfontsize=14, zguidefontsize=16, legendfontsize=14) # hide
+plot(semi => sol, plot_title = @sprintf "BBM-BBM equations at t = %.2f" last(tspan))
 savefig("shoaling_solution.png") # hide
 nothing # hide
 ```
@@ -135,7 +135,8 @@ Plotting an animation over time can, e.g., be done by the following command, whi
 
 ```@example overview
 anim = @animate for step in 1:length(sol.u)
-    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1))
+    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1),
+         plot_title = @sprintf "BBM-BBM equations at t = %.2f" sol.t[step])
 end
 gif(anim, "shoaling_solution.gif", fps = 25)
 nothing # hide
