@@ -5,17 +5,17 @@
     "upload_type": "software",
     "creators": [
         {
-            "affiliation": "Applied Mathematics, University of Hamburg, Germany",
+            "affiliation": "Department of Mathematics, University of Hamburg, Germany",
             "name": "Lampert, Joshua",
             "orcid": "0009-0007-0971-6709"
         },
         {
-            "affiliation": "Numerical Mathematics, Johannes Gutenberg University Mainz, Germany",
+            "affiliation": "Insititute of Mathematics, Johannes Gutenberg University Mainz, Germany",
             "name": "Wittenstein, Collin",
             "orcid": "0009-0006-8591-278X"
         },
         {
-            "affiliation": "Numerical Mathematics, Johannes Gutenberg University Mainz, Germany",
+            "affiliation": "Insititute of Mathematics, Johannes Gutenberg University Mainz, Germany",
             "name": "Ranocha, Hendrik",
             "orcid": "0000-0002-3456-2277"
         }
