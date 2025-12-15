@@ -7,6 +7,7 @@
 [![Coveralls](https://coveralls.io/repos/github/NumericalMathematics/DispersiveShallowWater.jl/badge.svg?branch=main)](https://coveralls.io/github/NumericalMathematics/DispersiveShallowWater.jl?branch=main)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.09361/status.svg)](https://doi.org/10.21105/joss.09361)
 [![DOI](https://zenodo.org/badge/635090135.svg)](https://zenodo.org/doi/10.5281/zenodo.10034636)
 
 <p align="center">
@@ -77,10 +78,25 @@ e.g., `include(joinpath(examples_dir(), "svaerd_kalisch_1d", "svaerd_kalisch_1d_
 
 ## Referencing
 
-You can directly refer to DispersiveShallowWater.jl as
+If you use DispersiveShallowWater.jl for your research, please cite our article
 
 ```bibtex
-@misc{lampert2025dispersive,
+@article{lampert2025dispersive,
+  title={{DispersiveShallowWater.jl}: {A} {J}ulia library of structure-preserving numerical methods for dispersive wave equations},
+  author={Lampert, Joshua and Wittenstein, Collin and Ranocha, Hendrik},
+  journal={Journal of Open Source Software},
+  volume={10},
+  number={116},
+  pages={9361},
+  year={2025},
+  month={12},
+  publisher={The Open Journal},
+  doi={10.21105/joss.09361}
+}
+```
+In addition, you can also refer to DispersiveShallowWater.jl directly as
+```bibtex
+@misc{lampert2025dispersiveshallowwater,
   title={{D}ispersive{S}hallow{W}ater.jl: {S}tructure-preserving numerical
          methods for dispersive shallow water models},
   author={Lampert, Joshua and Wittenstein, Collin and Ranocha, Hendrik},
