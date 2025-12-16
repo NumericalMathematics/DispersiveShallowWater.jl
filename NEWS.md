@@ -9,6 +9,8 @@ for human readability.
 
 #### Changed
 
+- The argument `plot_initial` in the plotting functions now always plots the initial condition at time `t = first(tspan)`.
+  To plot the analytical solution at the current time step, use `plot_analytical` instead ([#277]).
 - Changed the `default_example()` from a BBM-BBM setup to a physically more relevant Serre-Green-Naghdi setup ([#276]).
 
 ## Changes in the v0.8 lifecycle
