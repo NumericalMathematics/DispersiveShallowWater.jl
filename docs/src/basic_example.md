@@ -194,7 +194,8 @@ using Plots
 plot(semi => sol)
 
 anim = @animate for step in 1:length(sol.u)
-    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1))
+    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1),
+         plot_title = @sprintf "BBM-BBM equations at t = %.2f" sol.t[step])
 end
 gif(anim, "shoaling_solution.gif", fps = 25)
 ```

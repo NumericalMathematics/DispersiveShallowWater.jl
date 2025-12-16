@@ -129,7 +129,7 @@ anim = @animate for step in eachindex(sol.u)
     eta, = sol.u[step].x
     scatter!([x_t], [eta[index]],
              color = :green, label = nothing)
-    plot!(semi => sol, plot_initial = true, plot_bathymetry = false,
+    plot!(semi => sol, plot_analytical = true, plot_bathymetry = false,
           conversion = waterheight_total, step = step, legend = :topleft, linewidth = 2,
           plot_title = @sprintf("t = %.3f", t), yrange = (eta0 - 0.03, eta0 + 0.03),
           linestyles = [:solid :dot], labels = ["Euler" "Svärd-Kalisch"],
