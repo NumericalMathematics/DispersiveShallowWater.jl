@@ -5,6 +5,12 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+## Changes when updating to v0.9 from v0.8.x
+
+#### Changed
+
+- Changed the `default_example()` from a BBM-BBM setup to a physically more relevant Serre-Green-Naghdi setup ([#276]).
+
 ## Changes in the v0.8 lifecycle
 
 #### Added
