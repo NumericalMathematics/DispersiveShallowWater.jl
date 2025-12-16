@@ -44,7 +44,7 @@ See also [`examples_dir`](@ref) and [`get_examples`](@ref).
 Copied from [Trixi.jl](https://github.com/trixi-framework/Trixi.jl).
 """
 function default_example()
-    joinpath(examples_dir(), "bbm_bbm_1d", "bbm_bbm_1d_basic.jl")
+    joinpath(examples_dir(), "serre_green_naghdi_1d", "serre_green_naghdi_soliton.jl")
 end
 
 """

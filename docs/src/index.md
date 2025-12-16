@@ -59,7 +59,7 @@ In the Julia REPL, first load the package [DispersiveShallowWater.jl](https://gi
 julia> using DispersiveShallowWater
 ```
 
-You can run a basic simulation that solves the BBM-BBM equations by executing
+You can run a basic simulation that solves the Serre-Green-Naghdi equations by executing
 
 ```julia
 julia> include(default_example());
