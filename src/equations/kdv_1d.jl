@@ -50,7 +50,7 @@ end
 
 function KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
     eta0 == 0.0 || @warn "The still-water surface needs to be 0 for the KdV equations"
-    KdVEquation1D(gravity, D, eta0)
+    return KdVEquation1D(gravity, D, eta0)
 end
 
 function check_solver(::KdVEquation1D, solver, boundary_conditions)

@@ -21,6 +21,7 @@ function Base.show(io::IO, cb::DiscreteCallback{<:Any, <:RelaxationCallback})
     relaxation_callback = cb.affect!
     @unpack invariant = relaxation_callback
     print(io, "RelaxationCallback(invariant=", string(nameof(invariant)), ")")
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain",
@@ -40,9 +41,9 @@ end
 function RelaxationCallback(; invariant)
     relaxation_callback = RelaxationCallback(invariant)
 
-    DiscreteCallback(relaxation_callback, relaxation_callback, # the first one is the condition, the second the affect!
-                     save_positions = (false, false),
-                     initialize = initialize!)
+    return DiscreteCallback(relaxation_callback, relaxation_callback, # the first one is the condition, the second the affect!
+                            save_positions = (false, false),
+                            initialize = initialize!)
 end
 
 function initialize!(cb::DiscreteCallback{Condition, Affect!}, u, t,

@@ -569,15 +569,16 @@ function solve_system_matrix!(dv, system_matrix, rhs,
                                                SerreGreenNaghdiEquations1D},
                               D1, cache, ::BoundaryConditionPeriodic)
     scale_by_mass_matrix!(rhs, D1)
-    solve_system_matrix!(dv, system_matrix, rhs, equations, D1, cache)
+    return solve_system_matrix!(dv, system_matrix, rhs, equations, D1, cache)
 end
 
 function solve_system_matrix!(dv, system_matrix, rhs,
                               equations::SvaerdKalischEquations1D,
                               D1, cache, ::BoundaryConditionReflecting)
     scale_by_mass_matrix!(rhs, D1)
-    solve_system_matrix!(dv, system_matrix, (@view rhs[(begin + 1):(end - 1)]), equations,
-                         D1, cache)
+    return solve_system_matrix!(dv, system_matrix, (@view rhs[(begin + 1):(end - 1)]),
+                                equations,
+                                D1, cache)
 end
 
 function solve_system_matrix!(dv, system_matrix, rhs,
@@ -585,7 +586,7 @@ function solve_system_matrix!(dv, system_matrix, rhs,
                               D1, cache, ::BoundaryConditionReflecting)
     scale_by_mass_matrix!(rhs, D1)
     rhs[begin] = rhs[end] = 0
-    solve_system_matrix!(dv, system_matrix, rhs, equations, D1, cache)
+    return solve_system_matrix!(dv, system_matrix, rhs, equations, D1, cache)
 end
 
 function solve_system_matrix!(dv, system_matrix, rhs,
@@ -611,7 +612,7 @@ function solve_system_matrix!(dv, system_matrix, rhs,
 end
 
 function solve_system_matrix!(dv, system_matrix, ::Union{BBMEquation1D, BBMBBMEquations1D})
-    ldiv!(system_matrix, dv)
+    return ldiv!(system_matrix, dv)
 end
 
 # To match the experimental data from Dingemans, the initial condition needs to be shifted

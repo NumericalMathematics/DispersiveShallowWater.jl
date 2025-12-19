@@ -15,6 +15,7 @@ end
 
 function Base.show(io::IO, disp_rel::LinearDispersionRelation)
     print(io, "LinearDispersionRelation(h0 = ", disp_rel.ref_height, ")")
+    return nothing
 end
 
 Base.broadcastable(disp_rel::LinearDispersionRelation) = (disp_rel,)

@@ -37,6 +37,7 @@ function Base.show(io::IO, cb::DiscreteCallback{<:Any, <:AnalysisCallback})
     analysis_callback = cb.affect!
     @unpack interval = analysis_callback
     print(io, "AnalysisCallback(interval=", interval, ")")
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain",
@@ -62,7 +63,7 @@ end
 
 function AnalysisCallback(semi::Semidiscretization; kwargs...)
     mesh, equations, solver = mesh_equations_solver(semi)
-    AnalysisCallback(mesh, equations, solver; kwargs...)
+    return AnalysisCallback(mesh, equations, solver; kwargs...)
 end
 
 function AnalysisCallback(mesh, equations::AbstractEquations, solver;
@@ -96,9 +97,9 @@ function AnalysisCallback(mesh, equations::AbstractEquations, solver;
                                          Vector{Vector{real(solver)}}(),
                                          io)
 
-    DiscreteCallback(condition, analysis_callback,
-                     save_positions = (false, false),
-                     initialize = initialize!)
+    return DiscreteCallback(condition, analysis_callback,
+                            save_positions = (false, false),
+                            initialize = initialize!)
 end
 
 """
@@ -318,7 +319,7 @@ end
 # terminate the type-stable iteration over tuples
 function analyze_integrals!(io, current_integrals, i, analysis_integrals::Tuple{}, q, t,
                             semi)
-    nothing
+    return nothing
 end
 
 # used for error checks and EOC analysis
@@ -333,7 +334,7 @@ function (cb::DiscreteCallback{Condition, Affect!})(sol) where {Condition,
 end
 
 function analyze!(semi::Semidiscretization, quantity, q, t)
-    integrate_quantity!(semi.cache.tmp1, quantity, q, semi)
+    return integrate_quantity!(semi.cache.tmp1, quantity, q, semi)
 end
 
 pretty_form_utf(::typeof(waterheight)) = "∫h"

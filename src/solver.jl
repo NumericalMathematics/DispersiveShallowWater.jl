@@ -46,7 +46,7 @@ struct Solver{RealT <: Real,
             @assert derivative_order(D3) == 3
         end
 
-        new(D1, D2, D3)
+        return new(D1, D2, D3)
     end
 end
 
@@ -69,7 +69,7 @@ function Solver(mesh, accuracy_order)
     D2 = periodic_derivative_operator(2, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
     D3 = periodic_derivative_operator(3, accuracy_order + 2, mesh.xmin, mesh.xmax, mesh.N)
     @assert real(D1) == real(D2)
-    Solver{real(D1), typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
+    return Solver{real(D1), typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
 end
 
 # Also allow to pass custom SBP operators (for convenience without explicitly specifying the type)
@@ -89,11 +89,12 @@ function Solver(D1::AbstractDerivativeOperator{RealT},
                           Nothing} = nothing,
                 D3::Union{AbstractDerivativeOperator{RealT}, AbstractMatrix{RealT},
                           Nothing} = nothing) where {RealT}
-    Solver{RealT, typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
+    return Solver{RealT, typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)
 end
 
 function Base.show(io::IO, solver::Solver{RealT}) where {RealT}
     print(io, "Solver{", RealT, "}")
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", solver::Solver{RealT}) where {RealT}
@@ -125,7 +126,7 @@ grid(solver::Solver) = grid(solver.D1)
     # compiler for standard `Array`s but not necessarily for more
     # advanced array types such as `PtrArray`s, cf.
     # https://github.com/JuliaSIMD/VectorizationBase.jl/issues/55
-    SVector(ntuple(@inline(v->q.x[v][indices...]), Val(nvariables(equations))))
+    return SVector(ntuple(@inline(v->q.x[v][indices...]), Val(nvariables(equations))))
 end
 
 @inline function set_node_vars!(q, q_node, equations, indices...)

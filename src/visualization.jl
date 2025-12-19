@@ -158,23 +158,25 @@ end
 @recipe function f(semisol::Pair{<:Semidiscretization, <:ODESolution}; plot_initial = false,
                    plot_analytical = false, plot_bathymetry = true, conversion = prim2phys,
                    step = -1)
-    PlotData(semisol, plot_initial, plot_analytical, plot_bathymetry, conversion, step)
+    return PlotData(semisol, plot_initial, plot_analytical, plot_bathymetry, conversion,
+                    step)
 end
 
 @recipe function f(semi::Semidiscretization, sol::ODESolution; plot_initial = false,
                    plot_analytical = false, plot_bathymetry = true, conversion = prim2phys,
                    step = -1)
-    PlotData(semi => sol, plot_initial, plot_analytical, plot_bathymetry, conversion, step)
+    return PlotData(semi => sol, plot_initial, plot_analytical, plot_bathymetry, conversion,
+                    step)
 end
 
 @recipe function f(semisol::Pair{<:Semidiscretization, <:ODESolution}, x_value;
                    conversion = prim2phys)
-    PlotDataOverTime(semisol, x_value, conversion)
+    return PlotDataOverTime(semisol, x_value, conversion)
 end
 
 @recipe function f(semi::Semidiscretization, sol::ODESolution, x_value;
                    conversion = prim2phys)
-    PlotDataOverTime(semi => sol, x_value, conversion)
+    return PlotDataOverTime(semi => sol, x_value, conversion)
 end
 
 function pretty_form_utf(name)

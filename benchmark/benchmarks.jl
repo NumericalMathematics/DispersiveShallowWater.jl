@@ -23,6 +23,7 @@ for elixir in elixirs
     println("Running $benchname...")
     redirect_stdout(devnull) do
         trixi_include(@__MODULE__, elixir, tspan = (0.0, 1e-11))
+        return nothing
     end
     SUITE[benchname] = @benchmarkable DispersiveShallowWater.rhs!($(similar(sol.u[end])),
                                                                   $(copy(sol.u[end])),

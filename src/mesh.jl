@@ -11,7 +11,7 @@ struct Mesh1D{RealT}
     function Mesh1D{RealT}(xmin::RealT, xmax::RealT, N::Int) where {RealT}
         @assert xmin < xmax
         @assert N > 0
-        new(xmin, xmax, N)
+        return new(xmin, xmax, N)
     end
 end
 
@@ -22,11 +22,12 @@ Create a simple homogeneous one-dimensional mesh from `xmin` to `xmax` with `N` 
 """
 function Mesh1D(xmin, xmax, N)
     xmin, xmax = promote(xmin, xmax)
-    Mesh1D{typeof(xmin)}(xmin, xmax, N)
+    return Mesh1D{typeof(xmin)}(xmin, xmax, N)
 end
 
 function Base.show(io::IO, mesh::Mesh1D{RealT}) where {RealT}
     print(io, "Mesh1D{", RealT, "} with length ", mesh.N)
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", mesh::Mesh1D{RealT}) where {RealT}

@@ -72,7 +72,7 @@ const SvärdKalischEquations1D = SvaerdKalischEquations1D
 
 function SvaerdKalischEquations1D(; bathymetry_type = bathymetry_variable, gravity,
                                   eta0 = 0.0, alpha = 0.0, beta = 1 / 3, gamma = 0.0)
-    SvaerdKalischEquations1D(bathymetry_type, gravity, eta0, alpha, beta, gamma)
+    return SvaerdKalischEquations1D(bathymetry_type, gravity, eta0, alpha, beta, gamma)
 end
 
 function check_solver(::SvaerdKalischEquations1D, solver, ::BoundaryConditionPeriodic)
