@@ -127,9 +127,13 @@ nothing # hide
 
 ![shoaling solution](shoaling_solution.png)
 
-By default, this will plot the bathymetry, but not the initial (analytical) solution.
+By default, this will plot the bathymetry, but neither the initial nor the analytical solution.
 
-You can adjust this by passing the boolean values `plot_bathymetry` (if `true`, always plot bathymetry in the first subplot) and `plot_initial`. Note that `plot_initial = true` will evaluate and plot the initial condition function at the same time `t` as the numerical solution being displayed (the final time by default). This means if your initial condition function represents an analytical solution, setting `plot_initial = true` will plot the analytical solution at that specific time for comparison.
+You can adjust this by passing the boolean values `plot_bathymetry` (if `true`, always plot bathymetry in the first subplot),
+`plot_initial`, and `plot_analytical`. Note that `plot_analytical = true` will evaluate and plot the initial condition function
+at the same time `t` as the numerical solution being displayed (the final time by default). This means if your initial condition
+function represents an analytical solution, setting `plot_analytical = true` will plot the analytical solution at that specific
+time for comparison. On the other hand, `plot_initial = true` will always plot the initial condition at time `t = first(tspan)`.
 
 Plotting an animation over time can, e.g., be done by the following command, which uses `step` to plot the solution at a specific time step. Here `conversion = waterheight_total` makes it so that we only look at the total water height ``\eta`` and not also the velocity ``v``. More on tutorials for plotting can be found in the chapter [Plotting Simulation Results](@ref plotting).
 
@@ -190,7 +194,8 @@ using Plots
 plot(semi => sol)
 
 anim = @animate for step in 1:length(sol.u)
-    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1))
+    plot(semi => sol, plot_initial = true, conversion = waterheight_total, step = step, xlims = (-50, 20), ylims = (-0.8, 0.1),
+         plot_title = @sprintf "BBM-BBM equations at t = %.2f" sol.t[step])
 end
 gif(anim, "shoaling_solution.gif", fps = 25)
 ```

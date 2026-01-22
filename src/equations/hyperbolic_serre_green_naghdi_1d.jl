@@ -98,7 +98,7 @@ function HyperbolicSerreGreenNaghdiEquations1D(; bathymetry_type = bathymetry_mi
                                                gravity,
                                                eta0 = 0.0,
                                                lambda)
-    HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type, gravity, eta0, lambda)
+    return HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type, gravity, eta0, lambda)
 end
 
 function varnames(::typeof(prim2prim), ::HyperbolicSerreGreenNaghdiEquations1D)

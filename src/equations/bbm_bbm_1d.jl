@@ -61,7 +61,7 @@ end
 function BBMBBMEquations1D(; bathymetry_type = bathymetry_variable,
                            gravity, eta0 = 0.0)
     eta0 == 0.0 || @warn "The still-water surface needs to be 0 for the BBM-BBM equations"
-    BBMBBMEquations1D(bathymetry_type, gravity, eta0)
+    return BBMBBMEquations1D(bathymetry_type, gravity, eta0)
 end
 
 function check_solver(::BBMBBMEquations1D, solver, boundary_conditions)

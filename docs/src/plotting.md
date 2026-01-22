@@ -47,7 +47,7 @@ nothing # hide
 
 ## Variable Conversion and Visualization Options
 
-The plotting system supports different variable conversions and visualization options. By default, the physical variables (returned by [`prim2phys`](@ref)) are plotted. For hyperbolic approximations like [`HyperbolicSerreGreenNaghdiEquations1D`](@ref), this means auxiliary variables are not plotted by default - only the physical variables from the limit system.
+The plotting system supports different variable conversions and visualization options. By default, the physical variables (returned by [`prim2phys`](@ref)) are plotted. For hyperbolic approximations like [`HyperbolicSerreGreenNaghdiEquations1D`](@ref), this means auxiliary variables are not plotted by default – only the physical variables from the limit system.
 
 You can plot conservative variables, specific physical quantities, and control what additional information is displayed:
 
@@ -59,8 +59,8 @@ using Plots
 
 t = 13.37 # plot solution at (roughly) t = 13.37s
 step_idx = argmin(abs.(saveat .- t)) # get the closest point to 13.37
-p1 = plot(semi => sol, conversion = prim2prim, plot_bathymetry = false,
-          suptitle = "Primitive Variables", step = step_idx)
+p1 = plot(semi => sol, conversion = prim2prim, plot_bathymetry = false, plot_analytical = true,
+          suptitle = "Primitive Variables with Analytical Solution", step = step_idx)
 p2 = plot(semi => sol, conversion = prim2cons, plot_bathymetry = false,
           suptitle = "Conservative Variables", step = step_idx)
 p3 = plot(semi => sol, conversion = waterheight_total, plot_bathymetry = true,
@@ -75,8 +75,9 @@ nothing # hide
 
 ![variable conversions](variable_conversions.png)
 
-Note that the argument `plot_initial = true` plots the initial condition evaluated at the selected time step, which means that the analytical solution is plotted if the initial condition
-function describes an exact solution that varies with time.
+Note that the argument `plot_analytical = true` plots the initial condition evaluated at the selected time step, which means
+that the analytical solution is plotted if the initial condition function describes an exact solution that varies with time.
+Similarly, `plot_initial = true` always plots the initial condition at time `t = first(tspan)`.
 
 ## Time Series Analysis at Spatial Points
 

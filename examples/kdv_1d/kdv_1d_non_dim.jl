@@ -3,7 +3,7 @@ using DispersiveShallowWater
 using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 
 ###############################################################################
-# Semidiscretization of the KdV equation 
+# Semidiscretization of the KdV equation
 
 function initial_condition_non_dimensional(x, t, equations::KdVEquation1D, mesh)
     c = 1 / 3
@@ -56,4 +56,4 @@ sol = solve(ode, Tsit5(), abstol = 1e-8, reltol = 1e-8,
             save_everystep = false, callback = callbacks, saveat = saveat)
 
 # Plot the solution transformed back to non dimensional variables.
-# plot(semi => sol, conversion = prim2nondim, plot_initial = true)
+# plot(semi => sol, conversion = prim2nondim, plot_analytical = true)
