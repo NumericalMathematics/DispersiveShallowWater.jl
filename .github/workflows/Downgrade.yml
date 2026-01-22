@@ -52,6 +52,7 @@ jobs:
         with:
           skip: LinearAlgebra,Printf,SparseArrays,DelimitedFiles,Test
           projects: ., test
+          mode: forcedeps
       - uses: julia-actions/julia-buildpkg@v1
         env:
           PYTHON: ""
