@@ -57,7 +57,7 @@ function (relaxation_callback::RelaxationCallback)(u, t, integrator)
 end
 
 # This method is called as callback during the time integration.
-@inline function (relaxation_callback::RelaxationCallback)(integrator)
+@inline function (relaxation_callback::RelaxationCallback)(integrator::DiffEqBase.DEIntegrator)
     semi = integrator.p
     told = integrator.tprev
     qold = integrator.uprev
@@ -117,7 +117,7 @@ end
         end
 
         if terminate_integration
-            terminate!(integrator)
+            DiffEqBase.terminate!(integrator)
         end
     end
     return nothing
