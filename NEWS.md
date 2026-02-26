@@ -5,6 +5,12 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+## Changes when updating to v0.10 from v0.9.x
+
+#### Changed
+
+- `convergence_test` now returns the complete convergence orders. To obtain the mean convergence rates, use `DispersiveShallowWater.calc_mean_convergence` on the convergence orders ([#285]).
+
 ## Changes when updating to v0.9 from v0.8.x
 
 #### Changed
