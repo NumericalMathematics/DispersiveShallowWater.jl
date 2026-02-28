@@ -540,19 +540,21 @@ end
 
     accuracy_orders = [2, 4, 6]
     for accuracy_order in accuracy_orders
-        eoc_mean_values, _ = convergence_test(@__MODULE__, default_example(), 2, N = 256,
-                                              tspan = (0.0, 1.0),
-                                              accuracy_order = accuracy_order)
+        eocs, _ = convergence_test(@__MODULE__, default_example(), 2, N = 256,
+                                   tspan = (0.0, 1.0),
+                                   accuracy_order = accuracy_order)
+        eoc_mean_values = DispersiveShallowWater.calc_mean_convergence(eocs)
         @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:linf][1], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:l2][2], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:linf][2], accuracy_order, atol = 0.5)
 
-        eoc_mean_values2, _ = convergence_test(@__MODULE__, default_example(), [256, 512],
-                                               tspan = (0.0, 1.0),
-                                               accuracy_order = accuracy_order)
+        eocs2, _ = convergence_test(@__MODULE__, default_example(), [256, 512],
+                                    tspan = (0.0, 1.0),
+                                    accuracy_order = accuracy_order)
+        eoc_mean_values2 = DispersiveShallowWater.calc_mean_convergence(eocs2)
         for kind in (:l2, :linf), variable in (1, 2)
-            eoc_mean_values[kind][variable] == eoc_mean_values2[kind][variable]
+            @test eoc_mean_values[kind][variable] == eoc_mean_values2[kind][variable]
         end
     end
 end
