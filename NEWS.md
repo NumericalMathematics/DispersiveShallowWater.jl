@@ -9,6 +9,8 @@ for human readability.
 
 #### Changed
 
+- There are no default boundary conditions anymore in `Semidiscretization`.
+  Users now have to explicitly provide boundary conditions via the `boundary_conditions` keyword argument, which were periodic by default before ([#286]).
 - `convergence_test` now returns the complete convergence orders. To obtain the mean convergence rates, use `DispersiveShallowWater.calc_mean_convergence` on the convergence orders ([#285]).
 
 ## Changes when updating to v0.9 from v0.8.x
