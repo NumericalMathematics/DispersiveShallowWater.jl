@@ -89,7 +89,7 @@ end
     mesh = Mesh1D(-138, 46, 10)
     solver = Solver(mesh, 4)
     semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver;
-                                   boundary_conditions = boundary_conditions)
+                                   boundary_conditions = boundary_conditions_periodic)
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
 end
 
