@@ -88,31 +88,33 @@ end
     initial_condition = initial_condition_dingemans
     mesh = Mesh1D(-138, 46, 10)
     solver = Solver(mesh, 4)
-    semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver)
+    semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver;
+                                   boundary_conditions = boundary_condition)
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
 end
 
 @testitem "Solver consistency" setup=[Setup, AdditionalImports] begin
     mesh = Mesh1D(-1.0, 1.0, 10)
     initial_condition = initial_condition_convergence_test
+    boundary_conditions = boundary_condition_periodic
     D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
     solver = Solver(D1)
 
     equations = KdVEquation1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver; boundary_conditions = boundary_conditions)
 
     equations = BBMEquation1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver; boundary_conditions = boundary_conditions)
 
     equations = BBMBBMEquations1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver; boundary_conditions = boundary_conditions)
 
     equations = SvaerdKalischEquations1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver; boundary_conditions = boundary_conditions)
 end
 
 @testitem "Boundary conditions" setup=[Setup] begin
