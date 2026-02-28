@@ -102,19 +102,23 @@ end
 
     equations = KdVEquation1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver; boundary_conditions = boundary_conditions)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 
     equations = BBMEquation1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver; boundary_conditions = boundary_conditions)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 
     equations = BBMBBMEquations1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver; boundary_conditions = boundary_conditions)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 
     equations = SvaerdKalischEquations1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver; boundary_conditions = boundary_conditions)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 end
 
 @testitem "Boundary conditions" setup=[Setup] begin
