@@ -58,7 +58,7 @@ ode = semidiscretize(semi, tspan)
 # terminal.
 io = stdout
 summary_callback = SummaryCallback(io)
-analysis_callback = AnalysisCallback(semi; interval = 10, io,
+analysis_callback = AnalysisCallback(semi; interval = 100, io,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  momentum,

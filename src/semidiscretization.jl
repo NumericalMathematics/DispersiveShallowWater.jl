@@ -43,7 +43,7 @@ end
 """
     Semidiscretization(mesh, equations, initial_condition, solver;
                        source_terms=nothing,
-                       boundary_conditions=boundary_condition_periodic,
+                       boundary_conditions,
                        RealT=real(solver),
                        uEltype=RealT,
                        initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
@@ -53,7 +53,7 @@ Construct a semidiscretization of a PDE.
 """
 function Semidiscretization(mesh, equations, initial_condition, solver;
                             source_terms = nothing,
-                            boundary_conditions = boundary_condition_periodic,
+                            boundary_conditions,
                             # `RealT` is used as real type for node locations etc.
                             # while `uEltype` is used as element type of solutions etc.
                             RealT = real(solver), uEltype = RealT,

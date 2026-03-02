@@ -45,7 +45,7 @@ tspan = (0.0, 50.0)
 ode = semidiscretize(semi, tspan)
 
 summary_callback = SummaryCallback()
-analysis_callback = AnalysisCallback(semi; interval = 100,
+analysis_callback = AnalysisCallback(semi; interval = 2000,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  waterheight, entropy))
