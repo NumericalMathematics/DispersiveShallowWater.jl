@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Experimental Data · DispersiveShallowWater.jl</title><meta name="title" content="Experimental Data · DispersiveShallowWater.jl"/><meta property="og:title" content="Experimental Data · DispersiveShallowWater.jl"/><meta property="twitter:title" content="Experimental Data · DispersiveShallowWater.jl"/><meta name="description" content="Documentation for DispersiveShallowWater.jl."/><meta property="og:description" content="Documentation for DispersiveShallowWater.jl."/><meta property="twitter:description" content="Documentation for DispersiveShallowWater.jl."/><meta property="og:url" content="https://NumericalMathematics.github.io/DispersiveShallowWater.jl/stable/dingemans/"/><meta property="twitter:url" content="https://NumericalMathematics.github.io/DispersiveShallowWater.jl/stable/dingemans/"/><link rel="canonical" href="https://NumericalMathematics.github.io/DispersiveShallowWater.jl/stable/dingemans/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="DispersiveShallowWater.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">DispersiveShallowWater.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../overview/">Overview</a></li><li><a class="tocitem" href="../basic_example/">Basic Example</a></li><li><a class="tocitem" href="../SBP_Operators/">Summation-by-Parts Operators</a></li><li><a class="tocitem" href="../dispersion/">Dispersion</a></li><li><a class="tocitem" href="../solvers/">Using Different Solvers</a></li><li><a class="tocitem" href="../callbacks/">Callbacks and Relaxation</a></li><li><a class="tocitem" href="../plotting/">Plotting</a></li><li class="is-active"><a class="tocitem" href>Experimental Data</a><ul class="internal"><li><a class="tocitem" href="#Experimental-Setup"><span>Experimental Setup</span></a></li><li><a class="tocitem" href="#Numerical-Simulation"><span>Numerical Simulation</span></a></li><li><a class="tocitem" href="#Visualization-of-Temporal-Evolution"><span>Visualization of Temporal Evolution</span></a></li><li><a class="tocitem" href="#Comparison-with-Experimental-Data"><span>Comparison with Experimental Data</span></a></li><li><a class="tocitem" href="#overview-plain-program-dingemans"><span>Plain program</span></a></li></ul></li><li><a class="tocitem" href="../development/">Development</a></li><li><a class="tocitem" href="../ref/">Reference</a></li><li><a class="tocitem" href="../changelog/">Changelog</a></li><li><a class="tocitem" href="../contributing/">Contributing</a></li><li><a class="tocitem" href="../code_of_conduct/">Code of Conduct</a></li><li><a class="tocitem" href="../license/">License</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Experimental Data</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Experimental Data</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/NumericalMathematics/DispersiveShallowWater.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/NumericalMathematics/DispersiveShallowWater.jl/blob/main/docs/src/dingemans.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="dingemans"><a class="docs-heading-anchor" href="#dingemans">Dingemans Experiment</a><a id="dingemans-1"></a><a class="docs-heading-anchor-permalink" href="#dingemans" title="Permalink"></a></h1><p>The Dingemans experiment provides a classic benchmark for validating dispersive shallow water models against experimental data. This experiment, conducted by Dingemans in 1994 , simulates waves generated by a wave maker that propagate over a varying underwater topography (bathymetry). See more at <sup class="footnote-reference"><a id="citeref-Dingemans1994" href="#footnote-Dingemans1994" class="footnote-ref">[Dingemans1994]</a><span class="footnote-preview" id="fn-Dingemans1994"></span></sup> and <sup class="footnote-reference"><a id="citeref-Dingemans1997" href="#footnote-Dingemans1997" class="footnote-ref">[Dingemans1997]</a><span class="footnote-preview" id="fn-Dingemans1997"></span></sup></p><h2 id="Experimental-Setup"><a class="docs-heading-anchor" href="#Experimental-Setup">Experimental Setup</a><a id="Experimental-Setup-1"></a><a class="docs-heading-anchor-permalink" href="#Experimental-Setup" title="Permalink"></a></h2><p>The experiment features waves with a small amplitude (A = 0.02) that encounter a trapezoidal bathymetry profile. The bottom topography starts flat, then rises to form an underwater &quot;hill&quot; before descending back to the original depth. This setup tests how well different dispersive wave models can capture the complex wave transformations that occur when waves interact with varying bottom topography.</p><p>The bathymetry profile consists of:</p><ul><li>A flat section from the wave maker to x = 11.01</li><li>A linearly increasing slope from x = 11.01 to x = 23.04 (maximum height of 0.6)</li><li>A flat plateau from x = 23.04 to x = 27.04</li><li>A linearly decreasing slope from x = 27.04 to x = 33.07</li><li>A flat section beyond x = 33.07</li></ul><p>This configuration allows researchers to study wave shoaling (changes in wave characteristics due to depth variations), which is crucial for understanding coastal wave dynamics.</p><h2 id="Numerical-Simulation"><a class="docs-heading-anchor" href="#Numerical-Simulation">Numerical Simulation</a><a id="Numerical-Simulation-1"></a><a class="docs-heading-anchor-permalink" href="#Numerical-Simulation" title="Permalink"></a></h2><p>Let&#39;s implement the Dingemans experiment and compare the performance of different dispersive shallow water models available in <a href="https://github.com/NumericalMathematics/DispersiveShallowWater.jl">DispersiveShallowWater.jl</a>.</p><p>First, we load the necessary packages:</p><pre><code class="language-julia hljs">using DispersiveShallowWater, SummationByPartsOperators, SparseArrays, OrdinaryDiffEqTsit5, Plots</code></pre><p>Next, we set up the different equation systems we want to compare:</p><pre><code class="language-julia hljs"># BBM-BBM equations with variable bathymetry
+bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
+                           gravity = 9.81, eta0 = 0.0)
+
+# Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
+sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
+                              beta = 0.49292929292929294, gamma = 0.15707070707070708)
+
+# Serre-Green-Naghdi equations with variable bathymetry
+sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
+                                  gravity = 9.81, eta0 = 0.8)
+
+# Hyperbolic approximation of Serre-Green-Naghdi equations
+hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
+                                              lambda = 200.0, gravity = 9.81, eta0 = 0.8)
+                                              # for actual simulations a higher lambda (~500) is recommended
+                                              # it is chosen so low to be able to see the difference between it
+                                              # and the SGN equation.</code></pre><p>The initial condition <a href="../ref/#DispersiveShallowWater.initial_condition_dingemans-Tuple{Any, Any, BBMBBMEquations1D, Any}"><code>initial_condition_dingemans</code></a> provided by <a href="https://github.com/NumericalMathematics/DispersiveShallowWater.jl">DispersiveShallowWater.jl</a> automatically sets up the trapezoidal bathymetry and initial wave field.</p><pre><code class="language-julia hljs">initial_condition = initial_condition_dingemans
+boundary_conditions = boundary_condition_periodic</code></pre><p>We create a computational domain that is large enough to contain the entire experimental setup, with the wave maker positioned appropriately. Especially, we extend the domain to the left, such that the waves entering the domain on the left due to the periodic boundary conditions, do not interfere with the original wave train.</p><pre><code class="language-julia hljs">coordinates_min = -138.0
+coordinates_max = 46.0
+N = 1024
+mesh = Mesh1D(coordinates_min, coordinates_max, N)</code></pre><p>For the spatial discretization, we use sixth-order accurate <a href="../SBP_Operators/#sbp_operators">summation-by-parts operators</a>. Specifically, <a href="../SBP_Operators/#upwind_sbp">upwind SBP operators</a> are utilized for all equation systems except the hyperbolic Serre-Green-Naghdi equations. The hyperbolic Serre-Green-Naghdi equations involve only first derivatives, making central discretization appropriate, whereas the other models include higher-order derivatives that benefit from the upwind approach. It is important to note that when odd-order upwind operators are applied symmetrically to construct a central second-derivative operator, the resulting operator achieves one order higher accuracy (since it is even).</p><pre><code class="language-julia hljs">accuracy_order = 6
+solver_central = Solver(mesh, accuracy_order)
+
+D1 = upwind_operators(periodic_derivative_operator;
+                      derivative_order=1,
+                      accuracy_order=accuracy_order - 1,
+                      xmin=xmin(mesh), xmax=xmax(mesh),
+                      N=nnodes(mesh))
+D2 = sparse(D1.plus) * sparse(D1.minus)
+solver_upwind = Solver(D1, D2)</code></pre><p>We set up the time integration parameters. The experiment runs for a relatively long time to observe the full wave propagation and interaction with the bathymetry:</p><pre><code class="language-julia hljs">tspan = (0.0, 70.0)
+saveat = range(tspan..., length = 500)</code></pre><p>Now we create semidiscretizations for each equation system. Each semidiscretization bundles the mesh, equations, initial condition, solver, and boundary conditions:</p><pre><code class="language-julia hljs">semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
+                                 boundary_conditions = boundary_conditions)
+semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
+                             boundary_conditions = boundary_conditions)
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
+                              boundary_conditions = boundary_conditions)
+semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
+                                boundary_conditions = boundary_conditions)</code></pre><p>We convert each semidiscretization to an ODE problem and solve it using the <code>Tsit5</code> time integrator:</p><pre><code class="language-julia hljs">ode_bbmbbm = semidiscretize(semi_bbmbbm, tspan)
+ode_sk = semidiscretize(semi_sk, tspan)
+ode_sgn = semidiscretize(semi_sgn, tspan)
+ode_hysgn = semidiscretize(semi_hysgn, tspan)
+
+options = (; abstol = 1e-7, reltol = 1e-7, save_everystep = false, saveat = saveat)
+sol_bbmbbm = solve(ode_bbmbbm, Tsit5(); options...)
+sol_sk = solve(ode_sk, Tsit5(); options...)
+sol_sgn = solve(ode_sgn, Tsit5(); options...)
+sol_hysgn = solve(ode_hysgn, Tsit5(); options...)</code></pre><h2 id="Visualization-of-Temporal-Evolution"><a class="docs-heading-anchor" href="#Visualization-of-Temporal-Evolution">Visualization of Temporal Evolution</a><a id="Visualization-of-Temporal-Evolution-1"></a><a class="docs-heading-anchor-permalink" href="#Visualization-of-Temporal-Evolution" title="Permalink"></a></h2><p>For proper comparison, we need to account for the fact that the BBM-BBM equations use a different reference level (<span>$\eta_0 = 0$</span>) compared to the other equations. We create a custom conversion function which allows us to easily shift the BBM-BBM results:</p><pre><code class="language-julia hljs"># BBM-BBM equations need to be translated vertically for comparison
+shifted_waterheight(q, equations) = waterheight_total(q, equations) + 0.8
+DispersiveShallowWater.varnames(::typeof(shifted_waterheight), equations) = (&quot;η&quot;,)</code></pre><p>Finally, we create comparison plots at four different time instances to observe how the waves evolve as they interact with the bathymetry:</p><pre><code class="language-julia hljs"># Define parameters
+times = [14.0, 28.0, 42.0, 70.0]
+y_limits = (-0.03, 0.87)
+
+# Model configurations: (semidiscretization, solution, label, conversion_function, linestyle)
+models = [
+    (semi_bbmbbm, sol_bbmbbm, &quot;BBM-BBM&quot;, shifted_waterheight, :solid),
+    (semi_sk, sol_sk, &quot;Svärd-Kalisch&quot;, waterheight_total, :dashdotdot),
+    (semi_sgn, sol_sgn, &quot;Serre-Green-Naghdi&quot;, waterheight_total, :dot),
+    (semi_hysgn, sol_hysgn, &quot;Hyperbolic Serre-Green-Naghdi&quot;, waterheight_total, :dashdot)
+]
+
+# Create snapshot plots for each time
+snapshot_plots = []
+for time_val in times
+    step_idx = argmin(abs.(saveat .- time_val)) # get the closest point to the time_val
+    p = plot(title=&quot;t = $time_val&quot;, ylims=y_limits)
+
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi =&gt; sol,
+              step=step_idx,
+              label=label,
+              conversion=conversion,
+              plot_bathymetry=true,
+              legend=false,
+              title=&quot;Dingemans at t = $(time_val)&quot;,
+              suptitle=&quot;&quot;,
+              linewidth=[2 1], # 1 for the bathymetry
+              linestyles=[linestyle :solid], # :solid for the bathymetry
+              color=[i :black], # black for the bathymetry
+        )
+    end
+
+    push!(snapshot_plots, p)
+end
+
+# Create legend plot
+legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
+
+for (i, (_, _, label, _, linestyle)) in enumerate(models)
+    plot!(legend_plot, [], [], label=label, linestyles=linestyle, linewidth=2, color=i)
+end
+legend_plot_bathymetry = plot(legend_plot, [], [], label=&quot;Bathymetry&quot;, color=:black,)
+
+xlims_zoom = [(-25, 15), (0, 40), (5, 45), (-100, -60)]
+snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75, 0.85), title=&quot;Zoomed in at t = $(times[i])&quot;) for i in 1:4]
+
+# Combine all plots
+all_plots = [snapshot_plots..., legend_plot_bathymetry, snapshot_plots_zoom...]
+plot(all_plots...,
+     size=(900, 1100),
+     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
+)</code></pre><p><img src="../dingemans_temporal.png" alt="Dingemans temporal"/></p><p>The results show how different dispersive wave models capture the wave evolution over the trapezoidal bathymetry.</p><h2 id="Comparison-with-Experimental-Data"><a class="docs-heading-anchor" href="#Comparison-with-Experimental-Data">Comparison with Experimental Data</a><a id="Comparison-with-Experimental-Data-1"></a><a class="docs-heading-anchor-permalink" href="#Comparison-with-Experimental-Data" title="Permalink"></a></h2><p>During the experiment of Dingemans, the wave evolution was recorded at six gauges along the flume. These measurements provide a reference for validating the numerical models. We compare the numerical results with the experimental data at the corresponding gauge locations.</p><pre><code class="language-julia hljs">t_values, x_values, experimental_data = data_dingemans()
+
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
+
+snapshot_plots_time = []
+for (j, x_val) in enumerate(x_values)
+    p = plot(t_values, experimental_data[:, j],
+             xlims=tlims[j],
+             ylims=(0.765, 0.865),
+             label=&quot;experimental data&quot;,
+             linestyle=:dash,
+             color=:gray,
+             markershape=:circle,
+             markercolor=:gray,
+             markersize=1
+        )
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi =&gt; sol, x_val,
+              conversion=conversion,
+              label=label,
+              linestyle=linestyle,
+              color=i,
+              suptitle=&quot;&quot;,
+              legend=false,
+              title=&quot;Gauge at x = $(x_val)&quot;,
+              linewidth=2
+        )
+
+    end
+
+    push!(snapshot_plots_time, p)
+
+end
+
+legend_plot_data = plot(legend_plot, [], [], label=&quot;experimental data&quot;, linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
+
+all_plots2 = [snapshot_plots_time..., legend_plot_data]
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.16h}]),
+     size=(900, 900), suptitle=&quot;&quot;)</code></pre><p><img src="../dingemans_experimental.png" alt="Dingemans experimental"/></p><p>In this setup, the numerical results from the Svärd-Kalisch equations can capture the wave evolution more accurately compared to the other models.</p><h2 id="overview-plain-program-dingemans"><a class="docs-heading-anchor" href="#overview-plain-program-dingemans">Plain program</a><a id="overview-plain-program-dingemans-1"></a><a class="docs-heading-anchor-permalink" href="#overview-plain-program-dingemans" title="Permalink"></a></h2><p>Here follows a version of the program without any comments.</p><pre><code class="language-julia hljs">using DispersiveShallowWater, SummationByPartsOperators, SparseArrays, OrdinaryDiffEqTsit5, Plots
+
+# BBM-BBM equations with variable bathymetry
+bbmbbm = BBMBBMEquations1D(bathymetry_type = bathymetry_variable,
+                           gravity = 9.81, eta0 = 0.0)
+
+# Svärd-Kalisch equations with specific parameter set (optimized for small wave numbers)
+sk = SvaerdKalischEquations1D(gravity = 9.81, eta0 = 0.8, alpha = 0.0004040404040404049,
+                              beta = 0.49292929292929294, gamma = 0.15707070707070708)
+
+# Serre-Green-Naghdi equations with variable bathymetry
+sgn = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_variable,
+                                  gravity = 9.81, eta0 = 0.8)
+
+# Hyperbolic approximation of Serre-Green-Naghdi equations
+hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_slope,
+                                              lambda = 200.0, gravity = 9.81, eta0 = 0.8)
+                                              # for actual simulations a higher lambda (~500) is recommended
+                                              # it is chosen so low to be able to see the difference between it
+                                              # and the SGN equation.
+
+initial_condition = initial_condition_dingemans
+boundary_conditions = boundary_condition_periodic
+
+coordinates_min = -138.0
+coordinates_max = 46.0
+N = 1024
+mesh = Mesh1D(coordinates_min, coordinates_max, N)
+
+accuracy_order = 6
+solver_central = Solver(mesh, accuracy_order)
+
+D1 = upwind_operators(periodic_derivative_operator;
+                      derivative_order=1,
+                      accuracy_order=accuracy_order - 1,
+                      xmin=xmin(mesh), xmax=xmax(mesh),
+                      N=nnodes(mesh))
+D2 = sparse(D1.plus) * sparse(D1.minus)
+solver_upwind = Solver(D1, D2)
+
+tspan = (0.0, 70.0)
+saveat = range(tspan..., length = 500)
+
+semi_bbmbbm = Semidiscretization(mesh, bbmbbm, initial_condition, solver_upwind,
+                                 boundary_conditions = boundary_conditions)
+semi_sk = Semidiscretization(mesh, sk, initial_condition, solver_upwind,
+                             boundary_conditions = boundary_conditions)
+semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
+                              boundary_conditions = boundary_conditions)
+semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
+                                boundary_conditions = boundary_conditions)
+
+ode_bbmbbm = semidiscretize(semi_bbmbbm, tspan)
+ode_sk = semidiscretize(semi_sk, tspan)
+ode_sgn = semidiscretize(semi_sgn, tspan)
+ode_hysgn = semidiscretize(semi_hysgn, tspan)
+
+options = (; abstol = 1e-7, reltol = 1e-7, save_everystep = false, saveat = saveat)
+sol_bbmbbm = solve(ode_bbmbbm, Tsit5(); options...)
+sol_sk = solve(ode_sk, Tsit5(); options...)
+sol_sgn = solve(ode_sgn, Tsit5(); options...)
+sol_hysgn = solve(ode_hysgn, Tsit5(); options...)
+
+# BBM-BBM equations need to be translated vertically for comparison
+shifted_waterheight(q, equations) = waterheight_total(q, equations) + 0.8
+DispersiveShallowWater.varnames(::typeof(shifted_waterheight), equations) = (&quot;η&quot;,)
+
+# Define parameters
+times = [14.0, 28.0, 42.0, 70.0]
+y_limits = (-0.03, 0.87)
+
+# Model configurations: (semidiscretization, solution, label, conversion_function, linestyle)
+models = [
+    (semi_bbmbbm, sol_bbmbbm, &quot;BBM-BBM&quot;, shifted_waterheight, :solid),
+    (semi_sk, sol_sk, &quot;Svärd-Kalisch&quot;, waterheight_total, :dashdotdot),
+    (semi_sgn, sol_sgn, &quot;Serre-Green-Naghdi&quot;, waterheight_total, :dot),
+    (semi_hysgn, sol_hysgn, &quot;Hyperbolic Serre-Green-Naghdi&quot;, waterheight_total, :dashdot)
+]
+
+# Create snapshot plots for each time
+snapshot_plots = []
+for time_val in times
+    step_idx = argmin(abs.(saveat .- time_val)) # get the closest point to the time_val
+    p = plot(title=&quot;t = $time_val&quot;, ylims=y_limits)
+
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi =&gt; sol,
+              step=step_idx,
+              label=label,
+              conversion=conversion,
+              plot_bathymetry=true,
+              legend=false,
+              title=&quot;Dingemans at t = $(time_val)&quot;,
+              suptitle=&quot;&quot;,
+              linewidth=[2 1], # 1 for the bathymetry
+              linestyles=[linestyle :solid], # :solid for the bathymetry
+              color=[i :black], # black for the bathymetry
+        )
+    end
+
+    push!(snapshot_plots, p)
+end
+
+# Create legend plot
+legend_plot = plot(legend=:top, framestyle=:none, legendfontsize=11)
+
+for (i, (_, _, label, _, linestyle)) in enumerate(models)
+    plot!(legend_plot, [], [], label=label, linestyles=linestyle, linewidth=2, color=i)
+end
+legend_plot_bathymetry = plot(legend_plot, [], [], label=&quot;Bathymetry&quot;, color=:black,)
+
+xlims_zoom = [(-25, 15), (0, 40), (5, 45), (-100, -60)]
+snapshot_plots_zoom = [plot(snapshot_plots[i], xlims=xlims_zoom[i], ylims=(0.75, 0.85), title=&quot;Zoomed in at t = $(times[i])&quot;) for i in 1:4]
+
+# Combine all plots
+all_plots = [snapshot_plots..., legend_plot_bathymetry, snapshot_plots_zoom...]
+plot(all_plots...,
+     size=(900, 1100),
+     layout=@layout([a b; c d; e{0.14h}; f g; h i]),
+)
+
+t_values, x_values, experimental_data = data_dingemans()
+
+tlims = [(20, 30), (25, 35), (30, 40), (35, 45), (40, 50), (45, 55)]
+
+snapshot_plots_time = []
+for (j, x_val) in enumerate(x_values)
+    p = plot(t_values, experimental_data[:, j],
+             xlims=tlims[j],
+             ylims=(0.765, 0.865),
+             label=&quot;experimental data&quot;,
+             linestyle=:dash,
+             color=:gray,
+             markershape=:circle,
+             markercolor=:gray,
+             markersize=1
+        )
+    for (i, (semi, sol, label, conversion, linestyle)) in enumerate(models)
+        plot!(p, semi =&gt; sol, x_val,
+              conversion=conversion,
+              label=label,
+              linestyle=linestyle,
+              color=i,
+              suptitle=&quot;&quot;,
+              legend=false,
+              title=&quot;Gauge at x = $(x_val)&quot;,
+              linewidth=2
+        )
+
+    end
+
+    push!(snapshot_plots_time, p)
+
+end
+
+legend_plot_data = plot(legend_plot, [], [], label=&quot;experimental data&quot;, linestyle=:dash, color=:gray, markershape=:circle, markercolor=:gray, markersize=1)
+
+all_plots2 = [snapshot_plots_time..., legend_plot_data]
+plot(all_plots2..., layout=@layout([a b; c d; e f; g{0.16h}]),
+     size=(900, 900), suptitle=&quot;&quot;)</code></pre><h3 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h3><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-Dingemans1994"><a class="tag is-link" href="#citeref-Dingemans1994">Dingemans1994</a>Dingemans (1994): Comparison of computations with Boussinesq-like models and laboratory measurements. <a href="https://resolver.tudelft.nl/uuid:c2091d53-f455-48af-a84b-ac86680455e9">URL: https://resolver.tudelft.nl/uuid:c2091d53-f455-48af-a84b-ac86680455e9</a></li><li class="footnote" id="footnote-Dingemans1997"><a class="tag is-link" href="#citeref-Dingemans1997">Dingemans1997</a>Dingemans (1997): Water Wave Propagation Over Uneven Bottoms (In 2 Parts). <a href="https://doi.org/10.1142/1241">DOI: 10.1142/1241</a></li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../plotting/">« Plotting</a><a class="docs-footer-nextpage" href="../development/">Development »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.0 on <span class="colophon-date" title="Monday 17 November 2025 14:52">Monday 17 November 2025</span>. Using Julia version 1.10.10.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
