@@ -91,6 +91,7 @@ end
     semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver;
                                    boundary_conditions = boundary_condition_periodic)
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
+    @test_throws ArgumentError semidiscretize(semi, (0.0, 1.0), split_ode = Val{true}())
 end
 
 @testitem "Solver consistency" setup=[Setup, AdditionalImports] begin

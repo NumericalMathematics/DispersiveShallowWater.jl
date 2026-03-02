@@ -1,9 +1,9 @@
-using OrdinaryDiffEqTsit5
+using OrdinaryDiffEqSDIRK
 using DispersiveShallowWater
 using SummationByPartsOperators: upwind_operators, periodic_derivative_operator
 
 ###############################################################################
-# Semidiscretization of the KdV equation 
+# Semidiscretization of the KdV equation
 
 equations = KdVEquation1D(gravity = 9.81, D = 1.0)
 initial_condition = initial_condition_convergence_test
@@ -29,15 +29,16 @@ semi = Semidiscretization(mesh, equations, initial_condition, solver,
                           boundary_conditions = boundary_conditions)
 
 tspan = (0.0, 5.0)
-ode = semidiscretize(semi, tspan, split_ode = Val{false}()) # no IMEX for now
+ode = semidiscretize(semi, tspan)
 
 summary_callback = SummaryCallback()
 analysis_callback = AnalysisCallback(semi; interval = 100,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
-                                                                 waterheight, entropy))
+                                                                 waterheight))
 callbacks = CallbackSet(analysis_callback, summary_callback)
 saveat = range(tspan..., length = 100)
 
-sol = solve(ode, Tsit5(), abstol = 1e-7, reltol = 1e-7,
+alg = KenCarp4() # use an IMEX method
+sol = solve(ode, alg, abstol = 1e-7, reltol = 1e-7,
             save_everystep = false, callback = callbacks, saveat = saveat)

@@ -217,7 +217,27 @@ function rhs!(dq, q, semi, t)
     return nothing
 end
 
-function compute_coefficients(func, t, semi)
+function rhs_split_stiff!(dq, q, semi::Semidiscretization, t)
+    @unpack mesh, equations, initial_condition, boundary_conditions, solver, source_terms, cache = semi
+
+    @trixi_timeit timer() "rhs_split_stiff!" rhs!(dq, q, t, mesh, equations,
+                                                  initial_condition,
+                                                  boundary_conditions, source_terms, solver,
+                                                  cache, :stiff)
+    return nothing
+end
+
+function rhs_split_nonstiff!(dq, q, semi::Semidiscretization, t)
+    @unpack mesh, equations, initial_condition, boundary_conditions, solver, source_terms, cache = semi
+
+    @trixi_timeit timer() "rhs_split_nonstiff!" rhs!(dq, q, t, mesh, equations,
+                                                     initial_condition,
+                                                     boundary_conditions, source_terms,
+                                                     solver, cache, :nonstiff)
+    return nothing
+end
+
+function compute_coefficients(func, t, semi::Semidiscretization)
     @unpack mesh, equations, solver = semi
     q = allocate_coefficients(mesh_equations_solver(semi)...)
     compute_coefficients!(q, func, t, semi)
@@ -245,16 +265,51 @@ function check_bathymetry(equations::AbstractShallowWaterEquations, q0)
 end
 
 """
-    semidiscretize(semi::Semidiscretization, tspan)
+    semidiscretize(semi::Semidiscretization, tspan; split_ode = have_stiff_terms(semi.equations))
 
 Wrap the semidiscretization `semi` as an ODE problem in the time interval `tspan`
 that can be passed to `solve` from the [SciML ecosystem](https://diffeq.sciml.ai/latest/).
+
+If `split_ode` is `Val{false}()`, a regular `ODEFunction` is created.
+If `split_ode` is `Val{true}()`, a `SplitFunction` is created for IMEX time integration if available.
+By default, `split_ode` is determined by the [`DispersiveShallowWater.have_stiff_terms`](@ref) trait.
 """
-function semidiscretize(semi::Semidiscretization, tspan)
+function semidiscretize(semi::Semidiscretization, tspan;
+                        split_ode = have_stiff_terms(semi.equations))
     q0 = compute_coefficients(semi.initial_condition, first(tspan), semi)
     check_bathymetry(semi.equations, q0)
     iip = true # is-inplace, i.e., we modify a vector when calling rhs!
+    return _semidiscretize_ode(split_ode, q0, tspan, semi, iip)
+end
+
+# Type-stable dispatch based on split_ode trait
+function _semidiscretize_ode(::Val{false}, q0, tspan, semi, iip)
     return ODEProblem{iip}(rhs!, q0, tspan, semi)
+end
+
+function _semidiscretize_ode(::Val{true}, q0, tspan, semi, iip)
+    _check_split_rhs_implementation(semi)
+    return SplitODEProblem{iip}(SplitFunction(rhs_split_stiff!, rhs_split_nonstiff!), q0,
+                                tspan, semi)
+end
+
+function _check_split_rhs_implementation(semi)
+    @unpack mesh, equations, initial_condition, boundary_conditions, solver, source_terms, cache = semi
+
+    equation_name = get_name(equations)
+    args = (nothing, nothing, nothing, mesh, equations, initial_condition,
+            boundary_conditions, source_terms, solver, cache)
+
+    # Check if methods are applicable
+    if !applicable(rhs!, args..., :stiff)
+        throw(ArgumentError("Split RHS method with :stiff argument not implemented for $equation_name."))
+    end
+
+    if !applicable(rhs!, args..., :nonstiff)
+        throw(ArgumentError("Split RHS method with :nonstiff argument not implemented for $equation_name."))
+    end
+
+    return nothing
 end
 
 """
@@ -272,7 +327,8 @@ of the semidiscretization `semi` at the state `q0`.
 function jacobian(semi::Semidiscretization;
                   t = 0.0,
                   q0 = compute_coefficients(semi.initial_condition, t, semi))
-    J = ForwardDiff.jacobian(similar(q0), q0) do dq, q
+    @unpack tmp_partitioned = semi.cache
+    J = ForwardDiff.jacobian(tmp_partitioned, q0) do dq, q
         DispersiveShallowWater.rhs!(dq, q, semi, t)
         return nothing
     end
