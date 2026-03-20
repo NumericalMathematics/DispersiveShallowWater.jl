@@ -9,19 +9,19 @@ struct SummaryCallback
 
     function SummaryCallback(io::IO = stdout)
         function initialize(cb, u, t, integrator)
-            initialize_summary_callback(cb, u, t, integrator)
+            return initialize_summary_callback(cb, u, t, integrator)
         end
         # At the end of the simulation, the timer is printed
         function finalize(cb, u, t, integrator)
-            finalize_summary_callback(cb, u, t, integrator)
+            return finalize_summary_callback(cb, u, t, integrator)
         end
         summary_callback = new(io)
         # SummaryCallback is never called during the simulation
         condition = (u, t, integrator) -> false
-        DiscreteCallback(condition, summary_callback,
-                         save_positions = (false, false),
-                         initialize = initialize,
-                         finalize = finalize)
+        return DiscreteCallback(condition, summary_callback,
+                                save_positions = (false, false),
+                                initialize = initialize,
+                                finalize = finalize)
     end
 end
 
@@ -29,6 +29,7 @@ function Base.show(io::IO, cb::DiscreteCallback{<:Any, <:SummaryCallback})
     @nospecialize cb # reduce precompilation time
 
     print(io, "SummaryCallback")
+    return nothing
 end
 
 function initialize_summary_callback(cb::DiscreteCallback, u, t, integrator)

@@ -59,14 +59,15 @@ References for the Serre-Green-Naghdi system can be found in
 The semidiscretization implemented here conserves
 - the total water mass (integral of ``h``) as a linear invariant
 - the total momentum (integral of ``h v``) as a nonlinear invariant if the bathymetry is constant
-- the total modified energy
+- the total modified entropy/energy (integral of ``\hat U``/``\hat e``), which is called here
+  [`entropy_modified`](@ref) and [`energy_total_modified`](@ref)
 
-for periodic boundary conditions (see Ranocha and Ricchiuto (2024)).
+for periodic boundary conditions (see Ranocha and Ricchiuto (2025)).
 Additionally, it is well-balanced for the lake-at-rest stationary solution, see
-- Hendrik Ranocha and Mario Ricchiuto (2024)
-  Structure-preserving approximations of the Serre-Green-Naghdi
-  equations in standard and hyperbolic form
-  [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+- Hendrik Ranocha and Mario Ricchiuto (2025)
+  Structure-Preserving Approximations of the Serre-Green-Naghdi
+  Equations in Standard and Hyperbolic Form
+  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 """
 struct SerreGreenNaghdiEquations1D{Bathymetry <: AbstractBathymetry, RealT <: Real} <:
        AbstractSerreGreenNaghdiEquations{1, 3}
@@ -77,7 +78,7 @@ end
 
 function SerreGreenNaghdiEquations1D(; bathymetry_type = bathymetry_variable,
                                      gravity, eta0 = 0.0)
-    SerreGreenNaghdiEquations1D(bathymetry_type, gravity, eta0)
+    return SerreGreenNaghdiEquations1D(bathymetry_type, gravity, eta0)
 end
 
 """
@@ -716,7 +717,7 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     if equations.bathymetry_type isa BathymetryMildSlope
         factor = 0.75
-    elseif equations.bathymetry_type isa BathymetryVariable
+    else # equations.bathymetry_type isa BathymetryVariable
         factor = 1.0
     end
     @.. M_h_p_h_bx2 = h + factor * h * b_x^2
@@ -748,7 +749,7 @@ function assemble_system_matrix!(cache, h, b_x, D1, D1mat,
 
     if equations.bathymetry_type isa BathymetryMildSlope
         factor = 0.75
-    elseif equations.bathymetry_type isa BathymetryVariable
+    else # equations.bathymetry_type isa BathymetryVariable
         factor = 1.0
     end
     @.. M_h_p_h_bx2 = h + factor * h * b_x^2
@@ -784,12 +785,12 @@ end
 # Discretization that conserves
 # - the total water mass (integral of ``h``) as a linear invariant
 # - the total momentum (integral of ``h v``) as a nonlinear invariant for flat bathymetry
-# - the total modified energy
+# - the total modified entropy/modified energy (integral of ``\hat U``/``\hat e``) as a nonlinear invariant
 # for periodic boundary conditions, see
-# - Hendrik Ranocha and Mario Ricchiuto (2024)
-#   Structure-preserving approximations of the Serre-Green-Naghdi
-#   equations in standard and hyperbolic form
-#   [arXiv: 2408.02665](https://arxiv.org/abs/2408.02665)
+# - Hendrik Ranocha and Mario Ricchiuto (2025)
+#   Structure-Preserving Approximations of the Serre-Green-Naghdi
+#   Equations in Standard and Hyperbolic Form
+#   [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
 function rhs!(dq, q, t, mesh,
               equations::SerreGreenNaghdiEquations1D,
               initial_condition,
@@ -1019,9 +1020,6 @@ function rhs_sgn_central!(dq, q, t, equations, source_terms, solver, cache,
         # Compute all derivatives required below
         (; h, h_x, v_x, h_hpb_x, b, b_x, hv_x, v2_x,
         h2_v_vx_x, h_vx_x, p_h, p_x, tmp) = cache
-        if equations.bathymetry_type isa BathymetryVariable
-            (; psi) = cache
-        end
 
         @.. b = equations.eta0 - D
         @.. h = eta - b
@@ -1050,16 +1048,19 @@ function rhs_sgn_central!(dq, q, t, equations, source_terms, solver, cache,
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi = 0.125 * p_x
         end
         @.. tmp = b_x * v
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * h * v * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi += 0.125 * h * v * p_x
         end
         @.. p_h = p_h - 0.25 * (h_x * v + h * v_x) * b_x * v
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi -= 0.125 * (h_x * v + h * v_x) * b_x * v
         end
         @.. tmp = p_h * h
@@ -1086,6 +1087,7 @@ function rhs_sgn_central!(dq, q, t, equations, source_terms, solver, cache,
                    + p_x
                    + 1.5 * p_h * b_x)
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. dv = dv - psi * b_x
         end
     end
@@ -1134,9 +1136,6 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
         # Compute all derivatives required below
         (; h, h_x, v_x, v_x_upwind, h_hpb_x, b, b_x, hv_x, v2_x,
         h2_v_vx_x, h_vx_x, p_h, p_0, p_x, tmp) = cache
-        if equations.bathymetry_type isa BathymetryVariable
-            (; psi) = cache
-        end
 
         @.. b = equations.eta0 - D
         @.. h = eta - b
@@ -1165,12 +1164,14 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi = 0.125 * p_x
         end
         @.. tmp = b_x * v
         mul!(p_x, D1, tmp)
         @.. p_h += 0.25 * h * v * p_x
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi += 0.125 * h * v * p_x
         end
         @.. p_0 = p_h * h
@@ -1180,6 +1181,7 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
                    -
                    0.25 * (h_x * v + h * v_x) * b_x * v)
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. psi -= 0.125 * (h_x * v + h * v_x) * b_x * v
         end
         @.. p_h = p_h + tmp
@@ -1207,6 +1209,7 @@ function rhs_sgn_upwind!(dq, q, t, equations, source_terms, solver, cache,
                    + p_x
                    + 1.5 * p_h * b_x)
         if equations.bathymetry_type isa BathymetryVariable
+            (; psi) = cache
             @.. dv = dv - psi * b_x
         end
     end
@@ -1350,22 +1353,22 @@ end
 
 # The modified entropy/energy takes the whole `q` for every point in space
 """
-    DispersiveShallowWater.energy_total_modified!(e, q_global, equations::SerreGreenNaghdiEquations1D, cache)
+    DispersiveShallowWater.energy_total_modified!(e_mod, q_global, equations::SerreGreenNaghdiEquations1D, cache)
 
-Return the modified total energy `e` of the primitive variables `q_global` for the
+Return the modified total energy ``\\hat e`` of the primitive variables `q_global` for the
 [`SerreGreenNaghdiEquations1D`](@ref).
 It contains an additional term containing a
 derivative compared to the usual [`energy_total`](@ref) modeling
-non-hydrostatic contributions. The `energy_total_modified`
+non-hydrostatic contributions. The [`energy_total_modified`](@ref)
 is a conserved quantity (for periodic boundary conditions).
 
 For a [`bathymetry_flat`](@ref) the total modified energy is given by
 ```math
-\\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{6} h^3 v_x^2.
+\\hat e(\\eta, v) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{6} h^3 v_x^2.
 ```
 For a [`bathymetry_mild_slope`](@ref) the total modified energy is given by
 ```math
-\\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{6} h (-h v_x + 1.5 v b_x)^2.
+\\hat e(\\eta, v) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 + \\frac{1}{6} h (-h v_x + 1.5 v b_x)^2.
 ```
 For a [`bathymetry_variable`](@ref) the total modified energy has the additional term
 ```math
@@ -1377,7 +1380,7 @@ For a [`bathymetry_variable`](@ref) the total modified energy has the additional
 
 See also [`energy_total_modified`](@ref).
 """
-function energy_total_modified!(e, q_global,
+function energy_total_modified!(e_mod, q_global,
                                 equations::SerreGreenNaghdiEquations1D,
                                 cache)
     # unpack physical parameters and SBP operator `D1`
@@ -1410,12 +1413,12 @@ function energy_total_modified!(e, q_global,
         # This is equivalent to the above expression when `integrate`d over
         # the domain, i.e., multiplied by 1^T M from the left.
         @.. D2.b = (1 / 6) * h^3
-        mul!(e, D2, v)
-        scale_by_mass_matrix!(e, D1)
-        @.. e = -e * v
-        scale_by_inverse_mass_matrix!(e, D1)
+        mul!(e_mod, D2, v)
+        scale_by_mass_matrix!(e_mod, D1)
+        @.. e_mod = -e_mod * v
+        scale_by_inverse_mass_matrix!(e_mod, D1)
 
-        @.. e = e + 1 / 2 * g * eta^2 + 1 / 2 * h * v^2
+        @.. e_mod = e_mod + 1 / 2 * g * eta^2 + 1 / 2 * h * v^2
     else
         # Periodic boundary conditions
         # and reflecting boundary conditions
@@ -1440,12 +1443,12 @@ function energy_total_modified!(e, q_global,
             end
         end
 
-        @.. e = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 +
-                1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
+        @.. e_mod = 1 / 2 * g * eta^2 + 1 / 2 * h * v^2 +
+                    1 / 6 * h * (-h * v_x + 1.5 * v * b_x)^2
         if equations.bathymetry_type isa BathymetryVariable
-            @.. e += 1 / 8 * h * (v * b_x)^2
+            @.. e_mod += 1 / 8 * h * (v * b_x)^2
         end
     end
 
-    return e
+    return e_mod
 end

@@ -77,13 +77,17 @@ nothing # hide
 
 The analysis callback computes ``L^2`` and ``L^\infty`` errors by comparing the numerical solution to the initial condition at time ``t`` (which can be the analytical solution, if available). Additional error types can be specified using the `extra_analysis_errors` parameter, and physical quantities can be monitored using `extra_analysis_integrals`.
 
-The conservation error measures the temporal change of conserved quantities. For the BBM-BBM equations, important conserved quantities include the total water mass (integral of water height `h`), the total momentum (integral of `v` for flat bathymetry), and the total [`entropy`](@ref). The specific form of the entropy varies between different equation systems. For the BBM-BBM equations, the integral of the entropy is:
+The conservation error measures the temporal change of conserved quantities. For the BBM-BBM equations, important conserved quantities include the total water mass (integral of water height ``h`` given
+by [`waterheight`](@ref)), the total momentum (integral of ``v`` for flat bathymetry given by [`velocity`](@ref)), the integral of the total water height ``\eta`` given by [`waterheight_total`](@ref), and
+the total entropy (integral of ``U`` given by [`entropy`](@ref)). The specific form of the [`entropy`](@ref) varies between different equation systems. For the BBM-BBM equations, the integral of the entropy is:
 
 ```math
-\mathcal E(t; \eta, v) = \frac{1}{2}\int_\Omega g\eta^2 + (\eta + D)v^2 \, dx
+\mathcal E(t; \eta, v) = \int_\Omega U(\eta, v) \, dx = \frac{1}{2}\int_\Omega g\eta^2 + (\eta + D)v^2 \, dx
 ```
 
-where ``\eta`` is the total water height and ``D`` is the still-water depth.
+where ``\eta`` is the total water height and ``D`` is the still-water depth. Any scalar quantity taking a vector `q` of primitive variables and the `equations` as arguments and returning a scalar value can be used
+as an additional integral to monitor during the simulation by passing it to the `extra_analysis_integrals` parameter. Other quantities that can be monitored include [`momentum`](@ref), [`entropy_modified`](@ref),
+and [`hamiltonian`](@ref).
 
 ```@example callback
 tspan = (0.0, 20.0)
@@ -114,11 +118,20 @@ savefig("analysis_callback.png") # hide
 nothing # hide
 ```
 
+Please note that this plot shows the *change* of the invariants over time, i.e., the difference from their initial values.
 More on different options for plotting the analysis callback can be found in the chapter [Plotting Simulation Results](@ref plotting).
 
 ![analysis callback](analysis_callback.png)
 
-The plot shows that linear invariants such as the total water mass and total velocity are conserved exactly. However, nonlinear invariants such as the entropy may exhibit small growth over time. This occurs because standard time integration methods do not necessarily preserve nonlinear invariants, even when the spatial discretization is conservative.
+The plot shows that linear invariants such as the total water mass and total velocity are conserved exactly. However, nonlinear invariants such as the entropy may exhibit small growth over time (compared to the growth one would obtain from a standard spatial discretization that does not conserve these invariants).
+For example, in this case, we obtain
+
+```@example callback
+integrals(analysis_callback).entropy[begin]
+```
+
+Thus, a change of `0.005` of the entropy (the total energy) corresponds to a relative change of roughly ``10^{-6}``.
+This occurs because standard time integration methods do not necessarily preserve nonlinear invariants, even when the spatial discretization is conservative.
 
 For a fully discrete entropy-conservative method, see also the following section about relaxation and the [`RelaxationCallback`](@ref).
 

@@ -35,15 +35,15 @@ struct Semidiscretization{Mesh, Equations, InitialCondition, BoundaryConditions,
         @assert xmax(mesh) == xmax(solver.D1)
         @assert nnodes(mesh) == length(grid(solver))
 
-        new(mesh, equations, initial_condition, boundary_conditions, source_terms, solver,
-            cache)
+        return new(mesh, equations, initial_condition, boundary_conditions, source_terms,
+                   solver, cache)
     end
 end
 
 """
     Semidiscretization(mesh, equations, initial_condition, solver;
                        source_terms=nothing,
-                       boundary_conditions=boundary_condition_periodic,
+                       boundary_conditions,
                        RealT=real(solver),
                        uEltype=RealT,
                        initial_cache = (tmp1 = Array{RealT}(undef, nnodes(mesh)),
@@ -53,7 +53,7 @@ Construct a semidiscretization of a PDE.
 """
 function Semidiscretization(mesh, equations, initial_condition, solver;
                             source_terms = nothing,
-                            boundary_conditions = boundary_condition_periodic,
+                            boundary_conditions,
                             # `RealT` is used as real type for node locations etc.
                             # while `uEltype` is used as element type of solutions etc.
                             RealT = real(solver), uEltype = RealT,
@@ -82,20 +82,22 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                           RealT, uEltype)...,
              initial_cache...)
 
-    Semidiscretization{typeof(mesh), typeof(equations), typeof(initial_condition),
-                       typeof(boundary_conditions), typeof(source_terms),
-                       typeof(solver), typeof(cache)}(mesh, equations, initial_condition,
-                                                      boundary_conditions, source_terms,
-                                                      solver, cache)
+    return Semidiscretization{typeof(mesh), typeof(equations), typeof(initial_condition),
+                              typeof(boundary_conditions), typeof(source_terms),
+                              typeof(solver), typeof(cache)}(mesh, equations,
+                                                             initial_condition,
+                                                             boundary_conditions,
+                                                             source_terms,
+                                                             solver, cache)
 end
 
 """
     check_solver(equations, solver, boundary_conditions)
 
-Check that the `solver` is compatible with the given `equations` and 
+Check that the `solver` is compatible with the given `equations` and
 `boundary_conditions`. The default implementation performs no checks.
-Specific equation types can override this method to validate that 
-required derivative operators are present (e.g., some equations 
+Specific equation types can override this method to validate that
+required derivative operators are present (e.g., some equations
 require `D2` or `D3` to be non-`nothing`).
 
 Throws an `ArgumentError` if the solver is incompatible.
@@ -118,6 +120,7 @@ function Base.show(io::IO, semi::Semidiscretization)
         print(io, key)
     end
     print(io, "))")
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", semi::Semidiscretization)
@@ -158,22 +161,22 @@ function PolynomialBases.integrate(func, q::ArrayPartition, semi::Semidiscretiza
     return integrals
 end
 function PolynomialBases.integrate(func, quantity, semi::Semidiscretization)
-    integrate(func, quantity, semi.solver.D1)
+    return integrate(func, quantity, semi.solver.D1)
 end
 function PolynomialBases.integrate(q, semi::Semidiscretization)
-    integrate(identity, q, semi)
+    return integrate(identity, q, semi)
 end
 
-function integrate_quantity(func, q, semi::Semidiscretization)
+function integrate_quantity(func, q, semi)
     quantity = zeros(eltype(q), nnodes(semi))
-    integrate_quantity!(quantity, func, q, semi)
+    return integrate_quantity!(quantity, func, q, semi)
 end
 
-function integrate_quantity!(quantity, func, q, semi::Semidiscretization)
+function integrate_quantity!(quantity, func, q, semi)
     for i in eachnode(semi)
         quantity[i] = func(get_node_vars(q, semi.equations, i), semi.equations)
     end
-    integrate(quantity, semi)
+    return integrate(quantity, semi)
 end
 
 # Obtain the function, which has an additional `!` appended to the name
@@ -186,26 +189,26 @@ function integrate_quantity!(quantity,
                              func::Union{typeof(energy_total_modified),
                                          typeof(entropy_modified),
                                          typeof(hamiltonian)}, q,
-                             semi::Semidiscretization)
+                             semi)
     inplace_version(func)(quantity, q, semi.equations, semi.cache)
-    integrate(quantity, semi)
+    return integrate(quantity, semi)
 end
 
-@inline function mesh_equations_solver(semi::Semidiscretization)
+@inline function mesh_equations_solver(semi)
     @unpack mesh, equations, solver = semi
     return mesh, equations, solver
 end
 
-@inline function mesh_equations_solver_cache(semi::Semidiscretization)
+@inline function mesh_equations_solver_cache(semi)
     @unpack mesh, equations, solver, cache = semi
     return mesh, equations, solver, cache
 end
 
-function calc_error_norms(q, t, semi::Semidiscretization)
-    calc_error_norms(q, t, semi.initial_condition, mesh_equations_solver(semi)...)
+function calc_error_norms(q, t, semi)
+    return calc_error_norms(q, t, semi.initial_condition, mesh_equations_solver(semi)...)
 end
 
-function rhs!(dq, q, semi::Semidiscretization, t)
+function rhs!(dq, q, semi, t)
     @unpack mesh, equations, initial_condition, boundary_conditions, solver, source_terms, cache = semi
 
     @trixi_timeit timer() "rhs!" rhs!(dq, q, t, mesh, equations, initial_condition,
@@ -214,19 +217,19 @@ function rhs!(dq, q, semi::Semidiscretization, t)
     return nothing
 end
 
-function compute_coefficients(func, t, semi::Semidiscretization)
+function compute_coefficients(func, t, semi)
     @unpack mesh, equations, solver = semi
     q = allocate_coefficients(mesh_equations_solver(semi)...)
     compute_coefficients!(q, func, t, semi)
     return q
 end
 
-function compute_coefficients!(q, func, t, semi::Semidiscretization)
+function compute_coefficients!(q, func, t, semi)
     # Call `compute_coefficients` defined by the solver
     mesh, equations, solver = mesh_equations_solver(semi)
-    compute_coefficients!(q, func, t, mesh,
-                          is_hyperbolic_appproximation(equations), equations,
-                          solver)
+    return compute_coefficients!(q, func, t, mesh,
+                                 is_hyperbolic_appproximation(equations), equations,
+                                 solver)
 end
 
 check_bathymetry(equations, q0) = nothing
@@ -271,6 +274,7 @@ function jacobian(semi::Semidiscretization;
                   q0 = compute_coefficients(semi.initial_condition, t, semi))
     J = ForwardDiff.jacobian(similar(q0), q0) do dq, q
         DispersiveShallowWater.rhs!(dq, q, semi, t)
+        return nothing
     end
     return J
 end

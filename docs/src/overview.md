@@ -33,6 +33,18 @@ Several equation systems in [DispersiveShallowWater.jl](https://github.com/Numer
 
 The common interface provides shared functionality like [`waterheight`](@ref), [`velocity`](@ref), [`energy_total`](@ref), and [`entropy`](@ref). This enables consistent analysis and visualization across different dispersive models while maintaining the underlying shallow water physics.
 
+!!! warning "Entropy vs. Energy"
+    [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl)
+    is written by mathematicians with a background in numerical methods for
+    hyperbolic balance laws. Therefore, the term *entropy* is often used
+    in the sense of a mathematical entropy function, i.e., typically a
+    convex function that is conserved by smooth solutions and whose dissipation
+    provides useful bounds and estimates. For the classical shallow water
+    equations, the mathematical entropy is the same as the physical energy
+    (see [`energy_total`](@ref) and [`entropy`](@ref)). However, some dispersive
+    models like the [`SerreGreenNaghdiEquations1D`](@ref) do not conserve
+    the [`energy_total`](@ref) but a modified form [`energy_total_modified`](@ref).
+
 ## Hyperbolic Approximations
 
 Some equations are hyperbolic approximations of other systems (e.g., [`HyperbolicSerreGreenNaghdiEquations1D`](@ref) approximates [`SerreGreenNaghdiEquations1D`](@ref)). These systems support two approaches for initial conditions:

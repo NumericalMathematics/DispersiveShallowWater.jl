@@ -88,31 +88,37 @@ end
     initial_condition = initial_condition_dingemans
     mesh = Mesh1D(-138, 46, 10)
     solver = Solver(mesh, 4)
-    semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver)
+    semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver;
+                                   boundary_conditions = boundary_condition_periodic)
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
 end
 
 @testitem "Solver consistency" setup=[Setup, AdditionalImports] begin
     mesh = Mesh1D(-1.0, 1.0, 10)
     initial_condition = initial_condition_convergence_test
+    boundary_conditions = boundary_condition_periodic
     D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
     solver = Solver(D1)
 
     equations = KdVEquation1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 
     equations = BBMEquation1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 
     equations = BBMBBMEquations1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 
     equations = SvaerdKalischEquations1D(gravity = 1.0)
     @test_throws ArgumentError Semidiscretization(mesh, equations, initial_condition,
-                                                  solver)
+                                                  solver;
+                                                  boundary_conditions = boundary_conditions)
 end
 
 @testitem "Boundary conditions" setup=[Setup] begin
@@ -540,19 +546,21 @@ end
 
     accuracy_orders = [2, 4, 6]
     for accuracy_order in accuracy_orders
-        eoc_mean_values, _ = convergence_test(default_example(), 2, N = 512,
-                                              tspan = (0.0, 1.0),
-                                              accuracy_order = accuracy_order)
+        eocs, _ = convergence_test(@__MODULE__, default_example(), 2, N = 256,
+                                   tspan = (0.0, 1.0),
+                                   accuracy_order = accuracy_order)
+        eoc_mean_values = DispersiveShallowWater.calc_mean_convergence(eocs)
         @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
-        @test isapprox(eoc_mean_values[:linf][2], accuracy_order, atol = 0.5)
-        @test isapprox(eoc_mean_values[:l2][1], accuracy_order, atol = 0.5)
+        @test isapprox(eoc_mean_values[:linf][1], accuracy_order, atol = 0.5)
+        @test isapprox(eoc_mean_values[:l2][2], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:linf][2], accuracy_order, atol = 0.5)
 
-        eoc_mean_values2, _ = convergence_test(default_example(), [512, 1024],
-                                               tspan = (0.0, 1.0),
-                                               accuracy_order = accuracy_order)
+        eocs2, _ = convergence_test(@__MODULE__, default_example(), [256, 512],
+                                    tspan = (0.0, 1.0),
+                                    accuracy_order = accuracy_order)
+        eoc_mean_values2 = DispersiveShallowWater.calc_mean_convergence(eocs2)
         for kind in (:l2, :linf), variable in (1, 2)
-            eoc_mean_values[kind][variable] == eoc_mean_values2[kind][variable]
+            @test eoc_mean_values[kind][variable] == eoc_mean_values2[kind][variable]
         end
     end
 end

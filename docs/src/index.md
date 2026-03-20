@@ -7,6 +7,7 @@
 [![Coveralls](https://coveralls.io/repos/github/NumericalMathematics/DispersiveShallowWater.jl/badge.svg?branch=main)](https://coveralls.io/github/NumericalMathematics/DispersiveShallowWater.jl?branch=main)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.09361/status.svg)](https://doi.org/10.21105/joss.09361)
 [![DOI](https://zenodo.org/badge/635090135.svg)](https://zenodo.org/doi/10.5281/zenodo.10034636)
 
 ```@raw html
@@ -15,18 +16,18 @@
 </p>
 ```
 
-[**DispersiveShallowWater.jl**](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) is a [Julia](https://julialang.org/) package that implements structure-preserving numerical methods for dispersive shallow water models.
-To date, it provides provably conservative, entropy-conserving and well-balanced numerical schemes for some dispersive shallow water models:
+[**DispersiveShallowWater.jl**](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) is a [Julia](https://julialang.org/) package that implements structure-preserving numerical methods for one-dimensional dispersive shallow water models.
+To date, it provides provably conservative, entropy-conserving, and well-balanced numerical schemes for the following dispersive shallow water models:
 
 * the [Korteweg–De Vries (KdV) equation as the prototypical example of an integrable PDE](https://doi.org/10.1007/s10915-025-02898-x),
 * the [Benjamin-Bona-Mahony (BBM) equation, also known as regularized long-wave equation](https://doi.org/10.4208/cicp.OA-2020-0119),
-* the [BBM-BBM equations with varying bottom topography](https://iopscience.iop.org/article/10.1088/1361-6544/ac3c29),
+* the [BBM-BBM equations with varying bottom topography](https://doi.org/10.1088/1361-6544/ac3c29),
 * the [dispersive shallow water model proposed by Magnus Svärd and Henrik Kalisch](https://arxiv.org/abs/2302.09924),
-* the [Serre-Green-Naghdi equations in standard and hyperbolic form](https://arxiv.org/abs/2408.02665).
+* the [Serre-Green-Naghdi equations in standard and hyperbolic form](https://doi.org/10.1002/num.70016).
 
 The semidiscretizations are based on summation-by-parts (SBP) operators, which are implemented in [SummationByPartsOperators.jl](https://github.com/ranocha/SummationByPartsOperators.jl/).
 To obtain fully discrete schemes, the time integration methods from [OrdinaryDiffEq.jl](https://github.com/SciML/OrdinaryDiffEq.jl) are used to solve the resulting ordinary differential equations.
-Fully discrete entropy-conservative methods can be obtained by using the [relaxation method](https://epubs.siam.org/doi/10.1137/19M1263662) provided by DispersiveShallowWater.jl.
+Fully discrete entropy-conservative methods can be obtained by using the [relaxation method](https://doi.org/10.1137/19M1263662) provided by DispersiveShallowWater.jl.
 
 ## Installation
 
@@ -58,7 +59,7 @@ In the Julia REPL, first load the package [DispersiveShallowWater.jl](https://gi
 julia> using DispersiveShallowWater
 ```
 
-You can run a basic simulation that solves the BBM-BBM equations by executing
+You can run a basic simulation that solves the Serre-Green-Naghdi equations by executing
 
 ```julia
 julia> include(default_example());
@@ -78,10 +79,25 @@ e.g., `include(joinpath(examples_dir(), "svaerd_kalisch_1d", "svaerd_kalisch_1d_
 
 ## Referencing
 
-You can directly refer to [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) as
+If you use [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) for your research, please cite our article
 
 ```bibtex
-@misc{lampert2025dispersive,
+@article{lampert2025dispersive,
+  title={{DispersiveShallowWater.jl}: {A} {J}ulia library of structure-preserving numerical methods for dispersive wave equations},
+  author={Lampert, Joshua and Wittenstein, Collin and Ranocha, Hendrik},
+  journal={Journal of Open Source Software},
+  volume={10},
+  number={116},
+  pages={9361},
+  year={2025},
+  month={12},
+  publisher={The Open Journal},
+  doi={10.21105/joss.09361}
+}
+```
+In addition, you can also refer to DispersiveShallowWater.jl directly as
+```bibtex
+@misc{lampert2025dispersiveshallowwater,
   title={{D}ispersive{S}hallow{W}ater.jl: {S}tructure-preserving numerical
          methods for dispersive shallow water models},
   author={Lampert, Joshua and Wittenstein, Collin and Ranocha, Hendrik},
@@ -98,7 +114,7 @@ with contributions from Hendrik Ranocha (Johannes Gutenberg University Mainz)
 and Collin Wittenstein (Johannes Gutenberg University Mainz).
 Some parts of this repository are based on parts of
 [Dispersive-wave-schemes-notebooks. A Broad Class of Conservative Numerical Methods for Dispersive Wave Equations](https://github.com/ranocha/Dispersive-wave-schemes-notebooks)
-by Hendrik Ranocha, Dimitrios Mitsotakis and David Ketcheson.
+by Hendrik Ranocha, Dimitrios Mitsotakis, and David Ketcheson.
 The code structure is inspired by [Trixi.jl](https://github.com/trixi-framework/Trixi.jl/).
 
 ## License and contributing

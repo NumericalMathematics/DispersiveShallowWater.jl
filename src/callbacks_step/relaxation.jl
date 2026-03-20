@@ -21,6 +21,7 @@ function Base.show(io::IO, cb::DiscreteCallback{<:Any, <:RelaxationCallback})
     relaxation_callback = cb.affect!
     @unpack invariant = relaxation_callback
     print(io, "RelaxationCallback(invariant=", string(nameof(invariant)), ")")
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain",
@@ -40,9 +41,9 @@ end
 function RelaxationCallback(; invariant)
     relaxation_callback = RelaxationCallback(invariant)
 
-    DiscreteCallback(relaxation_callback, relaxation_callback, # the first one is the condition, the second the affect!
-                     save_positions = (false, false),
-                     initialize = initialize!)
+    return DiscreteCallback(relaxation_callback, relaxation_callback, # the first one is the condition, the second the affect!
+                            save_positions = (false, false),
+                            initialize = initialize!)
 end
 
 function initialize!(cb::DiscreteCallback{Condition, Affect!}, u, t,
@@ -56,7 +57,7 @@ function (relaxation_callback::RelaxationCallback)(u, t, integrator)
 end
 
 # This method is called as callback during the time integration.
-@inline function (relaxation_callback::RelaxationCallback)(integrator)
+@inline function (relaxation_callback::RelaxationCallback)(integrator::DiffEqBase.DEIntegrator)
     semi = integrator.p
     told = integrator.tprev
     qold = integrator.uprev
@@ -97,7 +98,8 @@ end
         val2 = relaxation_functional(tmp1, tmp_partitioned, semi) - energy_old
 
         if (val1 * val2) > 0
-            terminate_integration = true
+            # terminate if there is no root in [gamma_lo, gamma_hi]
+            gamma = zero(typeof(tnew))
         else
             gamma = find_zero(root_closure, (gamma_lo, gamma_hi), AlefeldPotraShi())
         end
@@ -115,7 +117,7 @@ end
         end
 
         if terminate_integration
-            terminate!(integrator)
+            DiffEqBase.terminate!(integrator)
         end
     end
     return nothing

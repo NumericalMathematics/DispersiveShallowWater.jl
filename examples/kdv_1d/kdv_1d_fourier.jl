@@ -3,7 +3,7 @@ using DispersiveShallowWater
 using SummationByPartsOperators: fourier_derivative_operator
 
 ###############################################################################
-# Semidiscretization of the KdV equation 
+# Semidiscretization of the KdV equation
 
 equations = KdVEquation1D(gravity = 9.81, D = 1.0)
 initial_condition = initial_condition_convergence_test
@@ -28,7 +28,7 @@ tspan = (0.0, 5.0)
 ode = semidiscretize(semi, tspan)
 
 summary_callback = SummaryCallback()
-analysis_callback = AnalysisCallback(semi; interval = 100,
+analysis_callback = AnalysisCallback(semi; interval = 1000,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  waterheight, entropy))

@@ -6,7 +6,7 @@ To learn more about different solvers and how to use them in [DispersiveShallowW
 
 ## 1. Introduction & Overview
 
-In recent years, summation-by-parts (SBP) operators have gained particular interest in computational mathematics as they allow transferring analytical results from the continuous level to numerical methods in a systematic manner. This is achieved by mimicking integration by parts discretely, which is one of the key ingredients for conservation and stability proofs at the continuous level. In this way, many fundamental analytical properties of hyperbolic-dominated partial differential equations can be obtained in a straightforward manner at the discrete level.[^LampertRanocha2024]
+In recent years, summation-by-parts (SBP) operators have gained particular interest in computational mathematics as they allow transferring analytical results from the continuous level to numerical methods in a systematic manner. This is achieved by mimicking integration by parts discretely, which is one of the key ingredients for conservation and stability proofs at the continuous level. In this way, many fundamental analytical properties of hyperbolic-dominated partial differential equations can be obtained in a straightforward manner at the discrete level.[^LampertRanocha2025]
 
 SBP operators were first developed for finite difference methods to mimic stability proofs based on integration by parts as traditionally used in finite element methods. However, exact integration can be impossible or computationally expensive in finite element methods, particularly for complex geometries or nonlinear problems. In this case, SBP formulations can be advantageous since they naturally include a quadrature rule through the mass matrix. In particular, split forms can be used with SBP operators to avoid the need for exact integration while maintaining discrete analogs of important analytical properties such as the chain rule and product rule.
 
@@ -26,10 +26,10 @@ SBP operators achieve this by providing:
 - **Provable stability**: Mathematical guarantees about the behavior of the numerical method through discrete energy estimates
 - **Flexibility**: A unified framework that encompasses finite differences, finite elements, and spectral methods
 
-[^LampertRanocha2024]:
-    Lampert, Ranocha (2024):
-    Structure-Preserving Numerical Methods for Two Nonlinear Systems of Dispersive Wave Equations
-    [arXiv: 2402.16669](https://arxiv.org/abs/2402.16669)
+[^LampertRanocha2025]:
+    Lampert, Ranocha (2025):
+    Structure-preserving numerical methods for two nonlinear systems of dispersive wave equations
+    [DOI: 10.1007/s44207-025-00006-3](https://doi.org/10.1007/s44207-025-00006-3)
 
 ## 2. Mathematical Foundation
 
@@ -117,6 +117,17 @@ M = \Delta x \cdot \text{diag}(1/2, 1, 1, \ldots, 1, 1/2)
 ```
 
 You can verify that this satisfies the SBP property and provides second-order accuracy in the interior with first-order accuracy at the boundaries.
+Thus, under standard assumptions, one can prove that this SBP operator leads to methods with order of convergence two (in the discrete ``L^2`` norm induced by the mass matrix).[^SvärdNordström2019][^SvärdNordström2021]
+
+[^SvärdNordström2019]:
+    Svärd, Nordström (2019):
+    On the convergence rates of energy-stable finite-difference schemes
+    [DOI: 10.1016/j.jcp.2019.07.018](https://doi.org/10.1016/j.jcp.2019.07.018)
+
+[^SvärdNordström2021]:
+    Svärd, Nordström (2021):
+    Convergence of energy stable finite-difference schemes with interfaces
+    [DOI: 10.1016/j.jcp.2020.110020](https://doi.org/10.1016/j.jcp.2020.110020)
 
 ## 3. Types of SBP Operators
 

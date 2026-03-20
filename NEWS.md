@@ -5,6 +5,22 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+## Changes when updating to v0.10 from v0.9.x
+
+#### Changed
+
+- There are no default boundary conditions anymore in `Semidiscretization`.
+  Users now have to explicitly provide boundary conditions via the `boundary_conditions` keyword argument, which were periodic by default before ([#286]).
+- `convergence_test` now returns the complete convergence orders. To obtain the mean convergence rates, use `DispersiveShallowWater.calc_mean_convergence` on the convergence orders ([#285]).
+
+## Changes when updating to v0.9 from v0.8.x
+
+#### Changed
+
+- The argument `plot_initial` in the plotting functions now always plots the initial condition at time `t = first(tspan)`.
+  To plot the analytical solution at the current time step, use `plot_analytical` instead ([#277]).
+- Changed the `default_example()` from a BBM-BBM setup to a physically more relevant Serre-Green-Naghdi setup ([#276]).
+
 ## Changes in the v0.8 lifecycle
 
 #### Added

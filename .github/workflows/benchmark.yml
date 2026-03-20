@@ -2,6 +2,18 @@ name: Benchmark this PR
 on:
   pull_request_target:
     branches: [ main ]  # change to your default branch
+    paths-ignore:
+      - 'CITATION.bib'
+      - 'LICENSE.md'
+      - 'README.md'
+      - '.zenodo.json'
+      - '.github/workflows/CompatHelper.yml'
+      - '.github/workflows/Documenter.yml'
+      - '.github/workflows/Format-check.yml'
+      - '.github/workflows/TagBot.yml'
+      - '.github/workflows/SpellCheck.yml'
+      - '.github/workflows/JET.yml'
+      - 'docs/**'
 permissions:
   pull-requests: write    # action needs to post a comment
 

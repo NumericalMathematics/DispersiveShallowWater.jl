@@ -1,6 +1,7 @@
 struct PlotData{Conversion}
     semisol::Pair{<:Semidiscretization, <:ODESolution}
     plot_initial::Bool
+    plot_analytical::Bool
     plot_bathymetry::Bool
     conversion::Conversion
     step::Integer
@@ -13,7 +14,7 @@ struct PlotDataOverTime{RealT, Conversion}
 end
 
 @recipe function f(plotdata::PlotData)
-    @unpack semisol, plot_initial, plot_bathymetry, conversion, step = plotdata
+    @unpack semisol, plot_initial, plot_analytical, plot_bathymetry, conversion, step = plotdata
     semi, sol = semisol
     equations = semi.equations
     names = varnames(conversion, equations)
@@ -31,24 +32,10 @@ end
 
     initial_condition = semi.initial_condition
     t = sol.t[step]
-
-    if plot_initial == true
-        q_exact = compute_coefficients(initial_condition, t, semi)
-        data_exact = zeros(nvars, nnodes(semi))
-    end
-
     q = sol.u[step]
+
     data = zeros(nvars, nnodes(semi))
-    if plot_bathymetry == true
-        bathy = zeros(nnodes(semi))
-    end
     for j in eachnode(semi)
-        if plot_bathymetry == true
-            bathy[j] = bathymetry(get_node_vars(q, equations, j), equations)
-        end
-        if plot_initial == true
-            data_exact[:, j] .= conversion(get_node_vars(q_exact, equations, j), equations)
-        end
         data[:, j] .= conversion(get_node_vars(q, equations, j), equations)
     end
 
@@ -61,12 +48,34 @@ end
         names[i] in ("D", "b") && continue
 
         subplot += 1
+        if plot_analytical == true
+            q_exact = compute_coefficients(initial_condition, t, semi)
+            data_exact = zeros(nvars, nnodes(semi))
+            for j in eachnode(semi)
+                data_exact[:, j] .= conversion(get_node_vars(q_exact, equations, j),
+                                               equations)
+            end
+            @series begin
+                subplot --> subplot
+                linestyle --> :solid
+                label --> "analytical $(names[i])"
+                grid(semi), data_exact[i, :]
+            end
+        end
+
         if plot_initial == true
+            t0 = sol.t[1]
+            q_exact = compute_coefficients(initial_condition, t0, semi)
+            data_initial = zeros(nvars, nnodes(semi))
+            for j in eachnode(semi)
+                data_initial[:, j] .= conversion(get_node_vars(q_exact, equations, j),
+                                                 equations)
+            end
             @series begin
                 subplot --> subplot
                 linestyle --> :solid
                 label --> "initial $(names[i])"
-                grid(semi), data_exact[i, :]
+                grid(semi), data_initial[i, :]
             end
         end
 
@@ -82,6 +91,10 @@ end
 
     # Plot the bathymetry
     if plot_bathymetry == true
+        bathy = zeros(nnodes(semi))
+        for j in eachnode(semi)
+            bathy[j] = bathymetry(get_node_vars(q, equations, j), equations)
+        end
         @series begin
             subplot --> 1
             linestyle --> :solid
@@ -143,23 +156,27 @@ end
 end
 
 @recipe function f(semisol::Pair{<:Semidiscretization, <:ODESolution}; plot_initial = false,
-                   plot_bathymetry = true, conversion = prim2phys, step = -1)
-    PlotData(semisol, plot_initial, plot_bathymetry, conversion, step)
+                   plot_analytical = false, plot_bathymetry = true, conversion = prim2phys,
+                   step = -1)
+    return PlotData(semisol, plot_initial, plot_analytical, plot_bathymetry, conversion,
+                    step)
 end
 
 @recipe function f(semi::Semidiscretization, sol::ODESolution; plot_initial = false,
-                   plot_bathymetry = true, conversion = prim2phys, step = -1)
-    PlotData(semi => sol, plot_initial, plot_bathymetry, conversion, step)
+                   plot_analytical = false, plot_bathymetry = true, conversion = prim2phys,
+                   step = -1)
+    return PlotData(semi => sol, plot_initial, plot_analytical, plot_bathymetry, conversion,
+                    step)
 end
 
 @recipe function f(semisol::Pair{<:Semidiscretization, <:ODESolution}, x_value;
                    conversion = prim2phys)
-    PlotDataOverTime(semisol, x_value, conversion)
+    return PlotDataOverTime(semisol, x_value, conversion)
 end
 
 @recipe function f(semi::Semidiscretization, sol::ODESolution, x_value;
                    conversion = prim2phys)
-    PlotDataOverTime(semi => sol, x_value, conversion)
+    return PlotDataOverTime(semi => sol, x_value, conversion)
 end
 
 function pretty_form_utf(name)
@@ -168,7 +185,7 @@ function pretty_form_utf(name)
     elseif name == :linf_error
         return "L∞ error"
     elseif name == :conservation_error
-        return "∫|q_q₀|"
+        return "∫|q-q₀|"
     elseif name == :lake_at_rest_error
         return "∫|η-η₀|"
     else

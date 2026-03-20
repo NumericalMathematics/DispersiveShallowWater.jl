@@ -44,7 +44,8 @@ See also [`examples_dir`](@ref) and [`get_examples`](@ref).
 Copied from [Trixi.jl](https://github.com/trixi-framework/Trixi.jl).
 """
 function default_example()
-    joinpath(examples_dir(), "bbm_bbm_1d", "bbm_bbm_1d_basic.jl")
+    return joinpath(examples_dir(), "serre_green_naghdi_1d",
+                    "serre_green_naghdi_soliton.jl")
 end
 
 """
@@ -61,7 +62,7 @@ readdir(data_dir())
 data_dir() = pkgdir(DispersiveShallowWater, "data")::String
 
 function convergence_test(example::AbstractString, iterations_or_Ns; kwargs...)
-    convergence_test(Main, example::AbstractString, iterations_or_Ns; kwargs...)
+    return convergence_test(Main, example::AbstractString, iterations_or_Ns; kwargs...)
 end
 
 """
@@ -84,7 +85,7 @@ function convergence_test(mod::Module, example::AbstractString, iterations; io::
 
     initial_N = extract_initial_N(example, kwargs)
     Ns = initial_N * 2 .^ (0:(iterations - 1))
-    convergence_test(mod, example, Ns; io = io, kwargs...)
+    return convergence_test(mod, example, Ns; io = io, kwargs...)
 end
 
 function convergence_test(mod::Module, example::AbstractString, Ns::AbstractVector;
@@ -101,7 +102,7 @@ function convergence_test(mod::Module, example::AbstractString, Ns::AbstractVect
 
         trixi_include(mod, example; kwargs..., N = Ns[iter])
 
-        l2_error, linf_error = mod.analysis_callback(mod.sol)
+        l2_error, linf_error = @invokelatest mod.analysis_callback(@invokelatest mod.sol)
 
         # collect errors as one vector to reshape later
         append!(errors[:l2], l2_error)
@@ -112,7 +113,7 @@ function convergence_test(mod::Module, example::AbstractString, Ns::AbstractVect
     end
 
     # Use raw error values to compute EOC
-    analyze_convergence(io, errors, iterations, mod.semi, Ns)
+    return analyze_convergence(io, errors, iterations, (@invokelatest mod.semi), Ns)
 end
 
 # Analyze convergence for any semidiscretization
@@ -120,7 +121,22 @@ end
 function analyze_convergence(io, errors, iterations, semi::Semidiscretization, Ns)
     _, equations, _, _ = mesh_equations_solver_cache(semi)
     variablenames = varnames(prim2prim, equations)
-    analyze_convergence(io, errors, iterations, variablenames, Ns)
+    return analyze_convergence(io, errors, iterations, variablenames, Ns)
+end
+
+"""
+    DispersiveShallowWater.calc_mean_convergence(eocs)
+
+Calculate the mean convergence rates from the given experimental orders of convergence `eocs`.
+The `eocs` are expected to be in the format returned by [`convergence_test`](@ref), i.e., a `Dict` where
+the keys are the error types (e.g., `:l2`, `:linf`) and the values are matrices with the EOCs for each
+variable in the columns and the iterations in the rows.
+Returns a `Dict` with the same keys as `eocs` and the mean convergence rates for all variables as values.
+"""
+function calc_mean_convergence(eocs)
+    return Dict(kind => [sum(eocs[kind][:, v]) / length(eocs[kind][:, v])
+                         for v in 1:size(eocs[kind], 2)]
+                for kind in keys(eocs))
 end
 
 # This method is called with the collected error values to actually compute and print the EOC
@@ -138,8 +154,7 @@ function analyze_convergence(io, errors, iterations,
                         log.(Ns[1:(end - 1)] ./ Ns[2:end])
                 for (kind, error) in errorsmatrix)
 
-    eoc_mean_values = Dict{Symbol, Any}()
-    eoc_mean_values[:variables] = variablenames
+    eoc_mean_values = calc_mean_convergence(eocs)
 
     for (kind, error) in errorsmatrix
         println(io, kind)
@@ -176,18 +191,15 @@ function analyze_convergence(io, errors, iterations,
         println(io, "")
 
         # Print mean EOCs
-        mean_values = zeros(nvariables)
         for v in 1:nvariables
-            mean_values[v] = sum(eocs[kind][:, v]) ./ length(eocs[kind][:, v])
             @printf(io, "%-15s", "mean")
-            @printf(io, "%-10.2f", mean_values[v])
+            @printf(io, "%-10.2f", eoc_mean_values[kind][v])
         end
-        eoc_mean_values[kind] = mean_values
         println(io, "")
         println(io, "-"^100)
     end
 
-    return eoc_mean_values, errorsmatrix
+    return eocs, errorsmatrix
 end
 
 function extract_initial_N(example, kwargs)

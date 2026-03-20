@@ -18,4 +18,5 @@ const boundary_condition_reflecting = BoundaryConditionReflecting()
 
 function Base.show(io::IO, ::BoundaryConditionReflecting)
     print(io, "boundary_condition_reflecting")
+    return nothing
 end
