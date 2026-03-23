@@ -1,3 +1,74 @@
+@doc raw"""
+    HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
+                                       gravity,
+                                       eta0 = 0.0,
+                                       alpha)
+
+Hyperbolic approximation of the Sainte-Marie system
+[`SainteMarieEquations1D`](@ref) in one spatial dimension derived by
+Escalante, Dumbser and Castro (2019).
+The equations are given by
+```math
+\begin{aligned}
+  h_t + (h v)_x &= 0,\\
+  h v_t + \frac{1}{2} g (h^2)_x + \frac{1}{2} h (v^2)_x
+    + (h p)_x &= -(g h + 2 p) b_x,\\
+  h w_t + h v w_x &= 2 p,\\
+  h p_t + h v p_x + h c^2 \bigl(v_x + (w - v b_x) / (h / 2)\bigr) &= 0.
+\end{aligned}
+```
+The unknown quantities of the Sainte-Marie equations are the
+total water height ``\eta = h + b`` and the velocity ``v``.
+The gravitational acceleration `gravity` is denoted by ``g`` and the bottom topography
+(bathymetry) ``b = \eta_0 - D``. The water height above the bathymetry
+is therefore given by ``h = \eta - \eta_0 + D``.
+The total water height is therefore given by ``\eta = h + b``.
+
+There are two additional variables compared to the [`SainteMarieEquations1D`](@ref):
+the auxiliary variable ``w \approx -h v_x / 2 + v b_x`` and the non-hydrostatic pressure ``p``.
+In the formal limit ``c \to \infty``, the hyperbolic approximation recovers the original Sainte-Marie system.
+The hyperbolization parameter is determined as ``c = \alpha \sqrt{g \eta_0}`` set by the keyword arguments `alpha` (``\alpha``), `gravity` (``g``), and `eta0` (``\eta_0``).
+The larger the value of ``\alpha``, the better the approximation of the original system, but also the stiffer the system.
+
+!!! note "Initial conditions"
+    The `HyperbolicSainteMarieEquations1D` allow two options for
+    specifying initial conditions:
+    1. Returning the full set of variables `q = (η, v, D, w, p)`
+    2. Returning a reduced set of variables `q = (η, v, D)` as required
+       for the limit system [`SainteMarieEquations1D`](@ref) of the
+       hyperbolic approximation. The remaining variables `w` and `p` are
+       initialized using the default initialization ``w \approx -h v_x / 2 + v b_x``
+       and ``p \approx 0`` using the derivative operator of the `solver`.
+
+Two types of `bathymetry_type` are supported:
+- [`bathymetry_flat`](@ref): flat bathymetry (typically ``b = 0`` everywhere)
+- [`bathymetry_mild_slope`](@ref): variable bathymetry with mild-slope approximation
+
+References for the Sainte-Marie system and its hyperbolization can be found in
+- Sainte-Marie (2011)
+  Vertically averaged models for the free surface non-hydrostatic
+  Euler system: derivation and kinetic interpretation
+  [DOI: 10.1142/S0218202511005118](https://doi.org/10.1142/S0218202511005118)
+- Bristeau, Mangeney, Sainte-Marie and Seguin (2015)
+  An energy-consistent depth-averaged Euler system:
+  derivation and properties
+  [DOI: 10.3934/dcdsb.2015.20.961](https://doi.org/10.3934/dcdsb.2015.20.961)
+- Aïssiouene, Bristeau, Godlewski, Mangeney, Parés Madroñal and Sainte-Marie (2020)
+  A two-dimensional method for a family of dispersive shallow water models
+  [DOI: 10.5802/smai-jcm.66](https://doi.org/10.5802/smai-jcm.66)
+- Escalante, Dumbser and Castro (2019)
+  An efficient hyperbolic relaxation system for dispersive non-hydrostatic
+  water waves and its solution with high order discontinuous Galerkin schemes
+  [DOI: 10.1016/j.jcp.2019.05.035](https://doi.org/10.1016/j.jcp.2019.05.035)
+
+The energy-conserving semidiscretization is basically taken from the
+following reference, but adapted to the standard style of
+DispersiveShallowWater.jl to use the primitive variables `q = (η, v, D, w, p)`.
+- Artiano and Ranocha (2026)
+  On Affordable High-Order Entropy-Conservative/Stable and
+  Well-Balanced Methods for Nonconservative Hyperbolic Systems
+  [DOI: 10.48550/arXiv.2603.18978](https://arxiv.org/abs/2603.18978)
+"""
 struct HyperbolicSainteMarieEquations1D{Bathymetry <: Union{BathymetryFlat, BathymetryMildSlope},
                                         RealT <: Real} <: AbstractSainteMarieEquations{1, 5}
     bathymetry_type::Bathymetry # type of bathymetry
@@ -15,7 +86,7 @@ function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_sl
     HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha, c_squared)
 end
 
-# TODO: What is easier - hv or v as main computational variable?
+# TODO: It would also make sense to use the conservative form as default.
 function varnames(::typeof(prim2prim), ::HyperbolicSainteMarieEquations1D)
     return ("η", "v", "D", "w", "p")
 end
@@ -54,6 +125,8 @@ function set_approximation_variables!(q, mesh,
 
     # This is not true but just a simple initialization used also in
     # at least one experiment of Escalante, Dumbser, Castro (2019).
+    # In general, the non-hydrostatic pressure involves also time derivatives
+    # of the velocity.
     @.. p = 0
 
     # w ≈ -(1/2) h v_x + v b_x
@@ -63,13 +136,13 @@ function set_approximation_variables!(q, mesh,
     if !(equations.bathymetry_type isa BathymetryFlat)
         b = equations.eta0 .- D
         b_x = D1 * b
-        @.. w += 1.5 * v * b_x
+        @.. w = w + v * b_x
     end
 
     return nothing
 end
 
-# TODO: other methods
+# TODO: initial conditions, source terms, dingemans_calibration
 
 function create_cache(mesh, equations::HyperbolicSainteMarieEquations1D,
                       solver, initial_condition,
@@ -207,11 +280,14 @@ function rhs!(dq, q, t, mesh,
         # h v_t + g (h (h + b))_x - g (h + b) h_x
         #       + 1/2 h (v^2)_x - 1/2 v^2 h_x  + 1/2 v (h v)_x - 1/2 h v v_x
         #       + (h p)_x + 2 p b_x = 0
-        # TODO: non-hydrostatic terms for variable bathymetry
         @.. dv = -(g * h_hpb_x - g * eta * h_x
                    + 0.5 * (h * v2_x - v^2 * h_x)
                    + 0.5 * v * (hv_x - h * v_x)
                    + hp_x + 2 * p * b_x) / h
+        if !(bathymetry_type isa BathymetryFlat)
+            # TODO: non-hydrostatic terms for variable bathymetry
+            error()
+        end
 
         # Plain: h w_t + h v w_x = 2 p
         #
