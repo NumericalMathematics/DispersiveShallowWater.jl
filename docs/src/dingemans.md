@@ -47,6 +47,10 @@ hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_
                                               # for actual simulations a higher lambda (~500) is recommended
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
+
+# Hyperbolic approximation of the Sainte-Marie equations
+hysm = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_mild_slope,
+                                        gravity = 9.81, eta0 = 0.8)
 nothing # hide
 ```
 
@@ -106,6 +110,8 @@ semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
                               boundary_conditions = boundary_conditions)
 semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
+semi_hysm = Semidiscretization(mesh, hysm, initial_condition, solver_central,
+                               boundary_conditions = boundary_conditions)
 nothing # hide
 ```
 
@@ -116,12 +122,13 @@ ode_bbmbbm = semidiscretize(semi_bbmbbm, tspan)
 ode_sk = semidiscretize(semi_sk, tspan)
 ode_sgn = semidiscretize(semi_sgn, tspan)
 ode_hysgn = semidiscretize(semi_hysgn, tspan)
-
+ode_hysm = semidiscretize(semi_hysm, tspan)
 options = (; abstol = 1e-7, reltol = 1e-7, save_everystep = false, saveat = saveat)
 sol_bbmbbm = solve(ode_bbmbbm, Tsit5(); options...)
 sol_sk = solve(ode_sk, Tsit5(); options...)
 sol_sgn = solve(ode_sgn, Tsit5(); options...)
 sol_hysgn = solve(ode_hysgn, Tsit5(); options...)
+sol_hysm = solve(ode_hysm, Tsit5(); options...)
 nothing # hide
 ```
 
@@ -147,7 +154,8 @@ models = [
     (semi_bbmbbm, sol_bbmbbm, "BBM-BBM", shifted_waterheight, :solid),
     (semi_sk, sol_sk, "Svärd-Kalisch", waterheight_total, :dashdotdot),
     (semi_sgn, sol_sgn, "Serre-Green-Naghdi", waterheight_total, :dot),
-    (semi_hysgn, sol_hysgn, "Hyperbolic Serre-Green-Naghdi", waterheight_total, :dashdot)
+    (semi_hysgn, sol_hysgn, "Hyperbolic Serre-Green-Naghdi", waterheight_total, :dashdot),
+    (semi_hysm, sol_hysm, "Hyperbolic Sainte-Marie", waterheight_total, :dash),
 ]
 
 # Create snapshot plots for each time
@@ -280,6 +288,9 @@ hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_
                                               # it is chosen so low to be able to see the difference between it
                                               # and the SGN equation.
 
+hysm = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_mild_slope,
+                                        gravity = 9.81, eta0 = 0.8)
+
 initial_condition = initial_condition_dingemans
 boundary_conditions = boundary_condition_periodic
 
@@ -310,17 +321,21 @@ semi_sgn = Semidiscretization(mesh, sgn, initial_condition, solver_upwind,
                               boundary_conditions = boundary_conditions)
 semi_hysgn = Semidiscretization(mesh, hysgn, initial_condition, solver_central,
                                 boundary_conditions = boundary_conditions)
+semi_hysm = Semidiscretization(mesh, hysm, initial_condition, solver_central,
+                               boundary_conditions = boundary_conditions)
 
 ode_bbmbbm = semidiscretize(semi_bbmbbm, tspan)
 ode_sk = semidiscretize(semi_sk, tspan)
 ode_sgn = semidiscretize(semi_sgn, tspan)
 ode_hysgn = semidiscretize(semi_hysgn, tspan)
+ode_hysm = semidiscretize(semi_hysm, tspan)
 
 options = (; abstol = 1e-7, reltol = 1e-7, save_everystep = false, saveat = saveat)
 sol_bbmbbm = solve(ode_bbmbbm, Tsit5(); options...)
 sol_sk = solve(ode_sk, Tsit5(); options...)
 sol_sgn = solve(ode_sgn, Tsit5(); options...)
 sol_hysgn = solve(ode_hysgn, Tsit5(); options...)
+sol_hysm = solve(ode_hysm, Tsit5(); options...)
 
 # BBM-BBM equations need to be translated vertically for comparison
 shifted_waterheight(q, equations) = waterheight_total(q, equations) + 0.8
@@ -335,7 +350,8 @@ models = [
     (semi_bbmbbm, sol_bbmbbm, "BBM-BBM", shifted_waterheight, :solid),
     (semi_sk, sol_sk, "Svärd-Kalisch", waterheight_total, :dashdotdot),
     (semi_sgn, sol_sgn, "Serre-Green-Naghdi", waterheight_total, :dot),
-    (semi_hysgn, sol_hysgn, "Hyperbolic Serre-Green-Naghdi", waterheight_total, :dashdot)
+    (semi_hysgn, sol_hysgn, "Hyperbolic Serre-Green-Naghdi", waterheight_total, :dashdot),
+    (semi_hysm, sol_hysm, "Hyperbolic Sainte-Marie", waterheight_total, :dash),
 ]
 
 # Create snapshot plots for each time

@@ -35,3 +35,37 @@ end
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
+
+@testitem "hyperbolic_sainte_marie_dingemans.jl" setup=[
+    Setup,
+    HyperbolicSainteMarieEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_sainte_marie_dingemans.jl"),
+                        tspan=(0.0, 1.0),
+                        l2=[
+                            0.2664324191809125,
+                            0.8758998976555538,
+                            5.277989040277512e-15,
+                            0.29779046756774213,
+                            0.13247677055242074
+                        ],
+                        linf=[
+                            0.036527826201786406,
+                            0.1194334643284359,
+                            5.662137425588298e-15,
+                            0.0401503049607073,
+                            0.03575050307041049
+                        ],
+                        cons_error=[
+                            3.126388037344441e-12,
+                            0.00028199575312887545,
+                            0.0,
+                            0.016515613345694284,
+                            0.15898674767011647
+                        ],
+                        change_entropy=-0.0007378821217116638,
+                        change_entropy_modified=-7.357332378887804e-7)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
+end

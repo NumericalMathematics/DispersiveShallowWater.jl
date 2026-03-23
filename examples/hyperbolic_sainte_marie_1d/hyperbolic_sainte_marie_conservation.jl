@@ -10,8 +10,9 @@ using OrdinaryDiffEqLowStorageRK
 using DispersiveShallowWater
 
 #=
-FIXME: Test this using
-julia> using Revise; using DispersiveShallowWater, Plots, OrdinaryDiffEqVerner
+You can run this example manually and check the conservation properties as follows:
+
+julia> using Revise; using DispersiveShallowWater, OrdinaryDiffEqVerner
 
 julia> trixi_include("examples/hyperbolic_sainte_marie_1d/hyperbolic_sainte_marie_conservation.jl", tol = 1.0e-12, alg = Vern9());
 
@@ -78,6 +79,7 @@ analysis_callback = AnalysisCallback(semi; interval = 50, io,
                                      extra_analysis_errors = (:conservation_error,),
                                      extra_analysis_integrals = (waterheight_total,
                                                                  momentum,
+                                                                 entropy,
                                                                  entropy_modified))
 
 callbacks = CallbackSet(analysis_callback, summary_callback)

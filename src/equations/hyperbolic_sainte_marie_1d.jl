@@ -2,7 +2,7 @@
     HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
                                        gravity,
                                        eta0 = 0.0,
-                                       alpha)
+                                       alpha = 3.0)
 
 Hyperbolic approximation of the Sainte-Marie system
 [`SainteMarieEquations1D`](@ref) in one spatial dimension derived by
@@ -81,7 +81,7 @@ end
 function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
                                             gravity,
                                             eta0,
-                                            alpha)
+                                            alpha = 3.0)
     c_squared = alpha^2 * gravity * eta0
     HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha, c_squared)
 end
@@ -142,7 +142,9 @@ function set_approximation_variables!(q, mesh,
     return nothing
 end
 
-# TODO: initial conditions, source terms, dingemans_calibration
+# TODO: initial conditions, source terms
+
+dingemans_calibration(equations::HyperbolicSainteMarieEquations1D) = 1.0
 
 function create_cache(mesh, equations::HyperbolicSainteMarieEquations1D,
                       solver, initial_condition,
@@ -270,7 +272,7 @@ function rhs!(dq, q, t, mesh,
             # dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
             # dh[end] += h[end] * v[end] / right_boundary_weight(D1)
             # FIXME
-            error()
+            error("Reflecting boundary conditions are not implemented yet.")
         end
 
         # Plain: h v_t + h v v_x + g (h + b) h_x
@@ -284,10 +286,6 @@ function rhs!(dq, q, t, mesh,
                    + 0.5 * (h * v2_x - v^2 * h_x)
                    + 0.5 * v * (hv_x - h * v_x)
                    + hp_x + 2 * p * b_x) / h
-        if !(bathymetry_type isa BathymetryFlat)
-            # TODO: non-hydrostatic terms for variable bathymetry
-            error()
-        end
 
         # Plain: h w_t + h v w_x = 2 p
         #
