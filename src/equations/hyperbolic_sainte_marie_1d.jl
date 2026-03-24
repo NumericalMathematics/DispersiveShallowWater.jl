@@ -148,33 +148,19 @@ end
     initial_condition_manufactured(x, t, equations::HyperbolicSainteMarieEquations1D, mesh)
 
 A smooth manufactured solution in combination with
-[`source_terms_manufactured`](@ref) similar to the setup for the
-[`HyperbolicSerreGreenNaghdiEquations1D`](@ref) described in
-- Hendrik Ranocha and Mario Ricchiuto (2025)
-  Structure-Preserving Approximations of the Serre-Green-Naghdi
-  Equations in Standard and Hyperbolic Form
-  [DOI: 10.1002/num.70016](https://doi.org/10.1002/num.70016)
+[`source_terms_manufactured`](@ref).
 """
 function initial_condition_manufactured(x, t,
                                         equations::HyperbolicSainteMarieEquations1D,
                                         mesh)
     eta = 2 + cospi(2 * (x - 2 * t))
     b = -5 - 2 * cospi(2 * x)
-    h = eta - b
+    # h = eta - b = 7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))
     v = sinpi(2 * (x - t / 2))
     D = equations.eta0 - b
     # w = -h v_x / 2 + v b_x
-    w = -pi * cospi(t - 2 * x) * (7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))) -
-        4 * pi * sinpi(t - 2 * x) * sinpi(2 * x)
-    # p = ( (h w)_t + (h v w)_x ) / 2
-    p = -0.125 * pi^2 * (48 * cospi(2*(t - 4 * x)) + 336 * cospi(2 * (t - 3 * x)) +
-       412 * cospi(2 * (t - 2 * x)) - 112 * cospi(2 * x) - 32 * cospi(4 * x) -
-       16 * cospi(4 * (t - x)) + 84 * cospi(6 * (t - x)) + 28 * cospi(2 * (t + x)) +
-       16 * cospi(2 * (t + 2 * x)) + 32 * cospi(6 * t - 8 * x) + 4 * cospi(10 * t - 8 * x) -
-       84 * sinpi(3 * t) - 12 * sinpi(t - 6 * x) - 112 * sinpi(t - 4 * x) -
-       206 * sinpi(t - 2 * x) + 4 * sinpi(t + 2 * x) - 40 * sinpi(5 * t - 6 * x) -
-       9 * sinpi(9 * t - 6 * x) - 140 * sinpi(5 * t - 4 * x) - 7 * sinpi(7 * t - 2 * x) -
-       24 * sinpi(3 * t + 2 * x))
+    w = -pi * cospi(t - 2 * x) * (7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))) - 4 * pi * sinpi(t - 2 * x) * sinpi(2 * x)
+    p = cospi(2 * x - 3 * t)
     return SVector(eta, v, D, w, p)
 end
 
@@ -187,113 +173,29 @@ A smooth manufactured solution in combination with
 function source_terms_manufactured(q, x, t,
                                    equations::HyperbolicSainteMarieEquations1D)
     g = gravity(equations)
+    (; c_squared) = equations
 
-    a1 = cospi(t - 2 * x)
-    a2 = cospi(2 * x)
-    a3 = cospi(2 * (-2 * t + x))
-    a4 = sinpi(t - 2*x)
-    a5 = sinpi(2 * (-2 * t + x))
-    a6 = sinpi(2 * x)
-    a7 = sinpi(4 * (-0.5 * t + x))
-    a8 = cospi(t - 6 * x)
-    a9 = cospi(t - 4 * x)
-    a10 = cospi(t + 2 * x)
-    a11 = cospi(5 * t - 6 * x)
-    a12 = cospi(9 * t - 6 * x)
-    a13 = cospi(5 * t - 4 * x)
-    a14 = cospi(7 * t - 2 * x)
-    a15 = cospi(3 * t + 2 * x)
-    a16 = sinpi(2 * (t - 4 * x))
-    a17 = sinpi(2 * (t - 3 * x))
-    a18 = sinpi(2 * (t - 2 * x))
-    a19 = sinpi(4 * x)
-    a20 = sinpi(4 * (-t + x))
-    a21 = sinpi(6 * (-t + x))
-    a22 = sinpi(2 * (t + x))
-    a23 = sinpi(2 * (t + 2 * x))
-    a24 = sinpi(6 * (t - 8 * x))
-    a25 = sinpi(10 * t - 8 * x)
+    # a1 = cospi(t - 2 * x)
     Cos = cos
     Sin = sin
+    Power = ^
     Pi = pi
+    c = sqrt(c_squared)
 
     # Source terms for variable bathymetry
-    s1 = 2 * pi * (2 * cospi(t - 4 * x) + 7 * cospi(t - 2 * x) + cospi(5 * t - 4 * x) +
-        2 * sinpi(2 * (-2 * t + x)))
-    s2 = 0.25 * pi * (-4 * a1 * (7 + 2 * a2 + a3) -
-       16*a4*a5 -
-       8*g*(7 + 2*a2 + a3)*
-        (2*a6 + a5) -
-       8 * a4^2 * (2*a6 + a5) +
-       8*(7 + 2*a2 + a3)*a7 -
-       pi^2*(7 + 2*a2 + a3)*
-        (36*a8 + 224*a9 + 206*a1 +
-          4*a10 + 120*a11 + 27*a12 +
-          280*a13 + 7*a14 - 24*a15 +
-          192*a16 + 1008*a17 + 824*a18 +
-          112*a6 + 64*a19 + 32*a20 -
-          252*a21 - 28*a22 - 32*a23 +
-          128*a24 + 16*a25) +
-       16*a6*(g*(7 + 2*a2 + a3) -
-          (pi^2*(48*Cos(2*Pi*(t - 4*x)) + 336*Cos(2*Pi*(t - 3*x)) +
-               412*Cos(2*Pi*(t - 2*x)) - 112*a2 - 32*Cos(4*Pi*x) -
-               16*Cos(4*Pi*(-t + x)) + 84*Cos(6*Pi*(-t + x)) + 28*Cos(2*Pi*(t + x)) +
-               16*Cos(2*Pi*(t + 2*x)) + 32*Cos(6*Pi*t - 8*Pi*x) +
-               4*Cos(10*Pi*t - 8*Pi*x) - 84*Sin(3*Pi*t) - 12*Sin(Pi*(t - 6*x)) -
-               112*Sin(Pi*(t - 4*x)) - 206*a4 + 4*Sin(Pi*(t + 2*x)) -
-               40*Sin(5*Pi*t - 6*Pi*x) - 9*Sin(9*Pi*t - 6*Pi*x) -
-               140*Sin(5*Pi*t - 4*Pi*x) - 7*Sin(7*Pi*t - 2*Pi*x) -
-               24*Sin(3*Pi*t + 2*Pi*x)))/4.) +
-       pi^2*(2*a6 + a5)*
-        (48*Cos(2*Pi*(t - 4*x)) + 336*Cos(2*Pi*(t - 3*x)) + 412*Cos(2*Pi*(t - 2*x)) -
-          112*a2 - 32*Cos(4*Pi*x) - 16*Cos(4*Pi*(-t + x)) +
-          84*Cos(6*Pi*(-t + x)) + 28*Cos(2*Pi*(t + x)) + 16*Cos(2*Pi*(t + 2*x)) +
-          32*Cos(6*Pi*t - 8*Pi*x) + 4*Cos(10*Pi*t - 8*Pi*x) - 84*Sin(3*Pi*t) -
-          12*Sin(Pi*(t - 6*x)) - 112*Sin(Pi*(t - 4*x)) - 206*a4 +
-          4*Sin(Pi*(t + 2*x)) - 40*Sin(5*Pi*t - 6*Pi*x) - 9*Sin(9*Pi*t - 6*Pi*x) -
-          140*Sin(5*Pi*t - 4*Pi*x) - 7*Sin(7*Pi*t - 2*Pi*x) - 24*Sin(3*Pi*t + 2*Pi*x)))
-   s3 = 0.0
-   s4 = 0.0
-   s5 = 0.125 * pi^3 * (2*(7 + 2*a2 + a3)*a4*
-        (36*a8 + 224*a9 + 206*a1 +
-          4*a10 + 120*a11 + 27*a12 +
-          280*a13 + 7*a14 - 24*a15 +
-          192*a16 + 1008*a17 + 824*a18 +
-          112*a6 + 64*a19 + 32*a20 -
-          252*a21 - 28*a22 - 32*a23 +
-          128*a24 + 16*a25) +
-       (7 + 2*a2 + a3)*
-        (252*Cos(3*Pi*t) + 12*a8 + 112*a9 +
-          206*a1 - 4*a10 + 200*a11 +
-          81*a12 + 700*a13 + 49*a14 +
-          72*a15 + 96*a16 + 672*a17 +
-          824*a18 + 64*a20 - 504*a21 +
-          56*a22 + 32*a23 + 192*a24 +
-          40*a25) -
-       4*a5*(48*Cos(2*Pi*(t - 4*x)) + 336*Cos(2*Pi*(t - 3*x)) +
-          412*Cos(2*Pi*(t - 2*x)) - 112*a2 - 32*Cos(4*Pi*x) -
-          16*Cos(4*Pi*(-t + x)) + 84*Cos(6*Pi*(-t + x)) + 28*Cos(2*Pi*(t + x)) +
-          16*Cos(2*Pi*(t + 2*x)) + 32*Cos(6*Pi*t - 8*Pi*x) + 4*Cos(10*Pi*t - 8*Pi*x) -
-          84*Sin(3*Pi*t) - 12*Sin(Pi*(t - 6*x)) - 112*Sin(Pi*(t - 4*x)) -
-          206*a4 + 4*Sin(Pi*(t + 2*x)) - 40*Sin(5*Pi*t - 6*Pi*x) -
-          9*Sin(9*Pi*t - 6*Pi*x) - 140*Sin(5*Pi*t - 4*Pi*x) - 7*Sin(7*Pi*t - 2*Pi*x) -
-          24*Sin(3*Pi*t + 2*Pi*x)) +
-       2*a1*(7 + 2*a2 + a3)*
-        (-48*Cos(2*Pi*(t - 4*x)) - 336*Cos(2*Pi*(t - 3*x)) - 412*Cos(2*Pi*(t - 2*x)) +
-          112*a2 + 32*Cos(4*Pi*x) + 16*Cos(4*Pi*(-t + x)) -
-          84*Cos(6*Pi*(-t + x)) - 28*Cos(2*Pi*(t + x)) - 16*Cos(2*Pi*(t + 2*x)) -
-          32*Cos(6*Pi*t - 8*Pi*x) - 4*Cos(10*Pi*t - 8*Pi*x) + 84*Sin(3*Pi*t) +
-          12*Sin(Pi*(t - 6*x)) + 112*Sin(Pi*(t - 4*x)) + 206*a4 -
-          4*Sin(Pi*(t + 2*x)) + 40*Sin(5*Pi*t - 6*Pi*x) + 9*Sin(9*Pi*t - 6*Pi*x) +
-          140*Sin(5*Pi*t - 4*Pi*x) + 7*Sin(7*Pi*t - 2*Pi*x) + 24*Sin(3*Pi*t + 2*Pi*x)) +
-       2*a4*(2*a6 + a5)*
-        (-48*Cos(2*Pi*(t - 4*x)) - 336*Cos(2*Pi*(t - 3*x)) - 412*Cos(2*Pi*(t - 2*x)) +
-          112*a2 + 32*Cos(4*Pi*x) + 16*Cos(4*Pi*(-t + x)) -
-          84*Cos(6*Pi*(-t + x)) - 28*Cos(2*Pi*(t + x)) - 16*Cos(2*Pi*(t + 2*x)) -
-          32*Cos(6*Pi*t - 8*Pi*x) - 4*Cos(10*Pi*t - 8*Pi*x) + 84*Sin(3*Pi*t) +
-          12*Sin(Pi*(t - 6*x)) + 112*Sin(Pi*(t - 4*x)) + 206*a4 -
-          4*Sin(Pi*(t + 2*x)) + 40*Sin(5*Pi*t - 6*Pi*x) + 9*Sin(9*Pi*t - 6*Pi*x) +
-          140*Sin(5*Pi*t - 4*Pi*x) + 7*Sin(7*Pi*t - 2*Pi*x) + 24*Sin(3*Pi*t + 2*Pi*x)))
+    s1 = 2*Pi*(2*Cos(Pi*(t - 4*x)) + 7*Cos(Pi*(t - 2*x)) + Cos(5*Pi*t - 4*Pi*x) +
+     2*Sin(2*Pi*(-2*t + x)))
+    s2 = Pi*(-Cos(Pi*(t - 2*x)) + (Cos(3*Pi*t - 2*Pi*x)*
+        (4*Sin(2*Pi*x) - 2*Sin(2*Pi*(-2*t + x))))/
+      (7 + 2*Cos(2*Pi*x) + Cos(2*Pi*(-2*t + x))) - 2*g*Sin(2*Pi*(-2*t + x)) +
+     Sin(4*Pi*(-0.5*t + x)) - 2*Sin(Pi*(-3*t + 2*x)))
+    s3 = 0.0 # D
+    s4 = (-2*Cos(3*Pi*t - 2*Pi*x))/(7 + 2*Cos(2*Pi*x) + Cos(2*Pi*(-2*t + x))) +
+   Power(Pi,2)*(14*Power(Sin(Pi*(t - 2*x)),2) -
+      4*Cos(Pi*(t - 2*x))*(Sin(2*Pi*x) + Sin(2*Pi*(-2*t + x))) +
+      Sin(Pi*(t - 2*x))*(7 + 2*Cos(2*Pi*x) + Cos(2*Pi*(-2*t + x)) +
+         12*Sin(Pi*(t - 4*x)) + 2*Sin(5*Pi*t - 4*Pi*x)))
+    s5 = Pi*(3 + 2*Sin(Pi*(t - 2*x)))*Sin(Pi*(-3*t + 2*x))
 
     return SVector(s1, s2, s3, s4, s5)
 end
