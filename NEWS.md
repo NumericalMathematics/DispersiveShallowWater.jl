@@ -5,6 +5,12 @@ DispersiveShallowWater.jl follows the interpretation of
 used in the Julia ecosystem. Notable changes will be documented in this file
 for human readability.
 
+## Changes in the v0.10 lifecycle
+
+#### Added
+
+- The `HyperbolicSainteMarieEquations1D` were added for different types of bathymetry ([#TODO]).
+
 ## Changes when updating to v0.10 from v0.9.x
 
 #### Changed
