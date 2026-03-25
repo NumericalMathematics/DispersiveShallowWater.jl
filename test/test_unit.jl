@@ -469,7 +469,7 @@ end
     solver = Solver(D1)
 
     # These equations are not really implemented and only available as a fallback for the hyperbolization.
-    equations = @test_nowarn @inferred DispersiveShallowWater.SainteMarieEquations1D(gravity = 9.81)
+    equations = @test_nowarn @inferred SainteMarieEquations1D(gravity = 9.81)
     @test_throws MethodError Semidiscretization(mesh, equations, initial_condition,
                                                 solver;
                                                 boundary_conditions = boundary_conditions)
