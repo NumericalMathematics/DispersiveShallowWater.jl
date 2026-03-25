@@ -62,9 +62,9 @@ struct SainteMarieEquations1D{Bathymetry <: Union{BathymetryFlat, BathymetryMild
 end
 
 function SainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
-                                  gravity,
-                                  eta0 = 0.0)
-    SainteMarieEquations1D(bathymetry_type, gravity, eta0)
+                                gravity,
+                                eta0 = 0.0)
+    return SainteMarieEquations1D(bathymetry_type, gravity, eta0)
 end
 
 # TODO: Consider implementing more functionality to allow comparison

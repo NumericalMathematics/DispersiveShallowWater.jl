@@ -69,7 +69,8 @@ DispersiveShallowWater.jl to use the primitive variables `q = (η, v, D, w, p)`.
   Well-Balanced Methods for Nonconservative Hyperbolic Systems
   [DOI: 10.48550/arXiv.2603.18978](https://arxiv.org/abs/2603.18978)
 """
-struct HyperbolicSainteMarieEquations1D{Bathymetry <: Union{BathymetryFlat, BathymetryMildSlope},
+struct HyperbolicSainteMarieEquations1D{Bathymetry <:
+                                        Union{BathymetryFlat, BathymetryMildSlope},
                                         RealT <: Real} <: AbstractSainteMarieEquations{1, 5}
     bathymetry_type::Bathymetry # type of bathymetry
     gravity::RealT # gravitational acceleration
@@ -79,11 +80,12 @@ struct HyperbolicSainteMarieEquations1D{Bathymetry <: Union{BathymetryFlat, Bath
 end
 
 function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
-                                            gravity,
-                                            eta0,
-                                            alpha = 3.0)
+                                          gravity,
+                                          eta0,
+                                          alpha = 3.0)
     c_squared = alpha^2 * gravity * eta0
-    HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha, c_squared)
+    return HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha,
+                                            c_squared)
 end
 
 # TODO: It would also make sense to use the conservative form as default.
@@ -142,8 +144,6 @@ function set_approximation_variables!(q, mesh,
     return nothing
 end
 
-
-
 """
     initial_condition_manufactured(x, t, equations::HyperbolicSainteMarieEquations1D, mesh)
 
@@ -159,7 +159,8 @@ function initial_condition_manufactured(x, t,
     v = sinpi(2 * (x - t / 2))
     D = equations.eta0 - b
     # w = -h v_x / 2 + v b_x
-    w = -pi * cospi(t - 2 * x) * (7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))) - 4 * pi * sinpi(t - 2 * x) * sinpi(2 * x)
+    w = -pi * cospi(t - 2 * x) * (7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))) -
+        4 * pi * sinpi(t - 2 * x) * sinpi(2 * x)
     p = cospi(2 * x - 3 * t)
     return SVector(eta, v, D, w, p)
 end
@@ -173,29 +174,30 @@ A smooth manufactured solution in combination with
 function source_terms_manufactured(q, x, t,
                                    equations::HyperbolicSainteMarieEquations1D)
     g = gravity(equations)
-    (; c_squared) = equations
+    pi_2 = pi^2
 
-    # a1 = cospi(t - 2 * x)
-    Cos = cos
-    Sin = sin
-    Power = ^
-    Pi = pi
-    c = sqrt(c_squared)
+    a1 = cospi(t - 4 * x)
+    a2 = cospi(t - 2 * x)
+    a3 = cospi(5 * t - 4 * x)
+    a4 = sinpi(4 * t - 2 * x)
+    a5 = cospi(3 * t - 2 * x)
+    a6 = sinpi(2 * x)
+    a7 = cospi(2 * x)
+    a8 = sinpi(t - 2 * x)
+    a9 = sinpi(3 * t - 2 * x)
+    a10 = cospi(4 * t - 2 * x)
+    a11 = sinpi(4 * x - 2 * t)
+    a12 = sinpi(t - 4 * x)
+    a13 = sinpi(5 * t - 4 * x)
+    a14 = (7 + 2 * a7 + a10)
 
     # Source terms for variable bathymetry
-    s1 = 2*Pi*(2*Cos(Pi*(t - 4*x)) + 7*Cos(Pi*(t - 2*x)) + Cos(5*Pi*t - 4*Pi*x) +
-     2*Sin(2*Pi*(-2*t + x)))
-    s2 = Pi*(-Cos(Pi*(t - 2*x)) + (Cos(3*Pi*t - 2*Pi*x)*
-        (4*Sin(2*Pi*x) - 2*Sin(2*Pi*(-2*t + x))))/
-      (7 + 2*Cos(2*Pi*x) + Cos(2*Pi*(-2*t + x))) - 2*g*Sin(2*Pi*(-2*t + x)) +
-     Sin(4*Pi*(-0.5*t + x)) - 2*Sin(Pi*(-3*t + 2*x)))
-    s3 = 0.0 # D
-    s4 = (-2*Cos(3*Pi*t - 2*Pi*x))/(7 + 2*Cos(2*Pi*x) + Cos(2*Pi*(-2*t + x))) +
-   Power(Pi,2)*(14*Power(Sin(Pi*(t - 2*x)),2) -
-      4*Cos(Pi*(t - 2*x))*(Sin(2*Pi*x) + Sin(2*Pi*(-2*t + x))) +
-      Sin(Pi*(t - 2*x))*(7 + 2*Cos(2*Pi*x) + Cos(2*Pi*(-2*t + x)) +
-         12*Sin(Pi*(t - 4*x)) + 2*Sin(5*Pi*t - 4*Pi*x)))
-    s5 = Pi*(3 + 2*Sin(Pi*(t - 2*x)))*Sin(Pi*(-3*t + 2*x))
+    s1 = 2 * pi * (2 * a1 + 7 * a2 + a3 - 2 * a4)
+    s2 = pi * (-a2 + a5 * (4 * a6 + 2 * a4) / a14 + 2 * g * a4 + a11 + 2 * a9)
+    s3 = zero(s1)
+    s4 = -2 * a5 / a14 +
+         pi_2 * (14 * a8^2 - 4 * a2 * (a6 - a4) + a8 * (a14 + 12 * a12 + 2 * a13))
+    s5 = -pi * (3 + 2 * a8) * a9
 
     return SVector(s1, s2, s3, s4, s5)
 end
@@ -358,8 +360,10 @@ function rhs!(dq, q, t, mesh,
         #       + c^2 h v_x + 2 c^2 w
         #       - 2 c^2 v b_x = 0
         @.. dp = (-0.5 * (hvp_x + h * v * p_x + dh * p)
-                  - c_squared * h * v_x - 2 * c_squared * w
-                  + 2 * c_squared * v * b_x) / h
+                  -
+                  c_squared * h * v_x - 2 * c_squared * w
+                  +
+                  2 * c_squared * v * b_x) / h
     end
 
     @trixi_timeit timer() "source terms" calc_sources!(dq, q, t, source_terms, equations,
