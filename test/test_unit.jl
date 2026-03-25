@@ -581,7 +581,8 @@ end
 end
 
 @testitem "LinearDispersionRelation" setup=[Setup] begin
-    disp_rel = LinearDispersionRelation(3.0)
+    h0 = 3.0
+    disp_rel = LinearDispersionRelation(h0)
     @test_nowarn print(disp_rel)
     @test_nowarn display(disp_rel)
     g = 9.81
@@ -593,7 +594,8 @@ end
         0.5660455316649682,
         7.700912310929906,
         3.1189522995345467,
-        3.5964407206640763
+        3.5964407206640763,
+        0.34223858107388744
     ]
     wave_speeds = [
         1.2495239060264087,
@@ -602,7 +604,8 @@ end
         0.09008894437955965,
         1.2256382606017253,
         0.4963966757387569,
-        0.5723913182306661
+        0.5723913182306661,
+        0.05446896189466557
     ]
 
     for (i, equations) in enumerate((EulerEquations1D(gravity = g),
@@ -614,7 +617,8 @@ end
                                                               beta = 0.2308939393939394,
                                                               gamma = 0.04034343434343434),
                                      SerreGreenNaghdiEquations1D(gravity = g),
-                                     SainteMarieEquations1D(gravity = g),))
+                                     SainteMarieEquations1D(gravity = g),
+                                     HyperbolicSainteMarieEquations1D(gravity = g, h0 = h0)))
         @test isapprox(disp_rel(equations, k), frequencies[i])
         @test isapprox(wave_speed(disp_rel, equations, k), wave_speeds[i])
         # Add test for correct broadcasting
