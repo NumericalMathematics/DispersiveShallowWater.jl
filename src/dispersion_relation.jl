@@ -154,5 +154,5 @@ function (disp_rel::LinearDispersionRelation)(equations::HyperbolicSainteMarieEq
     mu = (k * h0 / alpha)^2 / 4
     den1 = (1 + (k * h0)^2 / 4 + mu) / 2
     den2 = sqrt(den1^2 - mu)
-    return sqrt(g * h0) * k / (den1 + den2)
+    return sqrt(g * h0) * k / sqrt(den1 + den2)
 end

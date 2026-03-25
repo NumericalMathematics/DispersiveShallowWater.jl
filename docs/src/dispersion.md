@@ -48,21 +48,29 @@ plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :to
 
 kdv = KdVEquation1D(; gravity = g, eta0 = eta0, D = h0)
 c_kdv = wave_speed.(disp_rel, kdv, k; normalize = true)
-plot!(k, c_kdv, label = "KdV")
+plot!(k, c_kdv, label = "KdV", linestyle = :auto)
 
 bbm = BBMEquation1D(; gravity = g, eta0 = eta0, D = h0)
 c_bbm = wave_speed.(disp_rel, bbm, k; normalize = true)
-plot!(k, c_bbm, label = "BBM")
+plot!(k, c_bbm, label = "BBM", linestyle = :auto)
 
 # Optimized set 4 in the preprint
 sk = SvaerdKalischEquations1D(; gravity = g, eta0 = eta0,
                               alpha = 0.0, beta = 0.2308939393939394, gamma = 0.04034343434343434)
 c_sk = wave_speed.(disp_rel, sk, k; normalize = true)
-plot!(k, c_sk, label = "Svärd-Kalisch")
+plot!(k, c_sk, label = "Svärd-Kalisch", linestyle = :auto)
 
 sgn = SerreGreenNaghdiEquations1D(; gravity = g, eta0 = eta0)
 c_sgn = wave_speed.(disp_rel, sgn, k; normalize = true)
-plot!(k, c_sgn, label = "Serre-Green-Naghdi")
+plot!(k, c_sgn, label = "Serre-Green-Naghdi", linestyle = :auto)
+
+sm = SainteMarieEquations1D(; gravity = g, eta0 = eta0)
+c_sm = wave_speed.(disp_rel, sm, k; normalize = true)
+plot!(k, c_sm, label = "Sainte-Marie", linestyle = :auto)
+
+hsm = HyperbolicSainteMarieEquations1D(; gravity = g, eta0 = eta0, h0 = h0, alpha = 3.0)
+c_hsm = wave_speed.(disp_rel, hsm, k; normalize = true)
+plot!(k, c_hsm, label = "Hyperbolic Sainte-Marie (\$\\alpha = 3\$)", linestyle = :auto)
 
 savefig("dispersion_relations.png") # hide
 nothing # hide
