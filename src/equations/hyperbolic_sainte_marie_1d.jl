@@ -66,6 +66,7 @@ References for the Sainte-Marie system and its hyperbolization can be found in
 The energy-conserving semidiscretization is basically taken from the
 following reference, but adapted to the standard style of
 DispersiveShallowWater.jl to use the primitive variables `q = (η, v, D, w, p)`.
+The semidiscretization implemented here is derived from their method with parameters ``\alpha_1 = 2``, ``\alpha_2 = 0``, ``\alpha_3 = 0``, and ``\alpha_4 = 0``.
 - Artiano and Ranocha (2026)
   On Affordable High-Order Entropy-Conservative/Stable and
   Well-Balanced Methods for Nonconservative Hyperbolic Systems
@@ -227,14 +228,15 @@ function create_cache(mesh, equations::HyperbolicSainteMarieEquations1D,
     v2_x = DiffCache(zero(template), N)
     h_hpb_x = DiffCache(zero(template), N)
     w_x = DiffCache(zero(template), N)
-    hvw_x = DiffCache(zero(template), N)
+    hw_x = DiffCache(zero(template), N)
+    vw_x = DiffCache(zero(template), N)
     p_x = DiffCache(zero(template), N)
     hp_x = DiffCache(zero(template), N)
-    hvp_x = DiffCache(zero(template), N)
+    vp_x = DiffCache(zero(template), N)
     tmp = DiffCache(zero(template), N)
 
     cache = (; h, b, b_x, h_x, v_x, hv_x, v2_x, h_hpb_x,
-             w_x, hvw_x, p_x, hp_x, hvp_x, tmp)
+             w_x, hw_x, vw_x, p_x, hp_x, vp_x, tmp)
     return cache
 end
 
@@ -276,10 +278,11 @@ function rhs!(dq, q, t, mesh,
         v2_x = get_tmp(cache.v2_x, eta)
         h_hpb_x = get_tmp(cache.h_hpb_x, eta)
         w_x = get_tmp(cache.w_x, eta)
-        hvw_x = get_tmp(cache.hvw_x, eta)
+        hw_x = get_tmp(cache.hw_x, eta)
+        vw_x = get_tmp(cache.vw_x, eta)
         p_x = get_tmp(cache.p_x, eta)
         hp_x = get_tmp(cache.hp_x, eta)
-        hvp_x = get_tmp(cache.hvp_x, eta)
+        vp_x = get_tmp(cache.vp_x, eta)
         tmp = get_tmp(cache.tmp, eta)
 
         @.. b = equations.eta0 - D
@@ -309,9 +312,13 @@ function rhs!(dq, q, t, mesh,
         # w_x = D1 * w
         mul!(w_x, D1, w)
 
-        # hvw_x = D1 * (h * v * w)
-        @.. tmp = h * v * w
-        mul!(hvw_x, D1, tmp)
+        # hw_x = D1 * (h * w)
+        @.. tmp = h * w
+        mul!(hw_x, D1, tmp)
+
+        # vw_x = D1 * (v * w)
+        @.. tmp = v * w
+        mul!(vw_x, D1, tmp)
 
         # p_x = D1 * p
         mul!(p_x, D1, p)
@@ -320,9 +327,9 @@ function rhs!(dq, q, t, mesh,
         @.. tmp = h * p
         mul!(hp_x, D1, tmp)
 
-        # hvp_x = D1 * (h * v * p)
-        @.. tmp = h * v * p
-        mul!(hvp_x, D1, tmp)
+        # vp_x = D1 * (v * p)
+        @.. tmp = v * p
+        mul!(vp_x, D1, tmp)
 
         # Plain: h_t + (h v)_x = 0
         #
@@ -351,18 +358,18 @@ function rhs!(dq, q, t, mesh,
         # Plain: h w_t + h v w_x = 2 p
         #
         # Split form for energy conservation:
-        # h w_t + 1/2 (h v w)_x + 1/2 h v w_x
-        #       - 1/2 h_x v w - 1/2 h w v_x = 2 p
-        @.. dw = (-0.5 * (hvw_x + h * v * w_x + dh * w) + 2 * p) / h
+        # h w_t + 1/2 h (v w)_x + 1/2 v (h w)_x
+        #       - 1/2 h_x v w - 1/2 h v_x w = 2 p
+        @.. dw = (-0.5 * (h * vw_x + v * hw_x + dh * w) + 2 * p) / h
 
         # Plain: h p_t + ...
         #
         # Split form for energy conservation:
-        # h p_t + 1/2 (h v p)_x + 1/2 h v p_x
+        # h p_t + 1/2 h (v p)_x + 1/2 v (h p)_x
         #       - 1/2 h_x v p - 1/2 h v_x p
         #       + c^2 h v_x + 2 c^2 w
         #       - 2 c^2 v b_x = 0
-        @.. dp = (-0.5 * (hvp_x + h * v * p_x + dh * p)
+        @.. dp = (-0.5 * (h * vp_x + v * hp_x + dh * p)
                   -
                   c_squared * h * v_x - 2 * c_squared * w
                   +
