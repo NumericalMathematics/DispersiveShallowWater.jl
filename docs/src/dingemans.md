@@ -50,7 +50,7 @@ hysgn = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_mild_
 
 # Hyperbolic approximation of the Sainte-Marie equations
 hysm = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                        gravity = 9.81, eta0 = 0.8)
+                                        gravity = 9.81, eta0 = 0.8, h0 = 0.8)
 nothing # hide
 ```
 
