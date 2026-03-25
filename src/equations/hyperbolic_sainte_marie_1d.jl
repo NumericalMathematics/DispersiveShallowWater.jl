@@ -6,8 +6,9 @@
                                        alpha = 3.0)
 
 Hyperbolic approximation of the Sainte-Marie system
-[`SainteMarieEquations1D`](@ref) in one spatial dimension derived by
-Escalante, Dumbser and Castro (2019).
+[`SainteMarieEquations1D`](@ref) in one spatial dimension
+(with parameter ``\gamma = 2`` compared to the original literature)
+derived by Escalante, Dumbser and Castro (2019).
 The equations are given by
 ```math
 \begin{aligned}

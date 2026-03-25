@@ -3,7 +3,8 @@
                              gravity,
                              eta0 = 0.0)
 
-Sainte-Marie system in one spatial dimension.
+Sainte-Marie system in one spatial dimension (with parameter ``\gamma = 2``
+compared to the original literature).
 The equations are given by
 ```math
 \begin{aligned}

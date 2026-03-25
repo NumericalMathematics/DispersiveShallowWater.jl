@@ -128,3 +128,14 @@ function (disp_rel::LinearDispersionRelation)(equations::SerreGreenNaghdiEquatio
     g = gravity(equations)
     return sqrt(g * h0) * k / sqrt(1.0 + (k * h0)^2 / 3)
 end
+
+# See, e.g., non-numbered equation below eq. (14) in
+# - Escalante, Dumbser and Castro (2019)
+#   An efficient hyperbolic relaxation system for dispersive non-hydrostatic
+#   water waves and its solution with high order discontinuous Galerkin schemes
+#   [DOI: 10.1016/j.jcp.2019.05.035](https://doi.org/10.1016/j.jcp.2019.05.035)
+function (disp_rel::LinearDispersionRelation)(equations::SainteMarieEquations1D, k)
+    h0 = disp_rel.ref_height
+    g = gravity(equations)
+    return sqrt(g * h0) * k / sqrt(1 + (k * h0)^2 / 4)
+end
