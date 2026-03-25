@@ -461,6 +461,78 @@ end
     end
 end
 
+@testitem "HyperbolicSainteMarieEquations1D" setup=[Setup] begin
+    equations = @test_nowarn @inferred HyperbolicSainteMarieEquations1D(gravity = 9.81,
+                                                                        h0 = 1.0)
+    @test_nowarn print(equations)
+    @test_nowarn display(equations)
+    conversion_functions = [
+        waterheight_total,
+        waterheight,
+        velocity,
+        momentum,
+        discharge,
+        entropy,
+        energy_total,
+        prim2cons,
+        prim2prim,
+        prim2phys,
+        energy_total_modified,
+        entropy_modified
+    ]
+    for conversion in conversion_functions
+        @test DispersiveShallowWater.varnames(conversion, equations) isa Tuple
+    end
+    q = [42.0, 2.0, 0.0, -0.5, 1.0]
+    @test @inferred(prim2prim(q, equations)) == q
+    @test isapprox(@inferred(cons2prim(prim2cons(q, equations), equations)), q)
+    @test @inferred(waterheight_total(q, equations)) == 42.0
+    @test @inferred(waterheight(q, equations)) == 42.0
+    @test @inferred(velocity(q, equations)) == 2.0
+    @test @inferred(momentum(q, equations)) == 84.0
+    @test @inferred(discharge(q, equations)) == 84.0
+    @test @inferred(still_water_surface(q, equations)) == 0.0
+    @test @inferred(prim2phys(q, equations)) == [42.0, 2.0, 0.0]
+
+    @testset "energy_total_modified with manufactured solution" begin
+        initial_condition = initial_condition_manufactured
+        boundary_conditions = boundary_condition_periodic
+        mesh = @inferred Mesh1D(-1.0, 1.0, 10)
+        solver = Solver(mesh, 4)
+        semi = @inferred Semidiscretization(mesh, equations, initial_condition,
+                                            solver; boundary_conditions)
+        q = @inferred DispersiveShallowWater.compute_coefficients(initial_condition,
+                                                                  0.0, semi)
+        _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
+        e_modified = @inferred energy_total_modified(q, equations, cache)
+        e_modified_total = @inferred DispersiveShallowWater.integrate(e_modified, semi)
+        e_total = @inferred DispersiveShallowWater.integrate_quantity(energy_total,
+                                                                      q, semi)
+        @test e_modified_total > 0
+        @test e_total > 0
+        U_modified = @inferred entropy_modified(q, equations, cache)
+        U_modified_total = @inferred DispersiveShallowWater.integrate(U_modified, semi)
+        @test isapprox(U_modified_total, e_modified_total)
+    end
+
+    @testset "shallow bathymetry" begin
+        equations_flat = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_flat,
+                                                         gravity = 9.81,
+                                                         h0 = 1.0)
+        initial_condition = initial_condition_dingemans
+        boundary_conditions = boundary_condition_periodic
+        mesh = @inferred Mesh1D(-1.0, 1.0, 10)
+        solver = Solver(mesh, 4)
+        semi = @inferred Semidiscretization(mesh, equations_flat, initial_condition,
+                                            solver; boundary_conditions)
+        q = @inferred DispersiveShallowWater.compute_coefficients(initial_condition,
+                                                                  0.0, semi)
+        _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
+        e_modified = @inferred energy_total_modified(q, equations_flat, cache)
+        @test eltype(e_modified) <: Number
+    end
+end
+
 @testitem "AnalysisCallback" setup=[Setup] begin
     equations = SvaerdKalischEquations1D(gravity = 9.81)
     initial_condition = initial_condition_dingemans
