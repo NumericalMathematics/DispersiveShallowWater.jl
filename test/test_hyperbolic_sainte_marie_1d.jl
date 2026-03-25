@@ -36,6 +36,45 @@ end
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
+@testitem "hyperbolic_sainte_marie_conservation.jl with bathymetry_flat" setup=[
+    Setup,
+    HyperbolicSainteMarieEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_sainte_marie_conservation.jl"),
+                        b=0.0,
+                        bathymetry_type=bathymetry_flat,
+                        tol=1.0e-12,
+                        tspan=(0.0, 1.0),
+                        l2=[
+                            1.4883751342392053,
+                            2.0240715489993337,
+                            5.384295521873979e-14,
+                            0.851823022172266,
+                            4.021158410315962
+                        ],
+                        linf=[
+                            1.1622352722043399,
+                            0.996970504640431,
+                            3.1086244689504383e-15,
+                            0.3985082548812433,
+                            1.798277246494875
+                        ],
+                        cons_error=[
+                            8.105871529551223e-11,
+                            2.036050215359353e-5,
+                            1.7053025658242404e-13,
+                            1.1013360423538034,
+                            7.893957675920978
+                        ],
+                        change_waterheight_total=-8.105871529551223e-11,
+                        change_momentum=-1.730615650785694e-12,
+                        change_entropy=-0.5373666791674623,
+                        change_entropy_modified=-1.317857822868973e-9)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
+end
+
 @testitem "hyperbolic_sainte_marie_dingemans.jl" setup=[
     Setup,
     HyperbolicSainteMarieEquations1D
