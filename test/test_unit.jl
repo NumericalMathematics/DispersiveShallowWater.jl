@@ -531,8 +531,8 @@ end
 
     @testset "shallow bathymetry" begin
         equations_flat = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_flat,
-                                                         gravity = 9.81,
-                                                         h0 = 1.0)
+                                                          gravity = 9.81,
+                                                          h0 = 1.0)
         initial_condition = initial_condition_dingemans
         boundary_conditions = boundary_condition_periodic
         mesh = @inferred Mesh1D(-1.0, 1.0, 10)
