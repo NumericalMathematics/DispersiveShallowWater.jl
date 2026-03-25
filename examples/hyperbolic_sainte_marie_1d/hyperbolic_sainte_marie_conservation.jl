@@ -31,8 +31,7 @@ julia> integrals(analysis_callback).entropy_modified |> x -> (x[end] - x[1]) / x
 
 equations = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_mild_slope,
                                              gravity = 9.81,
-                                             eta0 = 1.0,
-                                             alpha = 3.0)
+                                             h0 = 1.0)
 
 function initial_condition_conservation_test(x, t,
                                              equations::HyperbolicSainteMarieEquations1D,

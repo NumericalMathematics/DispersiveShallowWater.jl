@@ -2,6 +2,7 @@
     HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
                                        gravity,
                                        eta0 = 0.0,
+                                       h0,
                                        alpha = 3.0)
 
 Hyperbolic approximation of the Sainte-Marie system
@@ -26,8 +27,9 @@ The total water height is therefore given by ``\eta = h + b``.
 
 There are two additional variables compared to the [`SainteMarieEquations1D`](@ref):
 the auxiliary variable ``w \approx -h v_x / 2 + v b_x`` and the non-hydrostatic pressure ``p``.
-In the formal limit ``c \to \infty``, the hyperbolic approximation recovers the original Sainte-Marie system.
-The hyperbolization parameter is determined as ``c = \alpha \sqrt{g \eta_0}`` set by the keyword arguments `alpha` (``\alpha``), `gravity` (``g``), and `eta0` (``\eta_0``).
+In the formal limit ``c^2 \to \infty``, the hyperbolic approximation recovers the original Sainte-Marie system.
+Escalante, Dumbser and Castro (2019) choose the hyperbolization parameter as ``c = \alpha \sqrt{g h_0}`` for some background water height ``h_0``.
+Thus, the hyperbolization parameter ``c^2`` is set by the keyword arguments `alpha` (``\alpha``), `gravity` (``g``), and `h0` (``h_0``).
 The larger the value of ``\alpha``, the better the approximation of the original system, but also the stiffer the system.
 
 !!! note "Initial conditions"
@@ -81,9 +83,10 @@ end
 
 function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
                                           gravity,
-                                          eta0,
+                                          eta0 = 0.0,
+                                          h0,
                                           alpha = 3.0)
-    c_squared = alpha^2 * gravity * eta0
+    c_squared = alpha^2 * gravity * h0
     return HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha,
                                             c_squared)
 end

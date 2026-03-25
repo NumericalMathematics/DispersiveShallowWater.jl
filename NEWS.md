@@ -9,7 +9,7 @@ for human readability.
 
 #### Added
 
-- The `HyperbolicSainteMarieEquations1D` were added for different types of bathymetry ([#TODO]).
+- The `HyperbolicSainteMarieEquations1D` were added for different types of bathymetry ([#288]).
 
 ## Changes when updating to v0.10 from v0.9.x
 

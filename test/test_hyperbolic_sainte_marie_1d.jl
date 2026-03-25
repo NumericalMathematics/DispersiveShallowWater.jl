@@ -67,7 +67,7 @@ end
                             1.1013360423538034,
                             7.893957675920978
                         ],
-                        change_waterheight_total=-8.105871529551223e-11,
+                        change_waterheight=-8.105871529551223e-11,
                         change_momentum=-1.730615650785694e-12,
                         change_entropy=-0.5373666791674623,
                         change_entropy_modified=-1.317857822868973e-9)

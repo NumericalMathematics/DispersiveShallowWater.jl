@@ -6,7 +6,8 @@ using DispersiveShallowWater
 
 equations = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_mild_slope,
                                              gravity = 9.81,
-                                             eta0 = 0.8)
+                                             eta0 = 0.8,
+                                             h0 = 0.8)
 
 initial_condition = initial_condition_dingemans
 boundary_conditions = boundary_condition_periodic

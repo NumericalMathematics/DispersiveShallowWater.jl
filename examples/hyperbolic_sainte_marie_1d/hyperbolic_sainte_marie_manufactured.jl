@@ -5,9 +5,9 @@ using DispersiveShallowWater
 # Semidiscretization of the hyperbolic Sainte-Marie equations
 
 equations = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_mild_slope,
-                                             alpha = 3.0,
                                              gravity = 9.81,
-                                             eta0 = 2.0)
+                                             h0 = 2.0,
+                                             alpha = 3.0)
 
 initial_condition = initial_condition_manufactured
 source_terms = source_terms_manufactured
