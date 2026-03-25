@@ -1,6 +1,6 @@
 # [Equations](@id equations)
 
-[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) provides six different dispersive shallow water equation systems for modeling water waves. Each equation system offers different levels of physical accuracy, computational complexity, and supports various boundary conditions and bathymetry types.
+[DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) provides seven different dispersive shallow water equation systems for modeling water waves. Each equation system offers different levels of physical accuracy, computational complexity, and supports various boundary conditions and bathymetry types.
 
 ## [Supported Models and Features](@id eq_overview)
 
@@ -14,6 +14,7 @@ The following table provides an overview of all available equation systems and t
 | [`Svärd-Kalisch`](@ref SvaerdKalischEquations1D) | ``(\eta, v, D)`` | ✅ | ✅ᵃ | ❌ | ❌ | ✅ | ✅ | ✅ |
 | [`Serre-Green-Naghdi`](@ref SerreGreenNaghdiEquations1D) | ``(\eta, v, D)`` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [`Hyperbolic SGN`](@ref HyperbolicSerreGreenNaghdiEquations1D) |``(\eta, v, D, w, H)`` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| [`Hyperbolic Sainte-Marie`](@ref HyperbolicSainteMarieEquations1D) |``(\eta, v, D, w, p)`` | ✅ | ❌ | ✅ | ✅ | ❌ | ✅ | ✅ |
 
 *ᵃReflecting boundary conditions for Svärd-Kalisch equations require `alpha = gamma = 0`*
 
@@ -26,10 +27,11 @@ The following table provides an overview of all available equation systems and t
 - ``D``: Still-water depth
 - ``w``: Auxiliary variable in hyperbolic approximation (``\approx -h v_x``)
 - ``H``: Auxiliary variable in hyperbolic approximation (``\approx h``)
+- ``p``: Non-hydrostatic pressure in hyperbolic Sainte-Marie approximation
 
 ## Abstract Shallow Water Equations Interface
 
-Several equation systems in [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) (`BBMBBMEquations1D`, `SvaerdKalischEquations1D`, `SerreGreenNaghdiEquations1D`, and `HyperbolicSerreGreenNaghdiEquations1D`) are subtypes of [`AbstractShallowWaterEquations`](@ref). This design reflects that these systems all contain the classical shallow water equations as a subsystem, extended with additional dispersive terms.
+Several equation systems in [DispersiveShallowWater.jl](https://github.com/NumericalMathematics/DispersiveShallowWater.jl) ([`BBMBBMEquations1D`](@ref), [`SvaerdKalischEquations1D`](@ref), [`SerreGreenNaghdiEquations1D`](@ref), [`HyperbolicSerreGreenNaghdiEquations1D`](@ref), and [`HyperbolicSainteMarieEquations1D`](@ref)) are subtypes of [`AbstractShallowWaterEquations`](@ref). This design reflects that these systems all contain the classical shallow water equations as a subsystem, extended with additional dispersive terms.
 
 The common interface provides shared functionality like [`waterheight`](@ref), [`velocity`](@ref), [`energy_total`](@ref), and [`entropy`](@ref). This enables consistent analysis and visualization across different dispersive models while maintaining the underlying shallow water physics.
 
@@ -47,9 +49,9 @@ The common interface provides shared functionality like [`waterheight`](@ref), [
 
 ## Hyperbolic Approximations
 
-Some equations are hyperbolic approximations of other systems (e.g., [`HyperbolicSerreGreenNaghdiEquations1D`](@ref) approximates [`SerreGreenNaghdiEquations1D`](@ref)). These systems support two approaches for initial conditions:
+Some equations are hyperbolic approximations of other systems (e.g., [`HyperbolicSerreGreenNaghdiEquations1D`](@ref) approximates [`SerreGreenNaghdiEquations1D`](@ref), and [`HyperbolicSainteMarieEquations1D`](@ref) approximates [`SainteMarieEquations1D`](@ref)). These systems support two approaches for initial conditions:
 
-1. **Full variables**: Specify all primitive variables including auxiliary variables ``(\eta, v, D, w, H)``
+1. **Full variables**: Specify all primitive variables including auxiliary variables (e.g., ``(\eta, v, D, w, H)`` or ``(\eta, v, D, w, p)``)
 2. **Physical variables**: Specify only the physical variables ``(\eta, v, D)`` from the limit system. The auxiliary variables are automatically initialized using appropriate approximations.
 
 This flexibility allows using the same initial conditions for both the original and hyperbolic systems, simplifying comparisons and testing.
@@ -93,4 +95,14 @@ DispersiveShallowWater.SerreGreenNaghdiEquations1D
 
 ```@docs
 DispersiveShallowWater.HyperbolicSerreGreenNaghdiEquations1D
+```
+
+## Sainte-Marie and Hyperbolic Sainte-Marie
+
+```@docs
+DispersiveShallowWater.SainteMarieEquations1D
+```
+
+```@docs
+DispersiveShallowWater.HyperbolicSainteMarieEquations1D
 ```
