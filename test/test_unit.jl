@@ -461,6 +461,20 @@ end
     end
 end
 
+@testitem "SainteMarieEquations1D" setup=[Setup, AdditionalImports] begin
+    mesh = Mesh1D(-1.0, 1.0, 10)
+    initial_condition = initial_condition_convergence_test
+    boundary_conditions = boundary_condition_periodic
+    D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
+    solver = Solver(D1)
+
+    # These equations are not really implemented and only available as a fallback for the hyperbolization.
+    equations = @test_nowarn @inferred DispersiveShallowWater.SainteMarieEquations1D(gravity = 9.81)
+    @test_throws MethodError Semidiscretization(mesh, equations, initial_condition,
+                                                solver;
+                                                boundary_conditions = boundary_conditions)
+end
+
 @testitem "HyperbolicSainteMarieEquations1D" setup=[Setup] begin
     equations = @test_nowarn @inferred HyperbolicSainteMarieEquations1D(gravity = 9.81,
                                                                         h0 = 1.0)
