@@ -235,7 +235,7 @@ function source_terms_manufactured(q, x, t,
         s2 = pi * (-a2 + a5 * (4 * a6 + 2 * a4) / a14 + 2 * g * a4 + a11 + 2 * a9)
         s3 = zero(s1)
         s4 = -2 * a5 / a14 +
-            pi_2 * (14 * a8^2 - 4 * a2 * (a6 - a4) + a8 * (a14 + 12 * a12 + 2 * a13))
+             pi_2 * (14 * a8^2 - 4 * a2 * (a6 - a4) + a8 * (a14 + 12 * a12 + 2 * a13))
         s5 = -pi * (3 + 2 * a8) * a9
     end
 
