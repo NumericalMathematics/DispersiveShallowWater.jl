@@ -418,7 +418,7 @@ function rhs!(dq, q, t, mesh,
         # v_x = D1 * v
         mul!(v_x, D1, v)
 
-        # hv2_x = D1 * (h * v)
+        # hv_x = D1 * (h * v)
         @.. tmp = h * v
         mul!(hv_x, D1, tmp)
 

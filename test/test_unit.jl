@@ -461,6 +461,92 @@ end
     end
 end
 
+@testitem "SainteMarieEquations1D" setup=[Setup, AdditionalImports] begin
+    mesh = Mesh1D(-1.0, 1.0, 10)
+    initial_condition = initial_condition_convergence_test
+    boundary_conditions = boundary_condition_periodic
+    D1 = periodic_derivative_operator(1, 4, mesh.xmin, mesh.xmax, mesh.N)
+    solver = Solver(D1)
+
+    # These equations are not really implemented and only available as a fallback for the hyperbolization.
+    equations = @test_nowarn @inferred SainteMarieEquations1D(gravity = 9.81)
+    @test_throws MethodError Semidiscretization(mesh, equations, initial_condition,
+                                                solver;
+                                                boundary_conditions = boundary_conditions)
+end
+
+@testitem "HyperbolicSainteMarieEquations1D" setup=[Setup] begin
+    equations = @test_nowarn @inferred HyperbolicSainteMarieEquations1D(gravity = 9.81,
+                                                                        h0 = 1.0)
+    @test_nowarn print(equations)
+    @test_nowarn display(equations)
+    conversion_functions = [
+        waterheight_total,
+        waterheight,
+        velocity,
+        momentum,
+        discharge,
+        entropy,
+        energy_total,
+        prim2cons,
+        prim2prim,
+        prim2phys,
+        energy_total_modified,
+        entropy_modified
+    ]
+    for conversion in conversion_functions
+        @test DispersiveShallowWater.varnames(conversion, equations) isa Tuple
+    end
+    q = [42.0, 2.0, 0.0, -0.5, 1.0]
+    @test @inferred(prim2prim(q, equations)) == q
+    @test isapprox(@inferred(cons2prim(prim2cons(q, equations), equations)), q)
+    @test @inferred(waterheight_total(q, equations)) == 42.0
+    @test @inferred(waterheight(q, equations)) == 42.0
+    @test @inferred(velocity(q, equations)) == 2.0
+    @test @inferred(momentum(q, equations)) == 84.0
+    @test @inferred(discharge(q, equations)) == 84.0
+    @test @inferred(still_water_surface(q, equations)) == 0.0
+    @test @inferred(prim2phys(q, equations)) == [42.0, 2.0, 0.0]
+
+    @testset "energy_total_modified with manufactured solution" begin
+        initial_condition = initial_condition_manufactured
+        boundary_conditions = boundary_condition_periodic
+        mesh = @inferred Mesh1D(-1.0, 1.0, 10)
+        solver = Solver(mesh, 4)
+        semi = @inferred Semidiscretization(mesh, equations, initial_condition,
+                                            solver; boundary_conditions)
+        q = @inferred DispersiveShallowWater.compute_coefficients(initial_condition,
+                                                                  0.0, semi)
+        _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
+        e_modified = @inferred energy_total_modified(q, equations, cache)
+        e_modified_total = @inferred DispersiveShallowWater.integrate(e_modified, semi)
+        e_total = @inferred DispersiveShallowWater.integrate_quantity(energy_total,
+                                                                      q, semi)
+        @test e_modified_total > 0
+        @test e_total > 0
+        U_modified = @inferred entropy_modified(q, equations, cache)
+        U_modified_total = @inferred DispersiveShallowWater.integrate(U_modified, semi)
+        @test isapprox(U_modified_total, e_modified_total)
+    end
+
+    @testset "shallow bathymetry" begin
+        equations_flat = HyperbolicSainteMarieEquations1D(bathymetry_type = bathymetry_flat,
+                                                          gravity = 9.81,
+                                                          h0 = 1.0)
+        initial_condition = initial_condition_dingemans
+        boundary_conditions = boundary_condition_periodic
+        mesh = @inferred Mesh1D(-1.0, 1.0, 10)
+        solver = Solver(mesh, 4)
+        semi = @inferred Semidiscretization(mesh, equations_flat, initial_condition,
+                                            solver; boundary_conditions)
+        q = @inferred DispersiveShallowWater.compute_coefficients(initial_condition,
+                                                                  0.0, semi)
+        _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
+        e_modified = @inferred energy_total_modified(q, equations_flat, cache)
+        @test eltype(e_modified) <: Number
+    end
+end
+
 @testitem "AnalysisCallback" setup=[Setup] begin
     equations = SvaerdKalischEquations1D(gravity = 9.81)
     initial_condition = initial_condition_dingemans
@@ -495,7 +581,8 @@ end
 end
 
 @testitem "LinearDispersionRelation" setup=[Setup] begin
-    disp_rel = LinearDispersionRelation(3.0)
+    h0 = 3.0
+    disp_rel = LinearDispersionRelation(h0)
     @test_nowarn print(disp_rel)
     @test_nowarn display(disp_rel)
     g = 9.81
@@ -506,7 +593,9 @@ end
         0.5660455316649682,
         0.5660455316649682,
         7.700912310929906,
-        3.1189522995345467
+        3.1189522995345467,
+        3.5964407206640763,
+        3.4154818594713676
     ]
     wave_speeds = [
         1.2495239060264087,
@@ -514,7 +603,9 @@ end
         0.09008894437955965,
         0.09008894437955965,
         1.2256382606017253,
-        0.4963966757387569
+        0.4963966757387569,
+        0.5723913182306661,
+        0.5435908209755664
     ]
 
     for (i, equations) in enumerate((EulerEquations1D(gravity = g),
@@ -525,7 +616,9 @@ end
                                                               alpha = 0.0,
                                                               beta = 0.2308939393939394,
                                                               gamma = 0.04034343434343434),
-                                     SerreGreenNaghdiEquations1D(gravity = g)))
+                                     SerreGreenNaghdiEquations1D(gravity = g),
+                                     SainteMarieEquations1D(gravity = g),
+                                     HyperbolicSainteMarieEquations1D(gravity = g, h0 = h0)))
         @test isapprox(disp_rel(equations, k), frequencies[i])
         @test isapprox(wave_speed(disp_rel, equations, k), wave_speeds[i])
         # Add test for correct broadcasting

@@ -128,3 +128,34 @@ function (disp_rel::LinearDispersionRelation)(equations::SerreGreenNaghdiEquatio
     g = gravity(equations)
     return sqrt(g * h0) * k / sqrt(1.0 + (k * h0)^2 / 3)
 end
+
+# See, e.g., non-numbered equation below eq. (14) in
+# - Escalante, Dumbser and Castro (2019)
+#   An efficient hyperbolic relaxation system for dispersive non-hydrostatic
+#   water waves and its solution with high order discontinuous Galerkin schemes
+#   [DOI: 10.1016/j.jcp.2019.05.035](https://doi.org/10.1016/j.jcp.2019.05.035)
+# There is a typo in the paper: The equation below eq. (14) should be ``\frac{C_J^2}{gH} = J(kH)^{-1}``
+# to be consistent with eq. (14) and eq. (15).
+function (disp_rel::LinearDispersionRelation)(equations::SainteMarieEquations1D, k)
+    h0 = disp_rel.ref_height
+    g = gravity(equations)
+    return sqrt(g * h0) * k / sqrt(1 + (k * h0)^2 / 4)
+end
+
+# See, e.g., eq. (15) in
+# - Escalante, Dumbser and Castro (2019)
+#   An efficient hyperbolic relaxation system for dispersive non-hydrostatic
+#   water waves and its solution with high order discontinuous Galerkin schemes
+#   [DOI: 10.1016/j.jcp.2019.05.035](https://doi.org/10.1016/j.jcp.2019.05.035)
+# We take the physically useful solution ``C_p^-`` (in their notation).
+function (disp_rel::LinearDispersionRelation)(equations::HyperbolicSainteMarieEquations1D,
+                                              k)
+    h0 = disp_rel.ref_height
+    g = gravity(equations)
+    # c = alpha * sqrt(g * h0)
+    alpha = sqrt(equations.c_squared / (g * h0))
+    mu = (k * h0 / alpha)^2 / 4
+    den1 = (1 + (k * h0)^2 / 4 + mu) / 2
+    den2 = sqrt(den1^2 - mu)
+    return sqrt(g * h0) * k / sqrt(den1 + den2)
+end

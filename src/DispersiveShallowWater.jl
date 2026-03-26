@@ -76,7 +76,8 @@ export AbstractShallowWaterEquations,
        KdVEquation1D,
        BBMEquation1D, BBMBBMEquations1D,
        SvärdKalischEquations1D, SvaerdKalischEquations1D,
-       SerreGreenNaghdiEquations1D, HyperbolicSerreGreenNaghdiEquations1D
+       SerreGreenNaghdiEquations1D, HyperbolicSerreGreenNaghdiEquations1D,
+       SainteMarieEquations1D, HyperbolicSainteMarieEquations1D
 
 export LinearDispersionRelation, EulerEquations1D, wave_speed
 

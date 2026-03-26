@@ -19,7 +19,9 @@ Filter = t -> !(t in [DispersiveShallowWater.KdVEquation1D,
                      DispersiveShallowWater.BBMBBMEquations1D,
                      DispersiveShallowWater.SvaerdKalischEquations1D,
                      DispersiveShallowWater.SerreGreenNaghdiEquations1D,
-                     DispersiveShallowWater.HyperbolicSerreGreenNaghdiEquations1D])
+                     DispersiveShallowWater.HyperbolicSerreGreenNaghdiEquations1D,
+                     DispersiveShallowWater.SainteMarieEquations1D,
+                     DispersiveShallowWater.HyperbolicSainteMarieEquations1D])
 ```
 
 ## Linear dispersion relations
