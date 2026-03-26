@@ -80,7 +80,7 @@ struct HyperbolicSainteMarieEquations1D{Bathymetry <:
     gravity::RealT # gravitational acceleration
     eta0::RealT # constant still-water surface
     alpha::RealT # hyperbolic relaxation parameter (→ ∞ for Sainte-Marie)
-    c_squared::RealT # c^2 = alpha^2 * g * eta0
+    c_squared::RealT # c^2 = alpha^2 * g * h0
 end
 
 function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
@@ -341,7 +341,7 @@ function rhs!(dq, q, t, mesh,
             # dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
             # dh[end] += h[end] * v[end] / right_boundary_weight(D1)
             # FIXME
-            error("Reflecting boundary conditions are not implemented yet.")
+            throw(ArgumentError("Reflecting boundary conditions are not implemented yet."))
         end
 
         # Plain: h v_t + h v v_x + g (h + b) h_x
