@@ -159,13 +159,21 @@ function initial_condition_manufactured(x, t,
                                         equations::HyperbolicSainteMarieEquations1D,
                                         mesh)
     eta = 2 + cospi(2 * (x - 2 * t))
-    b = -5 - 2 * cospi(2 * x)
-    # h = eta - b = 7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))
     v = sinpi(2 * (x - t / 2))
-    D = equations.eta0 - b
-    # w = -h v_x / 2 + v b_x
-    w = -pi * cospi(t - 2 * x) * (7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))) -
-        4 * pi * sinpi(t - 2 * x) * sinpi(2 * x)
+    if equations.bathymetry_type isa BathymetryFlat
+        b = -5
+        # h = eta - b = 7 + cospi(2 * (x - 2 * t))
+        D = equations.eta0 - b
+        # w = -h v_x / 2 + v b_x
+        w = -pi * cospi(t - 2 * x) * (7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))) -
+            4 * pi * sinpi(t - 2 * x) * sinpi(2 * x)
+    else
+        b = -5 - 2 * cospi(2 * x)
+        # h = eta - b = 7 + 2 * cospi(2 * x) + cospi(2 * (x - 2 * t))
+        D = equations.eta0 - b
+        # w = -h v_x / 2 + v b_x
+        w = -pi * cospi(t - 2 * x) * (7 + cospi(2 * (x - 2 * t)))
+    end
     p = cospi(2 * x - 3 * t)
     return SVector(eta, v, D, w, p)
 end
@@ -181,28 +189,43 @@ function source_terms_manufactured(q, x, t,
     g = gravity(equations)
     pi_2 = pi^2
 
-    a1 = cospi(t - 4 * x)
-    a2 = cospi(t - 2 * x)
-    a3 = cospi(5 * t - 4 * x)
-    a4 = sinpi(4 * t - 2 * x)
-    a5 = cospi(3 * t - 2 * x)
-    a6 = sinpi(2 * x)
-    a7 = cospi(2 * x)
-    a8 = sinpi(t - 2 * x)
-    a9 = sinpi(3 * t - 2 * x)
-    a10 = cospi(4 * t - 2 * x)
-    a11 = sinpi(4 * x - 2 * t)
-    a12 = sinpi(t - 4 * x)
-    a13 = sinpi(5 * t - 4 * x)
-    a14 = (7 + 2 * a7 + a10)
+    if equations.bathymetry_type isa BathymetryFlat
+        # Source terms for flat bathymetry
+        s1 = 2*Pi*(7*Cos(Pi*(t - 2*x)) + Cos(5*Pi*t - 4*Pi*x) + 2*Sin(2*Pi*(-2*t + x)))
+        s2 = -0.5*(Pi*(Cos(3*Pi*t) + 14*Cos(Pi*(t - 2*x)) + Cos(5*Pi*t - 4*Pi*x) +
+        14*Sin(2*Pi*(t - 2*x)) + 28*g*Sin(2*Pi*(-2*t + x)) + 2*g*Sin(4*Pi*(-2*t + x)) -
+        Sin(6*Pi*(-t + x)) - Sin(2*Pi*(t + x)) + 28*Sin(Pi*(-3*t + 2*x)) -
+        4*Sin(7*Pi*t - 4*Pi*x)))/(7 + Cos(2*Pi*(-2*t + x)))
+        s3 = zero(s1)
+        s4 = (-2*Cos(3*Pi*t - 2*Pi*x))/(7 + Cos(2*Pi*(-2*t + x))) +
+   Power(Pi,2)*(14*Power(Sin(Pi*(t - 2*x)),2) -
+      4*Cos(Pi*(t - 2*x))*Sin(2*Pi*(-2*t + x)) +
+      Sin(Pi*(t - 2*x))*(7 + Cos(2*Pi*(-2*t + x)) + 2*Sin(5*Pi*t - 4*Pi*x)))
+        s5 = Pi*(3 + 2*Sin(Pi*(t - 2*x)))*Sin(Pi*(-3*t + 2*x))
+    else
+        # Source terms for variable bathymetry
+        a1 = cospi(t - 4 * x)
+        a2 = cospi(t - 2 * x)
+        a3 = cospi(5 * t - 4 * x)
+        a4 = sinpi(4 * t - 2 * x)
+        a5 = cospi(3 * t - 2 * x)
+        a6 = sinpi(2 * x)
+        a7 = cospi(2 * x)
+        a8 = sinpi(t - 2 * x)
+        a9 = sinpi(3 * t - 2 * x)
+        a10 = cospi(4 * t - 2 * x)
+        a11 = sinpi(4 * x - 2 * t)
+        a12 = sinpi(t - 4 * x)
+        a13 = sinpi(5 * t - 4 * x)
+        a14 = (7 + 2 * a7 + a10)
 
-    # Source terms for variable bathymetry
-    s1 = 2 * pi * (2 * a1 + 7 * a2 + a3 - 2 * a4)
-    s2 = pi * (-a2 + a5 * (4 * a6 + 2 * a4) / a14 + 2 * g * a4 + a11 + 2 * a9)
-    s3 = zero(s1)
-    s4 = -2 * a5 / a14 +
-         pi_2 * (14 * a8^2 - 4 * a2 * (a6 - a4) + a8 * (a14 + 12 * a12 + 2 * a13))
-    s5 = -pi * (3 + 2 * a8) * a9
+        s1 = 2 * pi * (2 * a1 + 7 * a2 + a3 - 2 * a4)
+        s2 = pi * (-a2 + a5 * (4 * a6 + 2 * a4) / a14 + 2 * g * a4 + a11 + 2 * a9)
+        s3 = zero(s1)
+        s4 = -2 * a5 / a14 +
+            pi_2 * (14 * a8^2 - 4 * a2 * (a6 - a4) + a8 * (a14 + 12 * a12 + 2 * a13))
+        s5 = -pi * (3 + 2 * a8) * a9
+    end
 
     return SVector(s1, s2, s3, s4, s5)
 end

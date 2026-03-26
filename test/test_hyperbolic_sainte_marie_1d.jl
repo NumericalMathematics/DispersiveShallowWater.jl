@@ -147,3 +147,38 @@ end
 
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
+
+@testitem "hyperbolic_sainte_marie_manufactured.jl with bathymetry_flat" setup=[
+    Setup,
+    HyperbolicSainteMarieEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_sainte_marie_manufactured.jl"),
+                        bathymetry_type=bathymetry_flat,
+                        tspan=(0.0, 0.1),
+                        abstol=1.0e-12,
+                        reltol=1.0e-12,
+                        l2=[
+                            0.00019537168346170865,
+                            3.453172345767322e-5,
+                            0.0,
+                            0.002547202021354868,
+                            0.001859407766133216
+                        ],
+                        linf=[
+                            0.0003058377491629294,
+                            6.150206698318783e-5,
+                            0.0,
+                            0.004072090053441002,
+                            0.0030164198069354553
+                        ],
+                        cons_error=[
+                            4.440892098500626e-16,
+                            1.4747533280490277e-5,
+                            0.0,
+                            0.4936130523192781,
+                            0.0001957021433037043
+                        ])
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
+end
