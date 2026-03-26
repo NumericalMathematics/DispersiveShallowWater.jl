@@ -134,6 +134,8 @@ end
 #   An efficient hyperbolic relaxation system for dispersive non-hydrostatic
 #   water waves and its solution with high order discontinuous Galerkin schemes
 #   [DOI: 10.1016/j.jcp.2019.05.035](https://doi.org/10.1016/j.jcp.2019.05.035)
+# There is a typo in the paper: The equation below eq. (14) should be ``\frac{C_J^2}{gH} = J(kH)^{-1}``
+# to be consistent with eq. (14) and eq. (15).
 function (disp_rel::LinearDispersionRelation)(equations::SainteMarieEquations1D, k)
     h0 = disp_rel.ref_height
     g = gravity(equations)
