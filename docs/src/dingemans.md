@@ -123,6 +123,7 @@ ode_sk = semidiscretize(semi_sk, tspan)
 ode_sgn = semidiscretize(semi_sgn, tspan)
 ode_hysgn = semidiscretize(semi_hysgn, tspan)
 ode_hysm = semidiscretize(semi_hysm, tspan)
+
 options = (; abstol = 1e-7, reltol = 1e-7, save_everystep = false, saveat = saveat)
 sol_bbmbbm = solve(ode_bbmbbm, Tsit5(); options...)
 sol_sk = solve(ode_sk, Tsit5(); options...)
