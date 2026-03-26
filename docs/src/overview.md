@@ -25,7 +25,7 @@ The following table provides an overview of all available equation systems and t
 - ``\eta``: Total water height
 - ``v``: Velocity in horizontal direction
 - ``D``: Still-water depth
-- ``w``: Auxiliary variable in hyperbolic approximation (``\approx -h v_x``)
+- ``w``: Auxiliary variable in hyperbolic approximation (e.g., ``\approx -h v_x`` for the hyperbolic SGN equations)
 - ``H``: Auxiliary variable in hyperbolic approximation (``\approx h``)
 - ``p``: Non-hydrostatic pressure in hyperbolic Sainte-Marie approximation
 
