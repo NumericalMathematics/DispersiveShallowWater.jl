@@ -87,7 +87,7 @@ solve the problem with the Svärd-Kalisch equations.
 using OrdinaryDiffEqTsit5
 using Printf
 
-equations = sk
+equations = hsm
 wave_number() = 3.0
 frequency(k) = disp_rel(euler, k)
 
