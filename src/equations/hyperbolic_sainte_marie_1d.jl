@@ -30,10 +30,11 @@ There are two additional variables compared to the [`SainteMarieEquations1D`](@r
 the auxiliary variable ``w \approx -h v_x / 2 + v b_x`` and the non-hydrostatic pressure ``p``.
 In the formal limit ``c^2 \to \infty``, the hyperbolic approximation recovers the original Sainte-Marie system.
 Escalante, Dumbser and Castro (2019) choose the hyperbolization parameter as ``c = \alpha \sqrt{g h_0}`` for some background water height ``h_0``.
-Typically, ``\alpha`` should be chosen larger than 1 to get a good approximation of the original system, but the system also becomes stiffer for larger values of ``\alpha``.
-Escalante, Dumbser and Castro (2019) often use the value ``\alpha = 3`` in their numerical experiments, which is also the default value in `HyperbolicSainteMarieEquations1D`.
 Thus, the hyperbolization parameter ``c^2`` is set by the keyword arguments `alpha` (``\alpha``), `gravity` (``g``), and `h0` (``h_0``).
 The larger the value of ``\alpha``, the better the approximation of the original system, but also the stiffer the system.
+Typically, ``\alpha`` should be chosen larger than 1 to get a good approximation of the original system, but the system also becomes stiffer for larger values of ``\alpha``.
+Escalante, Dumbser and Castro (2019) often use the value ``\alpha = 3`` in their numerical experiments, which is also the default value in `HyperbolicSainteMarieEquations1D`.
+For the special case ``\alpha = 0`` and with initial conditions ``p = 0 = w``, the system reduces to the classical shallow water equations.
 
 !!! note "Initial conditions"
     The `HyperbolicSainteMarieEquations1D` allow two options for
