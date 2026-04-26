@@ -8,6 +8,6 @@
 
     # ExplicitImports.jl
     @test isnothing(check_no_implicit_imports(DispersiveShallowWater))
-    @test isnothing(check_no_stale_explicit_imports(DispersiveShallowWater),
-                    ignore = (:derivative_discontinuity!,))
+    @test isnothing(check_no_stale_explicit_imports(DispersiveShallowWater,
+                                                    ignore = (:derivative_discontinuity!,)))
 end
