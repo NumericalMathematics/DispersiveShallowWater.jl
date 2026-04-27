@@ -183,7 +183,7 @@ function (analysis_callback::AnalysisCallback)(integrator)
                                              semi)
 
     # avoid re-evaluating possible FSAL stages
-    u_modified!(integrator, false)
+    derivative_discontinuity!(integrator, false)
 
     # Return errors for EOC analysis
     return l2_error, linf_error

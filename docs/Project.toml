@@ -11,7 +11,7 @@ TrixiBase = "9a0f1c46-06d5-4909-a5a3-ce25d3fa3284"
 [compat]
 Changelog = "1"
 Documenter = "1"
-OrdinaryDiffEqTsit5 = "1"
+OrdinaryDiffEqTsit5 = "1, 2"
 Plots = "1.9"
 Printf = "1"
 SparseArrays = "1"

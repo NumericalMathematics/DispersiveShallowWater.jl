@@ -32,7 +32,6 @@ using Reexport: @reexport
 using Roots: AlefeldPotraShi, find_zero
 
 using SciMLBase: SciMLBase, DiscreteCallback, ODEProblem, ODESolution
-import SciMLBase: u_modified!
 
 @reexport using StaticArrays: SVector
 using SimpleUnPack: @unpack
@@ -56,6 +55,14 @@ import SummationByPartsOperators: grid, xmin, xmax, semidiscretize
 using TimerOutputs: TimerOutputs, print_timer, reset_timer!
 @reexport using TrixiBase: trixi_include
 using TrixiBase: TrixiBase, @trixi_timeit, timer
+
+# To keep backwards compatibility with SciMLBase v2, see
+# https://github.com/trixi-framework/Trixi.jl/pull/2918#issuecomment-4233720339
+@static if isdefined(SciMLBase, :derivative_discontinuity!)
+    using SciMLBase: derivative_discontinuity!
+else
+    const derivative_discontinuity! = SciMLBase.u_modified!
+end
 
 include("experimental_data.jl")
 include("boundary_conditions.jl")
