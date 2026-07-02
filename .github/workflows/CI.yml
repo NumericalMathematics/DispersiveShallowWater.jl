@@ -86,7 +86,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: run-${{ join(matrix.*, '-') }}
           parallel: true
-          path-to-lcov: ./lcov.info
+          file: ./lcov.info
 
   finish:
     needs: test
