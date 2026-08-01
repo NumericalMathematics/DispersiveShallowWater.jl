@@ -77,10 +77,6 @@ jobs:
           files: lcov.info
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      # Workaround for https://github.com/coverallsapp/github-action/issues/264
-      - name: Trust Coveralls Homebrew tap (Homebrew 6 requirement)
-        if: runner.os == 'macOS'
-        run: brew trust coverallsapp/coveralls
       - uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
