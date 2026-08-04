@@ -7,9 +7,9 @@
 
 Hyperbolic approximation of the Sainte-Marie system
 [`SainteMarieEquations1D`](@ref) in one spatial dimension
-(with parameter ``\gamma = 2`` compared to the original literature)
 derived by Escalante, Dumbser and Castro (2019).
-The equations are given by
+The equations (with parameter ``\gamma = 2`` compared to the original literature)
+are given by
 ```math
 \begin{aligned}
   h_t + (h v)_x &= 0,\\
