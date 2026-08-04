@@ -30,21 +30,23 @@ sol = solve(ode, Tsit5(), callback = summary_callback)
 At the end of the simulation, the callback will display output similar to:
 
 ```julia
-───────────────────────────────────────────────────────────────────────────────────────────
-              DispersiveSWE                       Time                    Allocations
-                                         ───────────────────────   ────────────────────────
-            Tot / % measured:                 440ms /  98.4%            867MiB /  99.9%
-
-Section                          ncalls     time    %tot     avg     alloc    %tot      avg
-───────────────────────────────────────────────────────────────────────────────────────────
-rhs!                              1.62k    420ms   97.0%   258μs    866MiB  100.0%   546KiB
-  solving elliptic system         1.62k    247ms   57.2%   152μs    357MiB   41.2%   225KiB
-  assembling elliptic operator    1.62k    167ms   38.6%   103μs    509MiB   58.8%   321KiB
-  hyperbolic terms                1.62k   3.49ms    0.8%  2.15μs     0.00B    0.0%    0.00B
-  ~rhs!~                          1.62k   1.46ms    0.3%   902ns   1.55KiB    0.0%    0.98B
-  source terms                    1.62k   42.0μs    0.0%  25.9ns     0.00B    0.0%    0.00B
-analyze solution                      3   13.2ms    3.0%  4.39ms    147KiB    0.0%  49.1KiB
-───────────────────────────────────────────────────────────────────────────────────────────
+                                                  DispersiveSWE
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                        Time                             Allocations
+                                          ────────────────────────────────    ──────────────────────────────────
+            Tot / % measured:                      403ms / 79.8%                        132MiB / 98.9%
+ ───────────────────────────────────────  ────────────────────────────────    ──────────────────────────────────
+ Section                          ncalls    time    %tot     avg                alloc    %tot      avg
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ rhs!                              16.1k   314ms   97.4%  19.5μs  ███████▊     128MiB   98.0%  8.14KiB  ███████▉
+ ├─ solving elliptic system dv     16.1k   152ms   47.1%  9.44μs  ███▊        63.9MiB   49.0%  4.07KiB  ███▉
+ ├─ solving elliptic system deta   16.1k   147ms   45.6%  9.13μs  ███▋        63.9MiB   49.0%  4.07KiB  ███▉
+ ├─ ~rhs!~                         16.1k  5.54ms    1.7%   345ns  ▏           1.00KiB    0.0%    0.06B
+ ├─ deta hyperbolic                32.1k  5.34ms    1.7%   166ns  ▏                 ∅       ∅        ∅
+ ├─ dv hyperbolic                  32.1k  4.13ms    1.3%   128ns  ▏                 ∅       ∅        ∅
+ └─ source terms                   16.1k   203μs    0.1%  12.6ns                    ∅       ∅        ∅
+ analyze solution                     54  8.36ms    2.6%   155μs  ▎           2.60MiB    2.0%  49.3KiB  ▏
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ## Analysis Callback
