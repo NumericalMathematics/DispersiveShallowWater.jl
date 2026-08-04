@@ -158,7 +158,7 @@ More examples sorted by the simulated equations can be found in the [examples/](
 
 Here follows a version of the program without any comments.
 
-```Julia
+```julia
 using DispersiveShallowWater, OrdinaryDiffEqTsit5
 
 equations = BBMBBMEquations1D(bathymetry_type = bathymetry_variable, gravity = 9.81)
