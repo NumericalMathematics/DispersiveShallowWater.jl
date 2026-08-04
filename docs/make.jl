@@ -1,4 +1,5 @@
 using Documenter
+using DocumenterCodeBlocks: CodeBlocks
 using DispersiveShallowWater
 using TrixiBase
 using Changelog: Changelog
@@ -79,6 +80,9 @@ makedocs(;
                                   assets = ["assets/favicon.ico"],
                                   size_threshold = 1200 * 1024, # the generated .gif files can be too large
                                   size_threshold_warn = 1000 * 1024),
+         # Improve code blocks in the documentation by using DocumenterCodeBlocks.jl
+         plugins = [CodeBlocks()],
+         # Explicitly specify documentation structure
          pages = ["Home" => "index.md",
              "Overview" => "overview.md",
              "Basic Example" => "basic_example.md",
