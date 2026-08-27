@@ -32,7 +32,7 @@ macro test_trixi_include_base(example, args...)
 
     quote
         println("═"^100)
-        println($example)
+        println($(esc(example)))
 
         # evaluate examples in the scope of the module they're called from
         @trixi_test_nowarn trixi_include(@__MODULE__, $(esc(example)); $(kwargs...)) $additional_ignore_content
