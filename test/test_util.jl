@@ -1,5 +1,6 @@
 using Test: @test
-using TrixiTest: @trixi_test_nowarn, @test_allocations, get_kwarg, append_to_kwargs
+using TrixiTest: @trixi_test_nowarn, @test_allocations, get_kwarg, append_to_kwargs,
+                 trixi_include_kwargs
 
 # Use a macro to avoid world age issues when defining new initial conditions etc.
 # inside an example.
@@ -20,25 +21,21 @@ macro test_trixi_include_base(example, args...)
     local atol_ints = get_kwarg(args, :atol_ints, 1e-11)
     local rtol_ints = get_kwarg(args, :rtol_ints, sqrt(eps()))
 
-    local kwargs = Pair{Symbol, Any}[]
-    for arg in args
-        if (arg.head == :(=) &&
-            !(arg.args[1] in (:additional_ignore_content,
-                              :l2, :linf, :cons_error, :change_waterheight,
-                              :change_velocity, :change_momentum, :change_entropy,
-                              :change_entropy_modified, :change_hamiltonian,
-                              :lake_at_rest,
-                              :atol, :rtol, :atol_ints, :rtol_ints)))
-            push!(kwargs, Pair(arg.args...))
-        end
-    end
+    local kwargs = trixi_include_kwargs(args;
+                                        reserved = (:additional_ignore_content, :l2, :linf,
+                                                    :cons_error, :change_waterheight,
+                                                    :change_velocity, :change_momentum,
+                                                    :change_entropy,
+                                                    :change_entropy_modified,
+                                                    :change_hamiltonian, :lake_at_rest,
+                                                    :atol, :rtol, :atol_ints, :rtol_ints))
 
     quote
         println("═"^100)
         println($example)
 
         # evaluate examples in the scope of the module they're called from
-        @trixi_test_nowarn trixi_include(@__MODULE__, $example; $kwargs...) $additional_ignore_content
+        @trixi_test_nowarn trixi_include(@__MODULE__, $(esc(example)); $(kwargs...)) $additional_ignore_content
 
         # if present, compare l2, linf and conservation errors against reference values
         if !isnothing($l2) || !isnothing($linf) || !isnothing($cons_error)
