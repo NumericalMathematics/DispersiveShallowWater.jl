@@ -619,7 +619,8 @@ end
                                                               beta = 0.2308939393939394,
                                                               gamma = 0.04034343434343434),
                                      SerreGreenNaghdiEquations1D(gravity = g),
-                                     HyperbolicSerreGreenNaghdiEquations1D(gravity = g, lambda = 500.0),
+                                     HyperbolicSerreGreenNaghdiEquations1D(gravity = g,
+                                                                           lambda = 500.0),
                                      SainteMarieEquations1D(gravity = g),
                                      HyperbolicSainteMarieEquations1D(gravity = g, h0 = h0)))
         @test isapprox(disp_rel(equations, k), frequencies[i])
@@ -631,6 +632,12 @@ end
         # For the normalized wave speed we expect c(0) = 1. Use eps() to avoid division by zero in c = omega / k
         @test isapprox(wave_speed(disp_rel, equations, eps(), normalize = true), 1.0)
     end
+
+    # The hyperbolic Serre-Green-Naghdi equations converge to the Serre-Green-Naghdi
+    # equations for big lambda values.
+    @test isapprox(disp_rel(HyperbolicSerreGreenNaghdiEquations1D(gravity = g,
+                                                                  lambda = 1.0e8), k),
+                   disp_rel(SerreGreenNaghdiEquations1D(gravity = g), k); rtol = 1.0e-6)
 end
 
 @testitem "util" setup=[Setup] begin

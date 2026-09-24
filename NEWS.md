@@ -10,6 +10,7 @@ for human readability.
 #### Added
 
 - The `HyperbolicSainteMarieEquations1D` were added for different types of bathymetry ([#288]).
+- Add linear dispersion relation for the `HyperbolicSerreGreenNaghdiEquations1D` ([#todo]).
 
 ## Changes when updating to v0.10 from v0.9.x
 
