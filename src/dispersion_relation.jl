@@ -129,6 +129,21 @@ function (disp_rel::LinearDispersionRelation)(equations::SerreGreenNaghdiEquatio
     return sqrt(g * h0) * k / sqrt(1.0 + (k * h0)^2 / 3)
 end
 
+# See, e.g., eq. (19) in
+# - N Favrie and S Gavrilyuk (2017)
+#   A rapid numerical method for solving Serre–Green–Naghdi equations describing long free surface gravity waves
+#   [DOI: 10.1088/1361-6544/aa712d](https://doi.org/10.1088/1361-6544/aa712d)
+function (disp_rel::LinearDispersionRelation)(
+    equations::HyperbolicSerreGreenNaghdiEquations1D, k)
+    h0 = disp_rel.ref_height
+    g = gravity(equations)
+    lambda = equations.lambda
+    A = lambda / h0^2 + (g * h0 + lambda / 3) * k^2
+    B = g * lambda * k^2 / h0
+
+    return sqrt(2 * B /(A + sqrt(A^2 - 4 * B)))
+end
+
 # See, e.g., non-numbered equation below eq. (14) in
 # - Escalante, Dumbser and Castro (2019)
 #   An efficient hyperbolic relaxation system for dispersive non-hydrostatic

@@ -64,6 +64,10 @@ sgn = SerreGreenNaghdiEquations1D(; gravity = g, eta0 = eta0)
 c_sgn = wave_speed.(disp_rel, sgn, k; normalize = true)
 plot!(k, c_sgn, label = "Serre-Green-Naghdi", linestyle = :auto)
 
+hsgn = HyperbolicSerreGreenNaghdiEquations1D(; gravity = g, eta0 = eta0, lambda = 500.0)
+c_hsgn = wave_speed.(disp_rel, hsgn, k; normalize = true)
+plot!(k, c_hsgn, label = "Hyperbolic Serre-Green-Naghdi (\$\\lambda = 500\$)", linestyle = :auto)
+
 sm = SainteMarieEquations1D(; gravity = g, eta0 = eta0)
 c_sm = wave_speed.(disp_rel, sm, k; normalize = true)
 plot!(k, c_sm, label = "Sainte-Marie", linestyle = :auto)
