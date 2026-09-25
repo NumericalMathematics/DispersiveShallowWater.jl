@@ -44,7 +44,7 @@ k = 0.01:0.01:5.0
 
 euler = EulerEquations1D(; gravity = g, eta0 = eta0)
 c_euler = wave_speed.(disp_rel, euler, k; normalize = true)
-plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :topright, yrange = (-0.1, 1.1))
+plot(k, c_euler, label = "Euler", xlabel = "k", ylabel = "c / c_0", legend = :bottomleft, yrange = (-0.1, 1.1))
 
 kdv = KdVEquation1D(; gravity = g, eta0 = eta0, D = h0)
 c_kdv = wave_speed.(disp_rel, kdv, k; normalize = true)
@@ -62,7 +62,11 @@ plot!(k, c_sk, label = "Svärd-Kalisch", linestyle = :auto)
 
 sgn = SerreGreenNaghdiEquations1D(; gravity = g, eta0 = eta0)
 c_sgn = wave_speed.(disp_rel, sgn, k; normalize = true)
-plot!(k, c_sgn, label = "Serre-Green-Naghdi", linestyle = :auto)
+plot!(k, c_sgn, label = "SGN", linestyle = :auto)
+
+hsgn = HyperbolicSerreGreenNaghdiEquations1D(; gravity = g, eta0 = eta0, lambda = 500.0)
+c_hsgn = wave_speed.(disp_rel, hsgn, k; normalize = true)
+plot!(k, c_hsgn, label = "Hyperbolic SGN (\$\\lambda = 500\$)", linestyle = :auto)
 
 sm = SainteMarieEquations1D(; gravity = g, eta0 = eta0)
 c_sm = wave_speed.(disp_rel, sm, k; normalize = true)
