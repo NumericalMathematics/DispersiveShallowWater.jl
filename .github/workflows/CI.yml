@@ -60,6 +60,8 @@ jobs:
             os: ubuntu-latest
           - version: '1.12'
             os: ubuntu-latest
+          - version: '1.13'
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: julia-actions/setup-julia@v3
