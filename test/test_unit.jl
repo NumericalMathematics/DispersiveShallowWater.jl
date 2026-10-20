@@ -459,6 +459,23 @@ end
         U_modified_total = @inferred DispersiveShallowWater.integrate(U_modified, semi)
         @test isapprox(U_modified_total, e_modified_total)
     end
+
+    @testset "initial_condition_soliton with nonzero eta0" begin
+        # The physical variables need to agree with the soliton of the limit system
+        equations_eta0 = HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_flat,
+                                                               gravity = 9.81,
+                                                               eta0 = 1.0,
+                                                               lambda = 500.0)
+        equations_limit = SerreGreenNaghdiEquations1D(bathymetry_type = bathymetry_flat,
+                                                      gravity = 9.81, eta0 = 1.0)
+        mesh = Mesh1D(-50.0, 50.0, 10)
+        for x in (-10.0, 0.0, 3.0), t in (0.0, 0.5)
+            q = @inferred initial_condition_soliton(x, t, equations_eta0, mesh)
+            q_limit = initial_condition_soliton(x, t, equations_limit, mesh)
+            @test isapprox(prim2phys(q, equations_eta0), q_limit)
+            @test isapprox(waterheight(q, equations_eta0), q[5])
+        end
+    end
 end
 
 @testitem "SainteMarieEquations1D" setup=[Setup, AdditionalImports] begin

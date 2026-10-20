@@ -182,7 +182,7 @@ function initial_condition_soliton(x, t, equations::HyperbolicSerreGreenNaghdiEq
 
     h = h1 + (h2 - h1) * sech(x_t / 2 * sqrt(3 * (h2 - h1) / (h1^2 * h2)))^2
     v = c * (1 - h1 / h)
-    # w = -h v_x (b = 0)
+    # w = -h v_x (b_x = 0)
     w = -h1 * sqrt(g * h2) * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) * (-h1 + h2) *
         (-h1 - (-h1 + h2) * sech(x_t * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) / 2)^2) *
         tanh(x_t * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) / 2) *
@@ -190,7 +190,11 @@ function initial_condition_soliton(x, t, equations::HyperbolicSerreGreenNaghdiEq
         (h1 + (-h1 + h2) * sech(x_t * sqrt((-3 * h1 + 3 * h2) / (h1^2 * h2)) / 2)^2)^2
     H = h
 
-    return SVector(h, v, 0, w, H)
+    D = zero(h)
+    b = equations.eta0 - D
+    eta = h + b
+
+    return SVector(eta, v, D, w, H)
 end
 
 """

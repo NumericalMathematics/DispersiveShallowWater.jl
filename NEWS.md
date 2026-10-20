@@ -14,6 +14,8 @@ for human readability.
 
 #### Fixed
 
+- `initial_condition_soliton` for the `HyperbolicSerreGreenNaghdiEquations1D` now respects a nonzero still-water
+  surface `eta0`. Before, the water height was off by `eta0` ([#326]).
 - The keyword constructors of all equations now promote their parameters to a common type, so that, e.g.,
   `SerreGreenNaghdiEquations1D(gravity = 1)` or `HyperbolicSerreGreenNaghdiEquations1D(gravity = 9.81, lambda = 500)`
   no longer throw a `MethodError` ([#325]).
