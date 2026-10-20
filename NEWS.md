@@ -17,6 +17,8 @@ for human readability.
 - The keyword constructors of all equations now promote their parameters to a common type, so that, e.g.,
   `SerreGreenNaghdiEquations1D(gravity = 1)` or `HyperbolicSerreGreenNaghdiEquations1D(gravity = 9.81, lambda = 500)`
   no longer throw a `MethodError` ([#325]).
+- `source_terms_manufactured_reflecting` for the `SerreGreenNaghdiEquations1D` with `bathymetry_mild_slope` and
+  `bathymetry_variable` now uses the gravitational acceleration of the equations instead of a hard-coded value of 9.81 ([#324]).
 
 ## Changes when updating to v0.10 from v0.9.x
 
