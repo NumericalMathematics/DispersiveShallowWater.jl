@@ -12,6 +12,12 @@ for human readability.
 - The `HyperbolicSainteMarieEquations1D` were added for different types of bathymetry ([#288]).
 - Add linear dispersion relation for the `HyperbolicSerreGreenNaghdiEquations1D` ([#321]).
 
+#### Fixed
+
+- The keyword constructors of all equations now promote their parameters to a common type, so that, e.g.,
+  `SerreGreenNaghdiEquations1D(gravity = 1)` or `HyperbolicSerreGreenNaghdiEquations1D(gravity = 9.81, lambda = 500)`
+  no longer throw a `MethodError` ([#325]).
+
 ## Changes when updating to v0.10 from v0.9.x
 
 #### Changed

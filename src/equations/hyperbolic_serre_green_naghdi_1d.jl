@@ -98,6 +98,7 @@ function HyperbolicSerreGreenNaghdiEquations1D(; bathymetry_type = bathymetry_mi
                                                gravity,
                                                eta0 = 0.0,
                                                lambda)
+    gravity, eta0, lambda = promote(gravity, eta0, lambda)
     return HyperbolicSerreGreenNaghdiEquations1D(bathymetry_type, gravity, eta0, lambda)
 end
 

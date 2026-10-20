@@ -62,6 +62,7 @@ struct EulerEquations1D{RealT <: Real} <: AbstractEquations{1, 0}
 end
 
 function EulerEquations1D(; gravity, eta0 = 0.0)
+    gravity, eta0 = promote(gravity, eta0)
     return EulerEquations1D(gravity, eta0)
 end
 

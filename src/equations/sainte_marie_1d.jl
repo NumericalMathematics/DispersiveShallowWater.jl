@@ -65,6 +65,7 @@ end
 function SainteMarieEquations1D(; bathymetry_type = bathymetry_mild_slope,
                                 gravity,
                                 eta0 = 0.0)
+    gravity, eta0 = promote(gravity, eta0)
     return SainteMarieEquations1D(bathymetry_type, gravity, eta0)
 end
 

@@ -50,6 +50,7 @@ end
 
 function KdVEquation1D(; gravity, D = 1.0, eta0 = 0.0)
     eta0 == 0.0 || @warn "The still-water surface needs to be 0 for the KdV equations"
+    gravity, D, eta0 = promote(gravity, D, eta0)
     return KdVEquation1D(gravity, D, eta0)
 end
 

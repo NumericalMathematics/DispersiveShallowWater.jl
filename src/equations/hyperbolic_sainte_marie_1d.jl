@@ -92,6 +92,7 @@ function HyperbolicSainteMarieEquations1D(; bathymetry_type = bathymetry_mild_sl
                                           h0,
                                           alpha = 3.0)
     c_squared = alpha^2 * gravity * h0
+    gravity, eta0, alpha, c_squared = promote(gravity, eta0, alpha, c_squared)
     return HyperbolicSainteMarieEquations1D(bathymetry_type, gravity, eta0, alpha,
                                             c_squared)
 end
