@@ -430,8 +430,8 @@ function source_terms_manufactured_reflecting(q, x, t,
           8(1 + 2(2 + cospix + x) * t) * (1 - pi * sinpix) * sinpix * t * x)
     b4 = (sinpix + cospix * pi * x) * ((1 + 2(2 + cospix + x) * t)^2)
     b5_base = -4(1 + 2(2 + cospix + x) * t) * sinpix * x
-    b6 = 19.62(1 + 2(2 + cospix + x) * t) * (1 - pi * sinpix) * t
-    b7 = 19.62(1 + 2(2 + cospix + x) * t)
+    b6 = 2g * (1 + 2(2 + cospix + x) * t) * (1 - pi * sinpix) * t
+    b7 = 2g * (1 + 2(2 + cospix + x) * t)
     b8 = (1 / 2) * (1 + 2(2 + cospix + x) * t) *
          (2sin2_pix * t2 * x + pi * sin2pix * t2 * x2)
     b9 = -(1 / 2) * (-2sinpix * t - 2cospix * pi * t * x) *

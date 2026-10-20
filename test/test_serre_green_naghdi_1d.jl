@@ -376,6 +376,23 @@ end
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=120_000)
 end
 
+@testitem "serre_green_naghdi_manufactured_reflecting.jl with bathymetry_variable and gravity = 1" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    # The manufactured source terms must use the gravity of the equations
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_manufactured_reflecting.jl"),
+                        bathymetry_type=bathymetry_variable,
+                        gravity=1.0,
+                        l2=[0.010167289855030393, 0.0018467499520855896, 0.0],
+                        linf=[0.09432999153089039, 0.004082447904924069, 0.0],
+                        change_waterheight=5.000659665129857,
+                        change_entropy_modified=78.08348093369625)
+
+    @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=120_000)
+end
+
 @testitem "serre_green_naghdi_manufactured_reflecting_upwind.jl with bathymetry_flat" setup=[
     Setup,
     SerreGreenNaghdiEquations1D
@@ -391,7 +408,7 @@ end
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=50_000)
 end
 
-@testitem "serre_green_naghdi_manufactured_reflecting_upwind.jl with bathymetry_mild_slope" setup=[
+@testitem "serre_green_naghdi_manufactured_reflecting.jl with bathymetry_mild_slope" setup=[
     Setup,
     SerreGreenNaghdiEquations1D
 ] begin
