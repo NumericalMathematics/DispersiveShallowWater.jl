@@ -50,6 +50,7 @@ end
 
 function BBMEquation1D(; gravity, D = 1.0, eta0 = 0.0, split_form = true)
     eta0 == 0.0 || @warn "The still-water surface needs to be 0 for the BBM equations"
+    gravity, D, eta0 = promote(gravity, D, eta0)
     return BBMEquation1D(gravity, D, eta0, split_form)
 end
 

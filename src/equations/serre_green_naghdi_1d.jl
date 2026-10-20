@@ -78,6 +78,7 @@ end
 
 function SerreGreenNaghdiEquations1D(; bathymetry_type = bathymetry_variable,
                                      gravity, eta0 = 0.0)
+    gravity, eta0 = promote(gravity, eta0)
     return SerreGreenNaghdiEquations1D(bathymetry_type, gravity, eta0)
 end
 

@@ -547,6 +547,34 @@ end
     end
 end
 
+@testitem "Promotion of parameters in equation constructors" setup=[Setup] begin
+    # Integer parameters are promoted to the type of the floating point defaults
+    for equations in (@inferred(KdVEquation1D(gravity = 1)),
+                      @inferred(BBMEquation1D(gravity = 1, D = 2)),
+                      @inferred(BBMBBMEquations1D(gravity = 1)),
+                      @inferred(SvaerdKalischEquations1D(gravity = 1)),
+                      @inferred(SerreGreenNaghdiEquations1D(gravity = 1)),
+                      @inferred(HyperbolicSerreGreenNaghdiEquations1D(gravity = 1,
+                                                                      lambda = 500)),
+                      @inferred(SainteMarieEquations1D(gravity = 1)),
+                      @inferred(HyperbolicSainteMarieEquations1D(gravity = 1, h0 = 1,
+                                                                 alpha = 3)),
+                      @inferred(EulerEquations1D(gravity = 1)))
+        @test gravity(equations) === 1.0
+    end
+
+    # If all parameters have the same type, this type is kept
+    equations = @inferred SerreGreenNaghdiEquations1D(gravity = 9.81f0, eta0 = 0.0f0)
+    @test gravity(equations) isa Float32
+    @test equations.eta0 isa Float32
+    equations = @inferred KdVEquation1D(gravity = 9.81f0, D = 1.0f0, eta0 = 0.0f0)
+    @test equations.D isa Float32
+    equations = @inferred HyperbolicSainteMarieEquations1D(gravity = 9.81f0,
+                                                           eta0 = 0.0f0, h0 = 1.0f0,
+                                                           alpha = 3.0f0)
+    @test equations.c_squared isa Float32
+end
+
 @testitem "AnalysisCallback" setup=[Setup] begin
     equations = SvaerdKalischEquations1D(gravity = 9.81)
     initial_condition = initial_condition_dingemans
