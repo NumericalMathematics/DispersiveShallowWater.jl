@@ -141,11 +141,14 @@ end
     "$(get_name(semi.equations)) at x = $(round(x, digits=5))"
     layout --> nsubplots
 
-    for i in 1:nsubplots
+    subplot = 0
+    for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ["D", "b"] && continue
+        names[i] in ("D", "b") && continue
+
+        subplot += 1
         @series begin
-            subplot --> i
+            subplot --> subplot
             label --> names[i]
             xguide --> "t"
             yguide --> names[i]
