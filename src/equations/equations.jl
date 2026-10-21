@@ -410,10 +410,11 @@ function Base.show(io::IO, equations::AbstractEquations)
 
     print(io, get_name(equations), " with ")
     if nvariables(equations) == 1
-        println(io, "one variable")
+        print(io, "one variable")
     else
-        println(io, nvariables(equations), " variables")
+        print(io, nvariables(equations), " variables")
     end
+    return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", equations::AbstractEquations)
@@ -424,10 +425,10 @@ function Base.show(io::IO, ::MIME"text/plain", equations::AbstractEquations)
         show(io, equations)
     else
         println(io, get_name(equations))
-        println(io, "#variables: ", nvariables(equations))
+        print(io, "#variables: ", nvariables(equations))
         for variable in eachvariable(equations)
-            println("    variable " * string(variable), ": ",
-                    varnames(prim2prim, equations)[variable])
+            print(io, "\n    variable ", variable, ": ",
+                  varnames(prim2prim, equations)[variable])
         end
     end
 end

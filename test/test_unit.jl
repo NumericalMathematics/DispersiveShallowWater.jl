@@ -130,6 +130,23 @@ end
     @test_nowarn display(boundary_conditions)
 end
 
+@testitem "show for equations" setup=[Setup] begin
+    # All output needs to be written to `io`
+    equations = BBMBBMEquations1D(gravity = 9.81)
+    @test sprint(show, equations) ==
+          "BBMBBMEquations1D-BathymetryVariable with 3 variables"
+    @test sprint(show, MIME"text/plain"(), equations) ==
+          """
+          BBMBBMEquations1D-BathymetryVariable
+          #variables: 3
+              variable 1: η
+              variable 2: v
+              variable 3: D"""
+    @test sprint(show, MIME"text/plain"(), equations; context = :compact => true) ==
+          sprint(show, equations)
+    @test sprint(show, KdVEquation1D(gravity = 9.81)) == "KdVEquation1D with one variable"
+end
+
 @testitem "KdVEquation1D" setup=[Setup] begin
     equations = @test_nowarn @inferred KdVEquation1D(gravity = 1.0)
     @test_nowarn print(equations)
