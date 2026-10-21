@@ -7,6 +7,9 @@
     @test xmax(mesh) == 1
     @test nnodes(mesh) == 10
     @test real(mesh) == Int64
+    @test nnodes(Mesh1D(-1.0, 1.0, Int32(10))) == 10
+    @test_throws ArgumentError Mesh1D(1.0, -1.0, 10)
+    @test_throws ArgumentError Mesh1D(-1.0, 1.0, 0)
 end
 
 @testitem "Solver" setup=[Setup, AdditionalImports] begin
@@ -56,6 +59,14 @@ end
     solver = @test_nowarn Solver(D1, D2)
     @test solver.D1 isa UniformPeriodicCoupledOperator
     @test solver.D2 isa UniformPeriodicCoupledOperator
+
+    # Derivative operators of the wrong order
+    D1 = periodic_derivative_operator(1, 4, -1.0, 1.0, 10)
+    D2 = periodic_derivative_operator(2, 4, -1.0, 1.0, 10)
+    D3 = periodic_derivative_operator(3, 4, -1.0, 1.0, 10)
+    @test_throws ArgumentError Solver(D2)
+    @test_throws ArgumentError Solver(D1, D3)
+    @test_throws ArgumentError Solver(D1, D2, D2)
 end
 
 @testitem "Semidiscretization" setup=[Setup] begin
@@ -91,6 +102,15 @@ end
     semi_flat = Semidiscretization(mesh, equations_flat, initial_condition, solver;
                                    boundary_conditions = boundary_condition_periodic)
     @test_throws ArgumentError semidiscretize(semi_flat, (0.0, 1.0))
+
+    # The mesh and the solver need to be compatible
+    mesh = Mesh1D(-1.0, 1.0, 10)
+    for solver in (Solver(Mesh1D(-1.0, 1.0, 12), 4), Solver(Mesh1D(-1.0, 2.0, 10), 4))
+        @test_throws ArgumentError Semidiscretization(mesh, equations,
+                                                      initial_condition_convergence_test,
+                                                      solver;
+                                                      boundary_conditions = boundary_condition_periodic)
+    end
 end
 
 @testitem "Solver consistency" setup=[Setup, AdditionalImports] begin
@@ -493,6 +513,8 @@ end
 end
 
 @testitem "HyperbolicSainteMarieEquations1D" setup=[Setup] begin
+    using SummationByPartsOperators: MattssonNordström2004, derivative_operator
+
     equations = @test_nowarn @inferred HyperbolicSainteMarieEquations1D(gravity = 9.81,
                                                                         h0 = 1.0)
     @test_nowarn print(equations)
@@ -561,6 +583,17 @@ end
         _, _, _, cache = @inferred DispersiveShallowWater.mesh_equations_solver_cache(semi)
         e_modified = @inferred energy_total_modified(q, equations_flat, cache)
         @test eltype(e_modified) <: Number
+    end
+
+    @testset "reflecting boundary conditions" begin
+        mesh = Mesh1D(-1.0, 1.0, 10)
+        D1 = derivative_operator(MattssonNordström2004(); derivative_order = 1,
+                                 accuracy_order = 2, xmin = xmin(mesh), xmax = xmax(mesh),
+                                 N = nnodes(mesh))
+        @test_throws ArgumentError Semidiscretization(mesh, equations,
+                                                      initial_condition_manufactured,
+                                                      Solver(D1);
+                                                      boundary_conditions = boundary_condition_reflecting)
     end
 end
 
@@ -703,12 +736,18 @@ end
         @test isapprox(eoc_mean_values[:l2][2], accuracy_order, atol = 0.5)
         @test isapprox(eoc_mean_values[:linf][2], accuracy_order, atol = 0.5)
 
-        eocs2, _ = convergence_test(@__MODULE__, default_example(), [256, 512],
+        # `Ns` is not modified and all output is written to `io`
+        Ns = [512, 256]
+        io = IOBuffer()
+        eocs2, _ = convergence_test(@__MODULE__, default_example(), Ns; io,
                                     tspan = (0.0, 1.0),
                                     accuracy_order = accuracy_order)
+        @test Ns == [512, 256]
+        @test occursin("Running convtest iteration 2/2", String(take!(io)))
         eoc_mean_values2 = DispersiveShallowWater.calc_mean_convergence(eocs2)
         for kind in (:l2, :linf), variable in (1, 2)
             @test eoc_mean_values[kind][variable] == eoc_mean_values2[kind][variable]
         end
     end
+    @test_throws ArgumentError convergence_test(@__MODULE__, default_example(), 1)
 end

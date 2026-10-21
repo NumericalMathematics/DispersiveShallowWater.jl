@@ -248,6 +248,16 @@ end
 
 dingemans_calibration(equations::HyperbolicSainteMarieEquations1D) = 1.0
 
+# TODO: Reflecting boundary conditions are not implemented yet. A starting point could be
+#       to add the boundary terms
+#         dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
+#         dh[end] += h[end] * v[end] / right_boundary_weight(D1)
+#       as for the `HyperbolicSerreGreenNaghdiEquations1D`.
+function check_solver(::HyperbolicSainteMarieEquations1D, solver,
+                      ::BoundaryConditionReflecting)
+    throw(ArgumentError("Reflecting boundary conditions are not implemented yet for the `HyperbolicSainteMarieEquations1D`."))
+end
+
 function create_cache(mesh, equations::HyperbolicSainteMarieEquations1D,
                       solver, initial_condition,
                       boundary_conditions::BoundaryConditionPeriodic,
@@ -376,12 +386,6 @@ function rhs!(dq, q, t, mesh,
         # Split form for energy conservation:
         # h_t + h_x v + h v_x = 0
         @.. dh = -(h_x * v + h * v_x)
-        if boundary_conditions isa BoundaryConditionReflecting
-            # dh[1] -= h[1] * v[1] / left_boundary_weight(D1)
-            # dh[end] += h[end] * v[end] / right_boundary_weight(D1)
-            # FIXME
-            throw(ArgumentError("Reflecting boundary conditions are not implemented yet."))
-        end
 
         # Plain: h v_t + h v v_x + g (h + b) h_x
         #              + ... = 0

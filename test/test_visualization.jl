@@ -13,6 +13,8 @@
     @test_nowarn plot(analysis_callback)
     @test_nowarn plot(analysis_callback, what = (:errors,))
     @test_nowarn plot(analysis_callback, what = (:integrals, :errors))
+    @test_throws ArgumentError plot(analysis_callback,
+                                    start_from = length(tstops(analysis_callback)))
 
     # Variables after the bathymetry need to be plotted, too
     trixi_include(@__MODULE__,
