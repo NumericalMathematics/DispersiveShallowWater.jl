@@ -14,6 +14,8 @@ for human readability.
 
 #### Fixed
 
+- Plotting a solution over time at a fixed `x` (e.g., `plot(semi => sol, x)`) now shows all variables. Before, variables
+  after the bathymetry were dropped, e.g., `H` for the `HyperbolicSerreGreenNaghdiEquations1D` with `conversion = prim2prim` ([#327]).
 - `initial_condition_soliton` for the `HyperbolicSerreGreenNaghdiEquations1D` now respects a nonzero still-water
   surface `eta0`. Before, the water height was off by `eta0` ([#326]).
 - The keyword constructors of all equations now promote their parameters to a common type, so that, e.g.,
