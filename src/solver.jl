@@ -71,6 +71,9 @@ function Solver(mesh, accuracy_order)
     end
     D1 = periodic_derivative_operator(1, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
     D2 = periodic_derivative_operator(2, accuracy_order, mesh.xmin, mesh.xmax, mesh.N)
+    # The periodic third-derivative operator with `accuracy_order = p` has the same stencil
+    # width as the first-derivative operator of order `p` and converges only with order
+    # `p - 2`. Thus, we use `accuracy_order + 2` to obtain the desired order of convergence.
     D3 = periodic_derivative_operator(3, accuracy_order + 2, mesh.xmin, mesh.xmax, mesh.N)
     @assert real(D1) == real(D2)
     return Solver{real(D1), typeof(D1), typeof(D2), typeof(D3)}(D1, D2, D3)

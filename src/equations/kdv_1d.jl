@@ -31,7 +31,7 @@ where ``D_1`` is a first-derivative operator, ``D_3`` a third-derivative operato
 It conserves
 - the total water mass (integral of ``\eta``) as a linear invariant
 and if upwind operators (``D_3 = D_{1,+} D_1 D_{1,-}``) or wide-stencil operators (``D_3 = D_1^3``) are used for the third derivative, it also conserves
-- the entropy/total energy (integral of ``U = 1/2\eta^2``)
+- the entropy/total energy (integral of ``U = 1/2 g\eta^2``)
 
 for periodic boundary conditions.
 

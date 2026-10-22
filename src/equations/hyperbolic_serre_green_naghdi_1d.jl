@@ -12,7 +12,7 @@ dimension. The equations for flat bathymetry are given by
   h v_t + \frac{1}{2} g (h^2)_x + \frac{1}{2} h (v^2)_x
     + \biggl( \frac{\lambda}{3} H (1 - H / h) \biggr)_x &= 0,\\
   h w_t + h v w_x &= \lambda (1 - H / h),\\
-  H_t + H_x u &= w.
+  H_t + H_x v &= w.
 \end{aligned}
 ```
 The unknown quantities of the hyperbolized Serre-Green-Naghdi equations are the
@@ -58,7 +58,7 @@ For the mild-slope approximation, the Serre-Green-Naghdi equations are
     + \biggl( \frac{\lambda}{3} H (1 - H / h) \biggr)_x
     + \biggl( g h + \frac{\lambda}{2} (1 - H / h) \biggr) b_x &= 0,\\
   h w_t + h v w_x &= \lambda (1 - H / h),\\
-  H_t + H_x u + \frac{3}{2} b_x v &= w.
+  H_t + H_x v + \frac{3}{2} b_x v &= w.
 \end{aligned}
 ```
 
@@ -538,7 +538,7 @@ For a [`bathymetry_mild_slope`](@ref) (and a [`bathymetry_flat`](@ref)),
 the total modified energy is given by
 ```math
 \\hat e(\\eta, v, w) = \\frac{1}{2} g \\eta^2 + \\frac{1}{2} h v^2 +
-\\frac{1}{6} h w^2 + \\frac{\\lambda}{6} h (1 - \\eta / h)^2.
+\\frac{1}{6} h w^2 + \\frac{\\lambda}{6} h (1 - H / h)^2.
 ```
 
 `q_global` is a vector of the primitive variables at ALL nodes.

@@ -18,7 +18,7 @@ Two types of `bathymetry_type` are supported:
 - [`bathymetry_flat`](@ref): flat bathymetry (typically ``b = 0`` everywhere)
 - [`bathymetry_variable`](@ref): general variable bathymetry
 
-For the general case of variable vathymetry the BBM-BBM equations are
+For the general case of variable bathymetry the BBM-BBM equations are
 ```math
 \begin{aligned}
   \eta_t + ((\eta + D)v)_x - \frac{1}{6}(D^2\eta_{xt})_x &= 0,\\
