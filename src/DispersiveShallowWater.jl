@@ -17,7 +17,6 @@ module DispersiveShallowWater
 
 using BandedMatrices: BandedMatrix
 using DelimitedFiles: readdlm
-using DiffEqBase: DiffEqBase
 using FastBroadcast: @..
 using ForwardDiff: ForwardDiff
 using Interpolations: Interpolations, linear_interpolation

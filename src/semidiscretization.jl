@@ -286,7 +286,7 @@ function jacobian(semi::Semidiscretization;
                   t = 0.0,
                   q0 = compute_coefficients(semi.initial_condition, t, semi))
     J = ForwardDiff.jacobian(similar(q0), q0) do dq, q
-        DispersiveShallowWater.rhs!(dq, q, semi, t)
+        rhs!(dq, q, semi, t)
         return nothing
     end
     return J

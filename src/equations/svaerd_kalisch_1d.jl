@@ -490,7 +490,8 @@ function rhs!(dq, q, t, mesh, equations::SvaerdKalischEquations1D,
         @.. h = eta - b
         @.. hv = h * v
 
-        mul!(deta, D1_central, -hv)
+        mul!(deta, D1_central, hv)
+        @.. deta = -deta
     end
 
     # split form

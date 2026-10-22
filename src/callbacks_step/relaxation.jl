@@ -57,7 +57,7 @@ function (relaxation_callback::RelaxationCallback)(u, t, integrator)
 end
 
 # This method is called as callback during the time integration.
-@inline function (relaxation_callback::RelaxationCallback)(integrator::DiffEqBase.DEIntegrator)
+@inline function (relaxation_callback::RelaxationCallback)(integrator::SciMLBase.DEIntegrator)
     semi = integrator.p
     told = integrator.tprev
     qold = integrator.uprev
@@ -109,15 +109,15 @@ end
         end
 
         convex_combination!(qnew, gamma, qold, qnew)
-        DiffEqBase.set_u!(integrator, qnew)
+        SciMLBase.set_u!(integrator, qnew)
 
         if !isapprox(tnew, first(integrator.opts.tstops))
             tgamma = told + gamma * (tnew - told) # convex_combination scalar eq.
-            DiffEqBase.set_t!(integrator, tgamma)
+            SciMLBase.set_t!(integrator, tgamma)
         end
 
         if terminate_integration
-            DiffEqBase.terminate!(integrator)
+            SciMLBase.terminate!(integrator)
         end
     end
     return nothing
