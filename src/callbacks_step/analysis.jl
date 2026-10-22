@@ -51,12 +51,12 @@ function Base.show(io::IO, ::MIME"text/plain",
         @unpack interval, analysis_errors, analysis_integrals = analysis_callback
 
         println(io, "AnalysisCallback")
-        println(io, "    interval: ", interval)
+        print(io, "    interval: ", interval)
         for (idx, error) in enumerate(analysis_errors)
-            println(io, "    error ", idx, ": ", error)
+            print(io, "\n    error ", idx, ": ", error)
         end
         for (idx, integral) in enumerate(analysis_integrals)
-            println(io, "    integral ", idx, ": ", pretty_form_utf(integral))
+            print(io, "\n    integral ", idx, ": ", pretty_form_utf(integral))
         end
     end
 end

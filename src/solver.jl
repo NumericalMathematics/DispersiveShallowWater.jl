@@ -110,7 +110,7 @@ function Base.show(io::IO, ::MIME"text/plain", solver::Solver{RealT}) where {Rea
         println(io, "Solver{", RealT, "}")
         println(io, "    D1: ", solver.D1)
         println(io, "    D2: ", solver.D2)
-        println(io, "    D3: ", solver.D3)
+        print(io, "    D3: ", solver.D3)
     end
 end
 
