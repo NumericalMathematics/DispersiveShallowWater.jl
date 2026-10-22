@@ -50,7 +50,7 @@ jobs:
       - uses: julia-actions/cache@v3
       - uses: julia-actions/julia-downgrade-compat@v2
         with:
-          skip: LinearAlgebra,Printf,SparseArrays,DelimitedFiles,Test
+          skip: LinearAlgebra,Printf,SparseArrays,DelimitedFiles,Random,Test
           projects: ., test
           mode: forcedeps
       # We run the tests manually instead of using julia-action/julia-builpkg and julia-action/julia-runtest or `Pkg.test`

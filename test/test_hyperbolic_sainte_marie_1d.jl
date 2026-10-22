@@ -148,6 +148,20 @@ end
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=1_000)
 end
 
+@testitem "hyperbolic_sainte_marie_manufactured.jl Jacobian" setup=[
+    Setup,
+    HyperbolicSainteMarieEquations1D
+] begin
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "hyperbolic_sainte_marie_manufactured.jl"),
+                        tspan=(0.0, 0.1))
+
+    # Check whether the Jacobian agrees with a finite difference approximation
+    J, err = @test_nowarn jacobian_finite_difference_error(semi)
+    @test size(J) == (5 * nnodes(semi.mesh), 5 * nnodes(semi.mesh))
+    @test err < 1.0e-11
+end
+
 @testitem "hyperbolic_sainte_marie_manufactured.jl with bathymetry_flat" setup=[
     Setup,
     HyperbolicSainteMarieEquations1D
