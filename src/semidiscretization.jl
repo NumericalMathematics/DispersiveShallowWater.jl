@@ -30,14 +30,24 @@ struct Semidiscretization{Mesh, Equations, InitialCondition, BoundaryConditions,
                                                             InitialCondition,
                                                             BoundaryConditions, SourceTerms,
                                                             Solver, Cache}
-        @assert ndims(mesh) == ndims(equations)
-        @assert xmin(mesh) == xmin(solver.D1)
-        @assert xmax(mesh) == xmax(solver.D1)
-        @assert nnodes(mesh) == length(grid(solver))
+        check_mesh_equations_solver(mesh, equations, solver)
 
         return new(mesh, equations, initial_condition, boundary_conditions, source_terms,
                    solver, cache)
     end
+end
+
+function check_mesh_equations_solver(mesh, equations, solver)
+    if ndims(mesh) != ndims(equations)
+        throw(ArgumentError("The mesh and the equations need to have the same number of spatial dimensions."))
+    end
+    if xmin(mesh) != xmin(solver.D1) || xmax(mesh) != xmax(solver.D1)
+        throw(ArgumentError("The domain of the mesh [$(xmin(mesh)), $(xmax(mesh))] and of the solver [$(xmin(solver.D1)), $(xmax(solver.D1))] need to agree."))
+    end
+    if nnodes(mesh) != length(grid(solver))
+        throw(ArgumentError("The mesh and the solver need to have the same number of nodes, got $(nnodes(mesh)) and $(length(grid(solver)))."))
+    end
+    return nothing
 end
 
 """
@@ -62,6 +72,9 @@ function Semidiscretization(mesh, equations, initial_condition, solver;
                                              tmp_partitioned = allocate_coefficients(mesh,
                                                                                      equations,
                                                                                      solver)))
+    # Check this before creating the cache, which may fail with less helpful errors otherwise
+    check_mesh_equations_solver(mesh, equations, solver)
+
     if (isa(solver.D1, AbstractPeriodicDerivativeOperator) ||
         isa(solver.D2, AbstractPeriodicDerivativeOperator) ||
         isa(solver.D3, AbstractPeriodicDerivativeOperator)) &&

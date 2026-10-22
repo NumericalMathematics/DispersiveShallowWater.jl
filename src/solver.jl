@@ -32,18 +32,22 @@ struct Solver{RealT <: Real,
                                                                  SecondDerivative,
                                                                  ThirdDerivative
                                                                  }
-        @assert derivative_order(D1) == 1
+        if derivative_order(D1) != 1
+            throw(ArgumentError("`D1` needs to be a first-derivative operator, got derivative order $(derivative_order(D1))."))
+        end
 
         if D2 isa AbstractDerivativeOperator &&
            !(D2 isa SummationByPartsOperators.FourierPolynomialDerivativeOperator) &&
-           !(D2 isa SummationByPartsOperators.PeriodicRationalDerivativeOperator)
-            @assert derivative_order(D2) == 2
+           !(D2 isa SummationByPartsOperators.PeriodicRationalDerivativeOperator) &&
+           derivative_order(D2) != 2
+            throw(ArgumentError("`D2` needs to be a second-derivative operator, got derivative order $(derivative_order(D2))."))
         end
 
         if D3 isa AbstractDerivativeOperator &&
            !(D3 isa SummationByPartsOperators.FourierPolynomialDerivativeOperator) &&
-           !(D3 isa SummationByPartsOperators.PeriodicRationalDerivativeOperator)
-            @assert derivative_order(D3) == 3
+           !(D3 isa SummationByPartsOperators.PeriodicRationalDerivativeOperator) &&
+           derivative_order(D3) != 3
+            throw(ArgumentError("`D3` needs to be a third-derivative operator, got derivative order $(derivative_order(D3))."))
         end
 
         return new(D1, D2, D3)
@@ -106,7 +110,7 @@ function Base.show(io::IO, ::MIME"text/plain", solver::Solver{RealT}) where {Rea
         println(io, "Solver{", RealT, "}")
         println(io, "    D1: ", solver.D1)
         println(io, "    D2: ", solver.D2)
-        println(io, "    D3: ", solver.D3)
+        print(io, "    D3: ", solver.D3)
     end
 end
 

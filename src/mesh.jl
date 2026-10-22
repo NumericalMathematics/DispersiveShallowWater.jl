@@ -9,8 +9,12 @@ struct Mesh1D{RealT}
     N::Int
 
     function Mesh1D{RealT}(xmin::RealT, xmax::RealT, N::Int) where {RealT}
-        @assert xmin < xmax
-        @assert N > 0
+        if !(xmin < xmax)
+            throw(ArgumentError("`xmin` needs to be smaller than `xmax`, got xmin = $xmin and xmax = $xmax."))
+        end
+        if N <= 0
+            throw(ArgumentError("The number of nodes `N` needs to be positive, got N = $N."))
+        end
         return new(xmin, xmax, N)
     end
 end
@@ -22,7 +26,7 @@ Create a simple homogeneous one-dimensional mesh from `xmin` to `xmax` with `N` 
 """
 function Mesh1D(xmin, xmax, N)
     xmin, xmax = promote(xmin, xmax)
-    return Mesh1D{typeof(xmin)}(xmin, xmax, N)
+    return Mesh1D{typeof(xmin)}(xmin, xmax, Int(N))
 end
 
 function Base.show(io::IO, mesh::Mesh1D{RealT}) where {RealT}
