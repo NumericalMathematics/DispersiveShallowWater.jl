@@ -112,24 +112,10 @@ end
                                  "hyperbolic_serre_green_naghdi_soliton.jl"),
                         tspan=(0.0, 0.1),)
 
-    J = @test_nowarn DispersiveShallowWater.jacobian(semi)
-    @test size(J, 1) == 5 * nnodes(semi.mesh)
-    @test size(J, 2) == 5 * nnodes(semi.mesh)
-
     # Check whether the Jacobian agrees with a finite difference approximation
-    ode = semidiscretize(semi, (0.0, 0.1))
-    q = ode.u0
-    dq = similar(q)
-    DispersiveShallowWater.rhs!(dq, q, semi, 0.0)
-    h = similar(q)
-    sqrt_eps = sqrt(eps())
-    for i in eachindex(h)
-        h[i] = sqrt_eps * (rand() - 0.5)
-        q[i] += h[i]
-    end
-    dq_plus_h = similar(q)
-    DispersiveShallowWater.rhs!(dq_plus_h, q, semi, 0.0)
-    @test maximum(abs, vec(dq) + J * vec(h) - vec(dq_plus_h)) < 1.0e-11
+    J, err = @test_nowarn jacobian_finite_difference_error(semi)
+    @test size(J) == (5 * nnodes(semi.mesh), 5 * nnodes(semi.mesh))
+    @test err < 1.0e-11
 end
 
 @testitem "hyperbolic_serre_green_naghdi_soliton_reflecting.jl" setup=[

@@ -1,3 +1,4 @@
+using Random: Xoshiro
 using Test: @test
 using TrixiTest: @trixi_test_nowarn, @test_allocations, get_kwarg, append_to_kwargs,
                  trixi_include_kwargs
@@ -157,4 +158,28 @@ macro test_trixi_include(expr, args...)
     quote
         @test_trixi_include_base($(esc(expr)), $(args...))
     end
+end
+
+"""
+    jacobian_finite_difference_error(semi; t = 0.0)
+
+Compute the Jacobian `J` of the semidiscretization `semi` at the initial condition
+using `DispersiveShallowWater.jacobian` and compare it with a finite difference
+approximation in a fixed direction. Return `J` and the maximum deviation.
+"""
+function jacobian_finite_difference_error(semi; t = 0.0)
+    J = DispersiveShallowWater.jacobian(semi; t)
+    q = DispersiveShallowWater.compute_coefficients(semi.initial_condition, t, semi)
+    dq = similar(q)
+    DispersiveShallowWater.rhs!(dq, q, semi, t)
+
+    # Use a random number generator with a fixed seed to make the test reproducible
+    rng = Xoshiro(1)
+    h = similar(q)
+    for i in eachindex(h)
+        h[i] = sqrt(eps()) * (rand(rng) - 0.5)
+    end
+    dq_plus_h = similar(q)
+    DispersiveShallowWater.rhs!(dq_plus_h, q + h, semi, t)
+    return J, maximum(abs, vec(dq) + J * vec(h) - vec(dq_plus_h))
 end
