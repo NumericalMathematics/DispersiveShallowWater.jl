@@ -14,6 +14,13 @@ for human readability.
 
 #### Fixed
 
+- Invalid arguments to `Mesh1D`, `Solver`, `Semidiscretization`, `convergence_test`, and the plot recipe of the
+  `AnalysisCallback` now throw an `ArgumentError` with an explanation instead of an `AssertionError`. A `Semidiscretization`
+  of the `HyperbolicSainteMarieEquations1D` with reflecting boundary conditions now throws an `ArgumentError` instead of
+  a `MethodError` ([#330]).
+- `Mesh1D` accepts any integer type for the number of nodes ([#330]).
+- `convergence_test` no longer sorts the
+  passed vector of resolutions in place and writes all its output to `io` ([#330]).
 - Plotting a solution over time at a fixed `x` (e.g., `plot(semi => sol, x)`) now shows all variables. Before, variables
   after the bathymetry were dropped, e.g., `H` for the `HyperbolicSerreGreenNaghdiEquations1D` with `conversion = prim2prim` ([#327]).
 - `initial_condition_soliton` for the `HyperbolicSerreGreenNaghdiEquations1D` now respects a nonzero still-water
