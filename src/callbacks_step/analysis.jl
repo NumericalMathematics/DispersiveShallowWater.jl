@@ -7,6 +7,8 @@
 Analyze a numerical solution every `interval` time steps.
 The L2- and the L∞-norm for each component are computed by default.
 Additional errors can be computed, e.g. by passing `extra_analysis_errors = (:conservation_error,)`.
+Currently, `:conservation_error` is the only supported additional error. Unsupported errors
+are ignored with a warning.
 
 Further scalar functions `func` in `extra_analysis_integrals` are applied to the numerical
 solution and integrated over the computational domain. Some examples for this are
@@ -83,11 +85,14 @@ function AnalysisCallback(mesh, equations::AbstractEquations, solver;
     # activated after a rejected step.
     condition = (u, t, integrator) -> interval > 0 &&
         ((integrator.stats.naccept % interval == 0) || isfinished(integrator))
-    for extra_analysis_error in extra_analysis_errors
-        if extra_analysis_error != :conservation_error
-            @warn "Extra analysis error $extra_analysis_error is not supported and will be ignored."
+    supported_analysis_errors = (:l2_error, :linf_error, :conservation_error)
+    for analysis_error in analysis_errors
+        if !(analysis_error in supported_analysis_errors)
+            @warn "Analysis error $analysis_error is not supported and will be ignored."
         end
     end
+    analysis_errors = unique(filter(in(supported_analysis_errors),
+                                    collect(Symbol, analysis_errors)))
     analysis_callback = AnalysisCallback(0.0, 0.0, interval, analysis_errors,
                                          Tuple(analysis_integrals),
                                          SVector(ntuple(_ -> zero(real(solver)),
@@ -255,9 +260,15 @@ function (analysis_callback::AnalysisCallback)(io, q, integrator, semi)
 
         # Calculate L2/Linf errors, which are also returned
         l2_error, linf_error = calc_error_norms(q, t, semi)
+        # The rows of `current_errors` are ordered as the names in `analysis_errors`
         current_errors = zeros(real(semi), (length(analysis_errors), nvariables(equations)))
-        current_errors[1, :] = l2_error
-        current_errors[2, :] = linf_error
+        for (i, analysis_error) in enumerate(analysis_errors)
+            if analysis_error === :l2_error
+                current_errors[i, :] = l2_error
+            elseif analysis_error === :linf_error
+                current_errors[i, :] = linf_error
+            end
+        end
         print(io, " L2 error:    ")
         for v in eachvariable(equations)
             @printf(io, "  % 10.8e", l2_error[v])
@@ -274,10 +285,11 @@ function (analysis_callback::AnalysisCallback)(io, q, integrator, semi)
         if :conservation_error in analysis_errors
             @unpack initial_state_integrals = analysis_callback
             state_integrals = integrate(q, semi)
-            current_errors[3, :] = abs.(state_integrals - initial_state_integrals)
+            i = findfirst(==(:conservation_error), analysis_errors)
+            current_errors[i, :] = abs.(state_integrals - initial_state_integrals)
             print(io, " |∫q - ∫q₀|:  ")
             for v in eachvariable(equations)
-                @printf(io, "  % 10.8e", current_errors[3, v])
+                @printf(io, "  % 10.8e", current_errors[i, v])
             end
             println(io)
         end

@@ -663,6 +663,42 @@ end
     @test_nowarn display(analysis_callback)
 end
 
+@testitem "AnalysisCallback errors" setup=[Setup] begin
+    using OrdinaryDiffEqTsit5: solve, Tsit5
+
+    equations = BBMBBMEquations1D(gravity = 9.81)
+    mesh = Mesh1D(-1.0, 1.0, 16)
+    semi = Semidiscretization(mesh, equations, initial_condition_convergence_test,
+                              Solver(mesh, 4);
+                              boundary_conditions = boundary_condition_periodic)
+    ode = semidiscretize(semi, (0.0, 0.01))
+    function solve_and_get_errors(; kwargs...)
+        analysis_callback = AnalysisCallback(semi; interval = 1, io = devnull, kwargs...)
+        solve(ode, Tsit5(); callback = analysis_callback, save_everystep = false)
+        return errors(analysis_callback)
+    end
+    errs = solve_and_get_errors(extra_analysis_errors = (:conservation_error,))
+    @test keys(errs) == (:l2_error, :linf_error, :conservation_error)
+
+    # Unsupported errors are ignored with a warning
+    message = "Analysis error foo is not supported and will be ignored."
+    extra_analysis_errors = (:conservation_error, :foo)
+    @test_logs (:warn, message) AnalysisCallback(semi; extra_analysis_errors)
+    errs_foo = @test_logs (:warn, message) solve_and_get_errors(; extra_analysis_errors)
+    @test errs_foo == errs
+
+    # The errors are stored according to their names, independent of the order
+    errs_reversed = solve_and_get_errors(analysis_errors = [:conservation_error,
+                                             :linf_error, :l2_error])
+    @test keys(errs_reversed) == (:conservation_error, :linf_error, :l2_error)
+    for name in keys(errs)
+        @test errs_reversed[name] == errs[name]
+    end
+    errs_conservation = solve_and_get_errors(analysis_errors = [:conservation_error])
+    @test keys(errs_conservation) == (:conservation_error,)
+    @test errs_conservation.conservation_error == errs.conservation_error
+end
+
 @testitem "RelaxationCallback" setup=[Setup] begin
     relaxation_callback = RelaxationCallback(invariant = entropy)
     @test_nowarn print(relaxation_callback)

@@ -14,6 +14,9 @@ for human readability.
 
 #### Fixed
 
+- The `AnalysisCallback` now ignores unsupported analysis errors (with a warning) instead of reporting them as zero
+  in `errors`. The errors returned by `errors` are now stored according to their names, which fixes wrong labels or a
+  `BoundsError` if `analysis_errors` is passed in a different order or without the L2 and L∞ errors ([#329]).
 - Invalid arguments to `Mesh1D`, `Solver`, `Semidiscretization`, `convergence_test`, and the plot recipe of the
   `AnalysisCallback` now throw an `ArgumentError` with an explanation instead of an `AssertionError`. A `Semidiscretization`
   of the `HyperbolicSainteMarieEquations1D` with reflecting boundary conditions now throws an `ArgumentError` instead of
