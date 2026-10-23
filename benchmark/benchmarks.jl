@@ -25,7 +25,12 @@ for elixir in elixirs
         trixi_include(@__MODULE__, elixir, tspan = (0.0, 1e-11))
         return nothing
     end
-    SUITE[benchname] = @benchmarkable DispersiveShallowWater.rhs!($(similar(sol.u[end])),
-                                                                  $(copy(sol.u[end])),
-                                                                  $(semi), $(first(tspan)))
+    # Since Julia v1.12, the global variables defined by `trixi_include` are newer
+    # than the world age this loop runs in, so we need to access them via `invokelatest`.
+    sol_elixir = @invokelatest (@__MODULE__).sol
+    semi_elixir = @invokelatest (@__MODULE__).semi
+    t = first(sol_elixir.prob.tspan)
+    SUITE[benchname] = @benchmarkable DispersiveShallowWater.rhs!($(similar(sol_elixir.u[end])),
+                                                                  $(copy(sol_elixir.u[end])),
+                                                                  $(semi_elixir), $t)
 end
