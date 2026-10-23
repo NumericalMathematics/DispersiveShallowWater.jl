@@ -11,6 +11,8 @@ for human readability.
 
 - The `HyperbolicSainteMarieEquations1D` were added for different types of bathymetry ([#288]).
 - Add linear dispersion relation for the `HyperbolicSerreGreenNaghdiEquations1D` ([#321]).
+- `still_water_surface` and `bathymetry` can now be used as `conversion` functions, e.g., for plotting with
+  `plot(semi => sol, conversion = bathymetry)` ([#338]).
 
 #### Fixed
 

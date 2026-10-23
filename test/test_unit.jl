@@ -174,6 +174,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         entropy,
         energy_total,
         prim2nondim,
@@ -226,6 +228,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         entropy,
         energy_total,
         prim2cons,
@@ -274,6 +278,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         velocity,
         momentum,
         discharge,
@@ -332,6 +338,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         velocity,
         momentum,
         discharge,
@@ -396,6 +404,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         velocity,
         momentum,
         discharge,
@@ -451,6 +461,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         velocity,
         momentum,
         discharge,
@@ -539,6 +551,8 @@ end
     conversion_functions = [
         waterheight_total,
         waterheight,
+        still_water_surface,
+        bathymetry,
         velocity,
         momentum,
         discharge,

@@ -31,4 +31,14 @@
             @test allunique(series[:subplot] for series in p.series_list)
         end
     end
+
+    # The bathymetry is plotted if it is the only variable
+    for conversion in (still_water_surface, bathymetry)
+        name = only(DispersiveShallowWater.varnames(conversion, equations))
+        for p in (plot(semi => sol; conversion, plot_bathymetry = false),
+                  plot(semi => sol, 0.0; conversion))
+            @test [series[:label] for series in p.series_list] == [name]
+        end
+        @test_nowarn plot(semi => sol; conversion)
+    end
 end
