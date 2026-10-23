@@ -20,8 +20,16 @@ permissions:
 jobs:
   bench:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Some code paths depend on the Julia version, e.g., `ldiv!` for sparse
+        # Cholesky factorizations requires Julia v1.12
+        julia-version:
+          - '1.10'
+          - '1.13'
     steps:
       - uses: MilesCranmer/AirspeedVelocity.jl@action-v1
         with:
-          julia-version: '1.10'
+          julia-version: ${{ matrix.julia-version }}
           bench-on: ${{ github.event.pull_request.head.sha }}
