@@ -14,6 +14,9 @@ for human readability.
 
 #### Fixed
 
+- If the water height becomes negative, e.g., because the time step is too large, the `SerreGreenNaghdiEquations1D`
+  with a `FourierDerivativeOperator` or a `VarCoefDerivativeOperator` now return `NaN`s instead of throwing a
+  `PosDefException`. This allows adaptive time integration methods to reject the step, as for the other solvers ([#334]).
 - The `AnalysisCallback` now ignores unsupported analysis errors (with a warning) instead of reporting them as zero
   in `errors`. The errors returned by `errors` are now stored according to their names, which fixes wrong labels or a
   `BoundsError` if `analysis_errors` is passed in a different order or without the L2 and L∞ errors ([#329]).
