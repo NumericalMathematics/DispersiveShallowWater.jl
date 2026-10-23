@@ -100,6 +100,38 @@ end
     @test_allocations(DispersiveShallowWater.rhs!, semi, sol, allocs=850_000)
 end
 
+@testitem "negative water height with dense and banded system matrices" setup=[
+    Setup,
+    SerreGreenNaghdiEquations1D
+] begin
+    # If the water height becomes negative, e.g., because the time step is too large,
+    # the system matrix is not positive definite. Then, `rhs!` returns `NaN`s so that
+    # adaptive time integration methods reject the step instead of throwing a
+    # `PosDefException`. The sparse system matrices are covered by other tests.
+    function rhs_with_negative_waterheight(semi)
+        q = DispersiveShallowWater.compute_coefficients(semi.initial_condition, 0.0, semi)
+        eta, _, D = q.x
+        b = semi.equations.eta0 .- D
+        eta[2:6] .= b[2:6] .- 0.5
+        dq = similar(q)
+        DispersiveShallowWater.rhs!(dq, q, semi, 0.0)
+        return dq
+    end
+
+    # dense system matrix
+    @test_trixi_include(joinpath(EXAMPLES_DIR, "serre_green_naghdi_soliton_fourier.jl"),
+                        tspan=(0.0, 1.0e-8))
+    dq = @test_nowarn rhs_with_negative_waterheight(semi)
+    @test all(isnan, dq.x[2])
+
+    # banded system matrix
+    @test_trixi_include(joinpath(EXAMPLES_DIR,
+                                 "serre_green_naghdi_soliton_reflecting_var_coef_op.jl"),
+                        tspan=(0.0, 1.0e-8))
+    dq = @test_nowarn rhs_with_negative_waterheight(semi)
+    @test all(isnan, dq.x[2])
+end
+
 @testitem "serre_green_naghdi_soliton_upwind.jl" setup=[Setup, SerreGreenNaghdiEquations1D] begin
     @test_trixi_include(joinpath(EXAMPLES_DIR,
                                  "serre_green_naghdi_soliton_upwind.jl"),

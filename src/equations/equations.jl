@@ -612,8 +612,14 @@ function solve_system_matrix!(dv, system_matrix, rhs,
             fill!(dv, NaN)
         end
     else
-        factorization = cholesky!(system_matrix)
-        ldiv!(dv, factorization, rhs)
+        factorization = cholesky!(system_matrix; check = false)
+        if issuccess(factorization)
+            ldiv!(dv, factorization, rhs)
+        else
+            # The factorization may fail if the time step is too large
+            # and h becomes negative.
+            fill!(dv, NaN)
+        end
     end
     return nothing
 end
