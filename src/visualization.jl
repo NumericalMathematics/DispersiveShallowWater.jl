@@ -21,8 +21,9 @@ end
 
     nvars = length(conversion(zeros(nvariables(semi)), equations))
     nsubplots = nvars
-    # Bathymetry is not plotted in separate subplot
-    if length(intersect(names, ["D", "b"])) > 0
+    # Bathymetry is not plotted in separate subplot (unless it is the only variable)
+    skip_bathymetry = nvars > 1 && length(intersect(names, ["D", "b"])) > 0
+    if skip_bathymetry
         nsubplots -= 1
     end
 
@@ -45,7 +46,7 @@ end
     subplot = 0
     for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ("D", "b") && continue
+        skip_bathymetry && names[i] in ("D", "b") && continue
 
         subplot += 1
         if plot_analytical == true
@@ -116,8 +117,9 @@ end
 
     nvars = length(conversion(zeros(nvariables(semi)), equations))
     nsubplots = nvars
-    # Bathymetry is not plotted in separate subplot
-    if length(intersect(names, ["D", "b"])) > 0
+    # Bathymetry is not plotted in separate subplot (unless it is the only variable)
+    skip_bathymetry = nvars > 1 && length(intersect(names, ["D", "b"])) > 0
+    if skip_bathymetry
         nsubplots -= 1
     end
 
@@ -144,7 +146,7 @@ end
     subplot = 0
     for i in 1:nvars
         # Don't plot bathymetry in separate subplot
-        names[i] in ("D", "b") && continue
+        skip_bathymetry && names[i] in ("D", "b") && continue
 
         subplot += 1
         @series begin

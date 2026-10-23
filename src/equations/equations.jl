@@ -221,6 +221,8 @@ for a given set of `equations`.
     return equations.eta0
 end
 
+varnames(::typeof(still_water_surface), equations) = ("η₀",)
+
 @inline function still_waterdepth(q, ::AbstractShallowWaterEquations)
     return q[3]
 end
@@ -241,6 +243,8 @@ of the correct length `nvariables(equations)`.
     eta0 = still_water_surface(q, equations)
     return eta0 - D
 end
+
+varnames(::typeof(bathymetry), equations) = ("b",)
 
 """
     lake_at_rest_error(q, equations)
