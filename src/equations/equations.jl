@@ -604,8 +604,14 @@ function solve_system_matrix!(dv, system_matrix, rhs,
         (; factorization) = cache
         cholesky!(factorization, system_matrix; check = false)
         if issuccess(factorization)
-            # see https://github.com/NumericalMathematics/DispersiveShallowWater.jl/issues/122
-            dv .= factorization \ rhs
+            @static if VERSION >= v"1.12"
+                ldiv!(dv, factorization, rhs)
+            else
+                # In-place `ldiv!` for sparse Cholesky factorizations is only available
+                # since Julia v1.12 (SparseArrays.jl v1.12), see
+                # https://github.com/NumericalMathematics/DispersiveShallowWater.jl/issues/122
+                dv .= factorization \ rhs
+            end
         else
             # The factorization may fail if the time step is too large
             # and h becomes negative.
